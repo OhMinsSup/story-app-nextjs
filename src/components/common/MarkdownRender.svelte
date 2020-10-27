@@ -219,17 +219,17 @@
 </style>
 
 <script lang="ts">
-  import prismPlugin from '../../lib/remark/prismPlugin';
-  import embedPlugin from '../../lib/remark/embedPlugin';
-
-  import Typography from './Typography.svelte';
-  // import sanitize from 'sanitize-html';
-  import { onMount } from 'svelte';
-  import { throttle } from 'throttle-debounce';
   import remark from 'remark';
   import htmlPlugin from 'remark-html';
   import slug from 'remark-slug';
   import breaks from 'remark-breaks';
+
+  import Typography from './Typography.svelte';
+  // import sanitize from 'sanitize-html';
+  import { onMount } from 'svelte';
+  // import { throttle } from 'throttle-debounce';
+  import prismPlugin from '../../lib/remark/prismPlugin';
+  import embedPlugin from '../../lib/remark/embedPlugin';
 
   export let markdown = '';
   export let editing = false;
@@ -237,23 +237,26 @@
   let html = typeof window !== 'undefined' ? '' : '';
   let element: any = null;
 
-  const applyElement = () => {
-    return throttle(250, (el: any) => {
-      element = el;
-    });
-  };
+  // const applyElement = () => {
+  //   return throttle(250, (el: any) => {
+  //     element = el;
+  //   });
+  // };
 
   onMount(() => {
-    // remark()
-    // .use(breaks)
-    // .use(prismPlugin)
-    // .use(htmlPlugin)
-    // .use(embedPlugin)
-    // .use(slug)
-    // .process(markdown, (err: any, file: any) => {
-    //   const html = String(file);
-    //   console.log(html);
-    // });
+    remark()
+      .use(breaks)
+      .use(prismPlugin)
+      .use(htmlPlugin)
+      .use(embedPlugin)
+      .use(slug)
+      .process(markdown, (err: any, file: any) => {
+        if (err) {
+          console.error(err);
+        }
+        const html = String(file);
+        console.log(html);
+      });
   });
 </script>
 

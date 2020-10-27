@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable */
 import visit from 'unist-util-visit';
 
 const embedTypeRegex = /^!(youtube|twitter|codesandbox|codepen)$/;

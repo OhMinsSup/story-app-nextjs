@@ -1,8 +1,6 @@
-/* eslint-disable no-param-reassign */
-import Prism from 'prismjs';
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable */
 import visit from 'unist-util-visit';
-
+import Prism from 'prismjs';
 import 'prismjs/components/prism-bash.min';
 import 'prismjs/components/prism-typescript.min';
 import 'prismjs/components/prism-javascript.min';
@@ -30,10 +28,8 @@ import 'prismjs/components/prism-rust.min';
 import 'prismjs/components/prism-yaml.min';
 import 'prismjs/components/prism-dart';
 
-// eslint-disable-next-line no-unused-vars
 export default function attacher({ include, exclude } = {}) {
   function visitor(node) {
-    // eslint-disable-next-line prefer-const
     let { lang, data } = node;
 
     if (!data) {

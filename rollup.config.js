@@ -1,4 +1,5 @@
 import resolve from '@rollup/plugin-node-resolve';
+import globals from 'rollup-plugin-node-globals';
 import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
 import svelte from 'rollup-plugin-svelte';
@@ -8,6 +9,7 @@ import svelteSVG from 'rollup-plugin-svelte-svg';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import json from '@rollup/plugin-json';
+import builtins from 'rollup-plugin-node-builtins';
 import config from 'sapper/config/rollup.js';
 import pkg from './package.json';
 
@@ -37,7 +39,6 @@ export default {
     input: config.client.input().replace(/.js$/, '.ts'),
     output: config.client.output(),
     plugins: [
-      json(),
       replace({
         'process.browser': true,
         'process.env.NODE_ENV': JSON.stringify(mode),
@@ -58,6 +59,9 @@ export default {
         dedupe: ['svelte'],
       }),
       commonjs(),
+      globals(),
+      builtins(),
+      json(),
       typescript({ sourceMap: dev }),
       svelteSVG({ dev }),
       legacy &&
@@ -98,7 +102,6 @@ export default {
     input: { server: config.server.input().server.replace(/.js$/, '.ts') },
     output: config.server.output(),
     plugins: [
-      json(),
       replace({
         'process.browser': false,
         'process.env.NODE_ENV': JSON.stringify(mode),
@@ -113,6 +116,9 @@ export default {
         dedupe: ['svelte'],
       }),
       commonjs(),
+      globals(),
+      builtins(),
+      json(),
       typescript({ sourceMap: dev }),
       svelteSVG({ dev, generate: 'ssr' }),
     ],

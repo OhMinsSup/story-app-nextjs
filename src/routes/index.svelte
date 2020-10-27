@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>story</title>
+  <title>velog</title>
   <meta
     name="description"
     content="개발자들을 위한 블로그 서비스. 어디서 글 쓸지 고민하지 말고 벨로그에서 시작하세요."
