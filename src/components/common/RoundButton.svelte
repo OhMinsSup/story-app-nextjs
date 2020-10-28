@@ -72,7 +72,7 @@
   type Color = 'teal' | 'gray' | 'darkGray' | 'lightGray';
 
   $: {
-    if (ref && border) {
+    if (ref) {
       (async function () {
         ref.style.border = `1px solid ${buttonColor.background}`;
         ref.style.color = buttonColor.background;

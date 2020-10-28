@@ -1,4 +1,4 @@
-<style lang="scss">
+<style lang="scss" scoped>
   @import '../../styles/variables.scss';
 
   .editor-panes-container {
@@ -57,6 +57,9 @@
 </style>
 
 <script lang="ts">
+  import MarkdownEditorContainer from '../../containers/write/MarkdownEditorContainer.svelte';
+  import MarkdownPreviewContainer from '../../containers/write/MarkdownPreviewContainer.svelte';
+
   export let shadow: boolean = false;
   export let theme: ThemeColorType = 'LIGHT' as const;
 
@@ -70,18 +73,14 @@
     class:white-editor-mode="{theme === 'LIGHT'}"
     class:black-editor-mode="{theme === 'DARK'}"
   >
-    <slot name="left">
-      <!-- fallback component editor -->
-    </slot>
+    <MarkdownEditorContainer />
   </div>
   <div
     class="preview-panes"
     class:white-preview-mode="{theme === 'LIGHT'}"
     class:black-preview-mode="{theme === 'DARK'}"
   >
-    <slot name="right">
-      <!-- fallback component preview -->
-    </slot>
+    <MarkdownPreviewContainer />
   </div>
 </div>
 <!-- markup (zero or more items) goes here -->

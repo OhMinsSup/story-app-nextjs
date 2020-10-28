@@ -1,4 +1,4 @@
-<style lang="scss">
+<style lang="scss" scoped>
   @import '../../styles/variables.scss';
 
   :global(.CodeMirror) {
@@ -57,23 +57,10 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    &::-webkit-scrollbar {
-      border-radius: 3px;
-      width: 6px;
-      &:hover {
-        width: 16px;
-      }
-      background: gray1;
-    }
-    &::-webkit-scrollbar-thumb {
-      z-index: 100;
-      background: gray9;
-      /* -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75); */
-    }
     & > .wrapper {
-      min-height: 0;
+      min-height: 0px;
       padding-bottom: 4rem;
-      flex: 1;
+      flex: 1 1 0%;
       display: flex;
       flex-direction: column;
 
@@ -123,7 +110,7 @@
 </script>
 
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import type { EditorFromTextArea } from 'codemirror';
 
   import write from '../../store/write';
@@ -131,11 +118,12 @@
   import TitleTextarea from '../write/TitleTextarea.svelte';
   import Toolbar from '../write/Toolbar.svelte';
   import AddLink from '../write/AddLink.svelte';
+  import WriteFooter from '../write/WriteFooter.svelte';
 
   let blockRef: HTMLDivElement;
   let toolbarRef: HTMLDivElement;
   let textareaRef: HTMLTextAreaElement;
-  let triggerEl: HTMLDivElement;
+  let footerRef: HTMLDivElement;
 
   let editor: EditorFromTextArea;
   // local State
@@ -611,6 +599,15 @@ ${selected}
     handler();
     codemirrorEditor.focus();
   };
+
+  $: {
+    if (footerRef) {
+      (async function () {
+        footerRef.style.width = `${clientWidth}px` || '50%';
+        await tick();
+      })();
+    }
+  }
 </script>
 
 <div class="markdown-editor-codemirror" bind:this="{blockRef}">
@@ -638,9 +635,8 @@ ${selected}
       {/if}
       <textarea bind:this="{textareaRef}" style="display:none;"></textarea>
     </div>
-    <div class="footer-wrapper">
-      footer
-      <!-- footer wrapper -->
+    <div class="footer-wrapper" bind:this="{footerRef}">
+      <WriteFooter />
     </div>
   </div>
 </div>
