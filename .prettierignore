@@ -1,0 +1,8 @@
+/dist
+/build
+/node_modules
+
+__sapper__
+
+src/service-worker.ts
+src/svelte.app.d.ts

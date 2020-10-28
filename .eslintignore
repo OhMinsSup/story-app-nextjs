@@ -1,0 +1,11 @@
+node_modules/
+public/
+
+svelte.config.js
+rollup.config.js
+.eslintrc.js
+
+__sapper__
+
+src/service-worker.ts
+src/svelte.app.d.ts
