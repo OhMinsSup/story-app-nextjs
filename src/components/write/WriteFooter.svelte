@@ -38,12 +38,21 @@
 <script lang="ts">
   import ArrowBackIcon from 'svelte-icons/md/MdArrowBack.svelte';
   import RoundButton from '../common/RoundButton.svelte';
+  import write from '../../store/write';
 
   export let edit = false;
+
+  const onGoBack = () => {
+    history.back();
+  };
+
+  const onOpenPublish = () => {
+    write.openPublish();
+  };
 </script>
 
 <div class="write-footer-block">
-  <button type="button" class="back-btn">
+  <button type="button" class="back-btn" on:click="{onGoBack}">
     <div class="arrowback-icon">
       <ArrowBackIcon />
     </div>
@@ -52,6 +61,6 @@
     <RoundButton inline="{true}" color="gray">임시저장</RoundButton>
   </div>
   <div class="footer-btn">
-    <RoundButton inline="{true}" color="teal">{edit ? '수정하기' : '출간하기'}</RoundButton>
+    <RoundButton inline="{true}" color="teal" on:click="{onOpenPublish}">{edit ? '수정하기' : '출간하기'}</RoundButton>
   </div>
 </div>

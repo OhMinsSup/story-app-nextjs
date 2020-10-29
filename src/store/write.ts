@@ -5,12 +5,14 @@ export interface WriteState {
   markdown: string;
   title: string;
   tags: string[];
+  publish: boolean;
 }
 
 const initialState: WriteState = {
   title: '',
   markdown: '',
   tags: [],
+  publish: false,
 };
 
 function writeStore() {
@@ -31,6 +33,16 @@ function writeStore() {
       update((state) => ({
         ...state,
         tags,
+      })),
+    openPublish: () =>
+      update((state) => ({
+        ...state,
+        publish: true,
+      })),
+    closePublish: () =>
+      update((state) => ({
+        ...state,
+        publish: false,
       })),
   };
 }
