@@ -75,8 +75,9 @@
 </style>
 
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
+  import PublishPreviewContainer from '../../containers/write/PublishPreviewContainer.svelte';
   import HideScroll from '../common/HideScroll.svelte';
 
   export let visible = false;
@@ -105,9 +106,13 @@
 {:else}
   <div class="publish-screen-template" in:slide="{{ duration: 125 }}">
     <div class="wrapper">
-      <div class="left-pane">??</div>
+      <div class="left-pane">
+        <PublishPreviewContainer />
+      </div>
       <div class="separator"></div>
-      <div class="right-pane">??</div>
+      <div class="right-pane">
+        <!--  -->
+      </div>
     </div>
     <HideScroll />
   </div>

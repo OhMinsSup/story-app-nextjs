@@ -20,6 +20,8 @@
       cursor: pointer;
       border: none;
       display: flex;
+      left: 0;
+      position: absolute;
       outline: none;
       & > .arrowback-icon {
         height: 1.25rem;
