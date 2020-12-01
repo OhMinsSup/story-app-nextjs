@@ -78,6 +78,7 @@
   import { onMount } from 'svelte';
   import { slide } from 'svelte/transition';
   import PublishPreviewContainer from '../../containers/write/PublishPreviewContainer.svelte';
+  import PublishSettings from '../../containers/write/PublishSettings.svelte';
   import HideScroll from '../common/HideScroll.svelte';
 
   export let visible = false;
@@ -111,7 +112,7 @@
       </div>
       <div class="separator"></div>
       <div class="right-pane">
-        <!--  -->
+        <PublishSettings />
       </div>
     </div>
     <HideScroll />
