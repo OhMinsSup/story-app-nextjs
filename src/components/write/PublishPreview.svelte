@@ -129,13 +129,30 @@
 </style>
 
 <script lang="ts">
-  // your script goes here
+  import { createEventDispatcher } from 'svelte';
   import PublishSection from './PublishSection.svelte';
   import ImageVector from '../../../static/svg/vector-image.svg';
+
+  const dispatch = createEventDispatcher();
 
   export let title: string = '';
   export let thumbnail: string = '';
   export let description: string = '';
+
+  const onChangeDescription = (
+    e: KeyboardEvent & {
+      target: EventTarget & HTMLTextAreaElement;
+      currentTarget: EventTarget & HTMLTextAreaElement;
+    }
+  ) => {
+    try {
+      dispatch('changeDescription', {
+        description: e.target.value,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 </script>
 
 <div class="publish-preivew-block">
@@ -163,7 +180,11 @@
     </div>
     <div class="PostInfo">
       <h4>{title}</h4>
-      <textarea placeholder="당신의 포스트를 짧게 소개해보세요." bind:value="{description}"></textarea>
+      <textarea
+        placeholder="당신의 포스트를 짧게 소개해보세요."
+        value="{description}"
+        on:keypress="{onChangeDescription}"
+      ></textarea>
       <div class="text-limit" class:limit="{description.length === 150}">{description.length}/150</div>
     </div>
   </PublishSection>

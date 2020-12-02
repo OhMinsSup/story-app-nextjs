@@ -105,7 +105,7 @@
 {#if !visible && !animate}
   <div></div>
 {:else}
-  <div class="publish-screen-template" in:slide="{{ duration: 125 }}">
+  <div class="publish-screen-template" transition:slide|local="{{ duration: 125 }}">
     <div class="wrapper">
       <div class="left-pane">
         <PublishPreviewContainer />

@@ -9,15 +9,20 @@
   /* your styles go here */
 </style>
 
-<script>
+<script lang="ts">
   import RoundButton from '../../components/common/RoundButton.svelte';
   import PublishPrivacySettingContainer from './PublishPrivacySettingContainer.svelte';
+  import write from '../../store/write';
+
+  const onClosePublish = () => {
+    write.closePublish();
+  };
 </script>
 
 <div>
   <PublishPrivacySettingContainer />
 </div>
 <div class="PublishActionButtons">
-  <RoundButton size="DEFAULT" color="gray">취소</RoundButton>
+  <RoundButton size="DEFAULT" color="gray" on:click="{onClosePublish}">취소</RoundButton>
   <RoundButton size="DEFAULT">출간하기</RoundButton>
 </div>

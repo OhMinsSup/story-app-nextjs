@@ -52,22 +52,51 @@
 </style>
 
 <script lang="ts">
-  // your script goes here
+  import { createEventDispatcher } from 'svelte';
   import GlobeIcon from '../../../static/svg/icon-globe.svg';
   import LockIcon from '../../../static/svg/icon-lock.svg';
-
   import PublishSection from './PublishSection.svelte';
 
+  const dispatch = createEventDispatcher();
+
   export let isPrivate: boolean = false;
+
+  const onClickPrivate = (
+    e: MouseEvent & {
+      target: EventTarget & HTMLButtonElement;
+      currentTarget: EventTarget & HTMLButtonElement;
+    }
+  ) => {
+    try {
+      const { dataset } = e.currentTarget;
+      dispatch('changePrivate', {
+        isPrivate: dataset['private'] === 'true' ? true : false,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 </script>
 
 <div class="PublishPrivacySettingBlock">
   <PublishSection title="공개 설정">
-    <button type="button" class="PrivacySettingButton" class:PrivacySettingButtonActive="{!isPrivate}">
+    <button
+      type="button"
+      class="PrivacySettingButton"
+      class:PrivacySettingButtonActive="{!isPrivate}"
+      data-private="false"
+      on:click="{onClickPrivate}"
+    >
       <GlobeIcon />
       <div class="description">전체 공개</div>
     </button>
-    <button type="button" class="PrivacySettingButton" class:PrivacySettingButtonActive="{isPrivate}">
+    <button
+      type="button"
+      class="PrivacySettingButton"
+      class:PrivacySettingButtonActive="{isPrivate}"
+      data-private="true"
+      on:click="{onClickPrivate}"
+    >
       <LockIcon />
       <div class="description">비공개</div>
     </button>

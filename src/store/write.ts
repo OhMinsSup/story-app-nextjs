@@ -4,15 +4,19 @@ import { writable } from 'svelte/store';
 export interface WriteState {
   markdown: string;
   title: string;
+  description: string;
   tags: string[];
   publish: boolean;
+  isPrivate: boolean;
 }
 
 const initialState: WriteState = {
   title: '',
   markdown: '',
+  description: '',
   tags: [],
   publish: false,
+  isPrivate: false,
 };
 
 function writeStore() {
@@ -33,6 +37,16 @@ function writeStore() {
       update((state) => ({
         ...state,
         tags,
+      })),
+    changeDescription: (description: string) =>
+      update((state) => ({
+        ...state,
+        description,
+      })),
+    changePrivate: (isPrivate: boolean) =>
+      update((state) => ({
+        ...state,
+        isPrivate,
       })),
     openPublish: () =>
       update((state) => ({
