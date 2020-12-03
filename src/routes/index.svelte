@@ -1,5 +1,7 @@
 <script lang="ts">
   import HomeHeader from '../components/home/HomeHeader.svelte';
+  import HomeTab from '../components/home/HomeTab.svelte';
+  import MainResponsive from '../components/main/MainResponsive.svelte';
 </script>
 
 <svelte:head>
@@ -11,4 +13,4 @@
   <meta property="og:image" content="https://images.velog.io/velog.png" />
 </svelte:head>
 
-<HomeHeader />
+main
