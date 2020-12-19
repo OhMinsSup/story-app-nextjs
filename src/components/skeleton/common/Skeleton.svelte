@@ -24,8 +24,6 @@
 
 <script>
   import { tick } from 'svelte';
-  import _, { takeAll } from 'fxjs/Strict';
-  import Lazy from 'fxjs/Lazy';
 
   export let className = '';
   export let width = '';
@@ -52,12 +50,9 @@
   };
 
   // create styles
-  const styles = _.go(
-    Lazy.entries(obj),
-    Lazy.filter(([key, value]) => value),
-    Lazy.map((value) => value),
-    takeAll
-  );
+  const styles = Object.entries(obj)
+    .filter(([_, value]) => value)
+    .map((value) => value);
 
   $: {
     if (skeletonRef) {

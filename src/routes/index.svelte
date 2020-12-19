@@ -8,6 +8,4 @@
   <link rel="canonical" href="https://velog.io/" />
 </svelte:head>
 
-<div>
-  <PostCardGrid posts="{tredingPosts.data.trendingPosts}" loading="{false}" forHome="{true}" />
-</div>
+<PostCardGrid posts="{tredingPosts.data.trendingPosts}" loading="{false}" forHome="{true}" />
