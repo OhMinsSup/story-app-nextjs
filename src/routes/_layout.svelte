@@ -16,7 +16,6 @@
   import Core from '../containers/common/Core.svelte';
 
   const { page } = stores();
-  console.log('layout', page);
 
   $: isMainPage = ['/', '/recent'].includes($page.path);
 </script>

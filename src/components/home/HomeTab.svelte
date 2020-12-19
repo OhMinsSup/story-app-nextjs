@@ -87,13 +87,14 @@
   });
 
   let moreButtonRef: HTMLDivElement;
+  let indicatorRef: HTMLDivElement;
   let extra = false;
 
   const onToggleExtra = () => {
     extra = !extra;
   };
 
-  const onOutSideClick = (event) => {
+  const onOutSideClick = () => {
     extra = false;
   };
 
@@ -108,6 +109,12 @@
   $: trendingActive = ['/'].includes($page.path);
   $: recentActive = ['/recent'].includes($page.path);
   $: ['/'].includes($page.path) ? size.set(0) : size.set(50);
+
+  $: {
+    if (indicatorRef) {
+      indicatorRef.style.left = `${$size}%`;
+    }
+  }
 </script>
 
 <div class="home-tab">
@@ -124,7 +131,8 @@
       </div>
       최신
     </a>
-    <div class="indicator" style="left:{$size}%;"></div>
+    <!-- style="left:{$size}%;" -->
+    <div class="indicator" bind:this="{indicatorRef}"></div>
   </div>
   <div class="mobile-tab-container" bind:this="{moreButtonRef}">
     <div class="more" on:click="{onToggleExtra}">
