@@ -284,7 +284,7 @@
     window.addEventListener('resize', handleResize);
 
     return () => {
-      editor.toTextArea();
+      // editor.toTextArea();
       window.removeEventListener('resize', handleResize);
     };
   });

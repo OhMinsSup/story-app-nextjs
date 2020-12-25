@@ -60,7 +60,7 @@ export function filter(html: string) {
     allowedIframeHostnames: ['www.youtube.com', 'codesandbox.io', 'codepen.io'],
   });
 }
-export const formatDate = (date: any) => {
+export const formatDate = (date: string | number | Date) => {
   const d = new Date(date);
   const now = Date.now();
   const diff = now - new Date(date).getTime();
@@ -78,4 +78,12 @@ export const formatDate = (date: any) => {
     return distanceInWordsToNow(d, { addSuffix: true, locale: koLocale });
   }
   return format(d, 'yyyy년 M월 d일');
+};
+
+export const escapeForUrl = (text) => {
+  return text
+    .replace(/[^0-9a-zA-Zㄱ-힣.\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf -]/g, '')
+    .trim()
+    .replace(/ /g, '-')
+    .replace(/--+/g, '-');
 };
