@@ -56,21 +56,28 @@
   }
 </style>
 
-<script>
+<script lang="ts">
+  import { goto } from '@sapper/app';
   import { tick } from 'svelte';
 
-  export let tab = 'posts';
-  export let username = '';
+  export let tab: string = 'post';
+  export let username: string = '';
 
-  let indicatorRef = null;
+  let indicatorRef: HTMLDivElement = null;
 
-  const tabIndexMap = {
-    posts: 0,
+  const tabIndexMap: {
+    [key: string]: number;
+  } = {
+    post: 0,
     about: 1,
   };
 
-  $: withPrefixUrl = (prefix) => {
-    return prefix ? `/velog/${username}/${prefix}` : `/story/${username}`;
+  const withPrefixUrl = (prefix: string) => {
+    return prefix ? `/velog/@${username}?type=${prefix}` : `/velog/@${username}`;
+  };
+
+  const go = async () => {
+    await goto(withPrefixUrl(tab));
   };
 
   $: tabIndex = tabIndexMap[tab];
@@ -87,8 +94,8 @@
 
 <div class="velog-tab">
   <div class="tab-wrapper">
-    <a href="{withPrefixUrl('')}" class="tab" class:active="{tabIndex === 0}">글</a>
-    <a href="{withPrefixUrl('about')}" class="tab" class:active="{tabIndex === 1}">소개</a>
+    <a href="{withPrefixUrl('post')}" class="tab" class:active="{tabIndex === 0}" on:click="{go}">글</a>
+    <a href="{withPrefixUrl('about')}" class="tab" class:active="{tabIndex === 1}" on:click="{go}">소개</a>
     <div class="indicator" bind:this="{indicatorRef}"></div>
   </div>
 </div>

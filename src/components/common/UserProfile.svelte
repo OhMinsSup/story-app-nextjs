@@ -94,10 +94,10 @@
       &:hover {
         color: $gray8;
       }
-      @media (max-width: 768px) {
-        width: 1.5rem;
-        height: 1.5rem;
-      }
+      // @media (max-width: 768px) {
+      //   width: 1.5rem;
+      //   height: 1.5rem;
+      // }
     }
 
     a {

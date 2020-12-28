@@ -20,21 +20,37 @@
       width: 100%;
     }
   }
+
+  .result-block {
+    @media (max-width: 768px) {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
 </style>
 
-<script>
+<script lang="ts">
+  import { stores } from '@sapper/app';
   import VelogTab from '../../components/velog/VelogTab.svelte';
+  import UserPosts from '../../containers/user/UserPosts.svelte';
   import UserPostTabContainer from '../../containers/user/UserPostTabContainer.svelte';
-
   import UserProfileContainer from '../../containers/user/UserProfileContainer.svelte';
+  import VelogAbout from '../../containers/user/VelogAbout.svelte';
 
-  // your script goes here
+  const { page } = stores();
+  $: type = 'type' in $page.query ? $page.query.type : 'post';
 </script>
 
 <div class="velog-responsive">
   <UserProfileContainer />
   <div class="mobile-separator"></div>
-  <VelogTab username="{'veloss'}" tab="posts" />
-  <!-- <StoryTab username="{username}" tab="{type}" /> -->
+  <VelogTab username="{'veloss'}" tab="{type}" />
   <UserPostTabContainer />
+  <div class="result-block">
+    {#if type === 'post'}
+      <UserPosts />
+    {:else}
+      <VelogAbout />
+    {/if}
+  </div>
 </div>
