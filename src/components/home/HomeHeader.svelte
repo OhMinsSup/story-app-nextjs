@@ -51,14 +51,14 @@
 
   const { session } = stores();
 
-  let triggerEl: HTMLDivElement;
+  let triggerEl: HTMLDivElement | null = null;
   let userMenu = false;
 
   const onToggleUserMenu = () => {
     userMenu = !userMenu;
   };
 
-  const onOutSideClick = (event: CustomEvent<HTMLDivElement>) => {
+  const onOutSideClick = (e: CustomEvent<HTMLDivElement>) => {
     userMenu = false;
   };
 
