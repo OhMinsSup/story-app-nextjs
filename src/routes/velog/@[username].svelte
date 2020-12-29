@@ -32,10 +32,10 @@
 <script lang="ts">
   import { stores } from '@sapper/app';
   import VelogTab from '../../components/velog/VelogTab.svelte';
-  import UserPosts from '../../containers/user/UserPosts.svelte';
-  import UserPostTabContainer from '../../containers/user/UserPostTabContainer.svelte';
-  import UserProfileContainer from '../../containers/user/UserProfileContainer.svelte';
-  import VelogAbout from '../../containers/user/VelogAbout.svelte';
+  import UserPosts from '../../containers/velog/UserPosts.svelte';
+  import UserPostTabContainer from '../../containers/velog/UserPostTabContainer.svelte';
+  import UserProfileContainer from '../../containers/velog/UserProfileContainer.svelte';
+  import VelogAbout from '../../containers/velog/VelogAbout.svelte';
 
   const { page } = stores();
   $: type = 'type' in $page.query ? $page.query.type : 'post';

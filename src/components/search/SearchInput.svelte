@@ -48,7 +48,7 @@
 
   export let className = '';
   export let initial = '';
-  export let large = false;
+  export const large = false;
   export let searchAsYouType = false;
 
   let focus = false;
