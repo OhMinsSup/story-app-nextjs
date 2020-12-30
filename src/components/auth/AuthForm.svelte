@@ -1,4 +1,4 @@
-<style lang="scss" scoped>
+<style lang="scss">
   @import '../../styles/variables.scss';
 
   .auth-form {
@@ -18,6 +18,7 @@
     }
     h2 {
       font-size: 1.3125rem;
+      font-weight: bold;
       color: $gray8;
     }
     h4 {
@@ -55,6 +56,7 @@
 
   import AuthEmailForm from './AuthEmailForm.svelte';
   import AuthEmailSuccess from './AuthEmailSuccess.svelte';
+  import AuthSocialButtonGroup from './AuthSocialButtonGroup.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -74,6 +76,7 @@
   export let loading: boolean = false;
   export let registered = null;
   export let mode: 'REGISTER' | 'LOGIN' = 'REGISTER';
+  export let currentPath = '';
 
   let email = '';
   let errorMessage = '';
@@ -124,7 +127,7 @@
     </section>
     <section>
       <h4>소셜 계정으로 {modeText}</h4>
-      <!-- <AuthSocialButtonGroup currentPath="{currentPath}" /> -->
+      <AuthSocialButtonGroup currentPath="{currentPath}" />
     </section>
   </article>
   <article class="foot">

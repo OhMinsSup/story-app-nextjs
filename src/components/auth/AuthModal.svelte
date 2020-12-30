@@ -11,6 +11,7 @@
     align-items: center;
     justify-content: center;
     z-index: 25;
+    background: rgba(249, 249, 249, 0.85);
     .wrapper {
       box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.09);
       display: flex;
@@ -94,14 +95,12 @@
 
   import UndrawJoyride from '../../../static/svg/undraw_joyride_hnno.svg';
 
-  export let visible = false;
+  export let visible: boolean = false;
 
-  let closed = true;
-  let timeoutId = null;
+  let closed: boolean = true;
+  let timeoutId: number | null = null;
 
   onMount(() => {
-    document.body.style.overflowY = visible ? 'hidden' : 'initial';
-
     if (visible) {
       closed = false;
     } else {

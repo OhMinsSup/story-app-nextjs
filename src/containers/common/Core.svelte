@@ -2,8 +2,6 @@
   import { onMount } from 'svelte';
   import { stores } from '@sapper/app';
 
-  import user from '../../store/user';
-
   import { VELOG_USER_KEY } from '../../config/contants';
   import AuthModalContainer from '../auth/AuthModalContainer.svelte';
 

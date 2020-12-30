@@ -6,6 +6,7 @@
   import core from '../../store/core';
 
   const onClose = () => {
+    document.body.style.overflowY = 'initial';
     core.closeAuthModal();
   };
 

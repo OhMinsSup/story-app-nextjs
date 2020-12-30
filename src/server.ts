@@ -7,6 +7,7 @@ import session from 'express-session';
 import bodyParser from 'body-parser';
 import sessionFileStore from 'session-file-store';
 import * as sapper from '@sapper/server';
+import type { Request } from 'express';
 
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'dev';
@@ -24,9 +25,9 @@ polka() // You can also use Express
     // 특정 사용자를 추적하기 위해 쿠키를 만들고, 해당 쿠키를 저장소 (캐시)의 레코드에 매핑하고,
     // 참조 할 나머지 경로에 대한 요청에 해당 세션을 연결하는 작업을 처리
     session({
-      secret: 'velog-fornt',
-      resave: false,
-      saveUninitialized: true,
+      secret: 'velog-fornt', // 암호화하는 데 쓰일 키
+      resave: false, // 세션을 언제나 저장할지 설정함
+      saveUninitialized: true, // 세션이 저장되기 전 uninitialized 상태로 미리 만들어 저장
       cookie: {
         maxAge: 31536000,
       },
@@ -39,7 +40,8 @@ polka() // You can also use Express
     compression({ threshold: 0 }),
     sirv('static', { dev }),
     sapper.middleware({
-      session: (req: any) => {
+      session: (req: Request) => {
+        console.log(req);
         const { cookies } = req;
         if (!cookies.refresh_token) {
           return {

@@ -63,11 +63,8 @@
   };
 
   const onLoginClick = () => {
+    document.body.style.overflowY = 'hidden';
     core.showAuthModal('LOGIN');
-  };
-
-  const navigateLoginPage = async () => {
-    await goto('/login');
   };
 </script>
 
