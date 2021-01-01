@@ -41,12 +41,10 @@ polka() // You can also use Express
     sirv('static', { dev }),
     sapper.middleware({
       session: (req: Request) => {
-        console.log(req);
         const { cookies } = req;
         if (!cookies.refresh_token) {
           return {
             token: null,
-            user: null,
           };
         }
 
@@ -56,7 +54,6 @@ polka() // You can also use Express
               access_token: null,
               refresh_token: cookies.refresh_token,
             },
-            user: null,
           };
         }
 
@@ -65,7 +62,6 @@ polka() // You can also use Express
             access_token: cookies.access_token,
             refresh_token: cookies.refresh_token,
           },
-          user: null,
         };
       },
     })

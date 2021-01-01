@@ -95,30 +95,22 @@
   import { stores, goto } from '@sapper/app';
   import { onMount } from 'svelte';
   import { notifier } from '@beyonk/svelte-notifications';
-
   import { emailCodeLoginAPI } from '../api/auth';
   import { getCurrentUserProfileAPI } from '../api/user';
-  import { VELOG_USER_KEY } from '../config/contants';
 
   const { page, session } = stores();
 
   const processLogin = async () => {
     try {
       // post email code login
-      await emailCodeLoginAPI($page.query.code);
+      const { data } = await emailCodeLoginAPI($page.query.code);
+      // set user data
+      $session.access_token = data.accessToken;
+      $session.refresh_token = data.refreshToken;
 
       // get logiun user profile
-      const profileResponse = await getCurrentUserProfileAPI();
-      // set localStorage user data
-
-      // login user profile and token data
-      const sessionData = {
-        ...profileResponse.data.user,
-      };
-
-      // set user profile Data
-      $session.user = sessionData;
-      localStorage.setItem(VELOG_USER_KEY, JSON.stringify(sessionData));
+      const userProfile = await getCurrentUserProfileAPI();
+      $session.user = userProfile ? userProfile.data.user : null;
       goto('/');
     } catch (e) {
       console.error(e);

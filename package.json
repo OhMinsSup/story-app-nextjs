@@ -19,6 +19,7 @@
     "cross-env": "^7.0.2",
     "date-fns": "^2.16.1",
     "express-session": "^1.17.1",
+    "jwt-decode": "^3.1.2",
     "polka": "next",
     "prismjs": "^1.22.0",
     "remark": "^13.0.0",

@@ -87,3 +87,9 @@ export const escapeForUrl = (text) => {
     .replace(/ /g, '-')
     .replace(/--+/g, '-');
 };
+
+export const generateCookie = (session: any) => {
+  const accessToken = session.token.access_token ? `access_token=${session.token.access_token};` : '';
+  const refresh_token = session.token.refresh_token ? `refresh_token=${session.token.refresh_token};` : '';
+  return accessToken + refresh_token;
+};

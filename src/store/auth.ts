@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { writable } from 'svelte/store';
-
-import type { User } from './user';
+import type { User } from '../api/models/user/user.model';
 
 import {
   sendAuthEmailAPI,
@@ -54,11 +53,11 @@ function authStore() {
           }));
         }
 
-        const { data } = response;
+        // const { data } = response;
         return update((state) => ({
           ...state,
           authLoading: false,
-          authData: data,
+          // authData: data,
         }));
       } catch (e) {
         console.error(e);
@@ -80,11 +79,11 @@ function authStore() {
           }));
         }
 
-        const { data } = response;
+        // const { data } = response;
         return update((state) => ({
           ...state,
           authLoading: false,
-          authData: data,
+          // authData: data,
         }));
       } catch (e) {
         console.error(e);

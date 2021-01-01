@@ -1,5 +1,5 @@
 import client from './client';
-import type { User } from '../store/user';
+import type { User } from './models/user/user.model';
 
 export type UserProfileResponse = {
   user: User;
