@@ -110,7 +110,7 @@
     <!--  -->
     <form on:submit|preventDefault="{onSubmit}">
       <input bind:value bind:this="{inputRef}" placeholder="URL 을 입력하세요" />
-      <RoundButton color="darkGray" size="SMALL">확인</RoundButton>
+      <RoundButton color="darkGray" size="small">확인</RoundButton>
     </form>
   </div>
 </div>

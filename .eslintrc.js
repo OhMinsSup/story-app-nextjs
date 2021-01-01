@@ -33,5 +33,6 @@ module.exports = {
     camelcase: 0,
     'import/extensions': 0,
     'import/no-unresolved': 0,
+    'no-console': 0,
   },
 };

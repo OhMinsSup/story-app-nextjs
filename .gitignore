@@ -7,3 +7,4 @@ yarn-error.log
 .sessions
 /tmp/sessions
 .vscode
+tmp/

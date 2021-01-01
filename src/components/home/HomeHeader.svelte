@@ -45,8 +45,8 @@
 
   import core from '../../store/core';
 
-  import StoryLogo from '../../../static/svg/logo.svg';
-  import SearchSvg from '../../../static/svg/search2.svg';
+  import Logo from '../../../static/svg/logo.svg';
+  import Search from '../../../static/svg/search2.svg';
   import { defaultThumbnail } from '../../config/contants';
 
   const { session } = stores();
@@ -73,17 +73,17 @@
   <MainResponsive>
     <div class="header-container">
       <a href="." class="logo-container">
-        <StoryLogo width="71" height="30" fill="none" />
+        <Logo width="71" height="30" fill="none" />
       </a>
       {#if $session.user}
         <div class="right">
           <div class="search-button">
             <a href="search">
-              <SearchSvg width="17" height="17" viewBox="0 0 17 17" />
+              <Search width="17" height="17" viewBox="0 0 17 17" />
             </a>
           </div>
           <div class="write-button">
-            <RoundButton border color="darkGray" to="/write">새 글 작성</RoundButton>
+            <RoundButton color="darkGray" to="/write">새 글 작성</RoundButton>
           </div>
           <div bind:this="{triggerEl}">
             <HeaderUserIcon
@@ -103,7 +103,7 @@
         <div class="right">
           <div class="search-button">
             <a href="search">
-              <SearchSvg width="17" height="17" viewBox="0 0 17 17" />
+              <Search width="17" height="17" viewBox="0 0 17 17" />
             </a>
           </div>
           <RoundButton color="darkGray" border on:click="{onLoginClick}">로그인</RoundButton>
