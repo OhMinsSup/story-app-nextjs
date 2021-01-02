@@ -1,7 +1,7 @@
 /* eslint-disable */
 import visit from 'unist-util-visit';
 
-const embedTypeRegex = /^!(youtube|twitter|codesandbox|codepen)$/;
+const embedTypeRegex = /^!(youtube|twitter|codesandbox|codepen)\[(.*?)\]/;
 const converters = {
   youtube: (code) =>
     `<iframe class="embed" src="https://www.youtube.com/embed/${code}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`,
@@ -14,18 +14,23 @@ const converters = {
 };
 
 export default function embedPlugin() {
-  function transformer(tree) {
+  function transformer(tree, file) {
+    console.log('tree', tree);
     function visitor(node) {
       try {
         const { children } = node;
+        console.log('children', children);
         if (children.length < 2) return;
         const index = children.findIndex((childNode) => {
           if (!childNode.value) return false;
           return childNode.value.match(embedTypeRegex);
         });
+        console.log('index', index);
         if (index === -1) return;
         const childNode = children[index];
         const siblingNode = children[index + 1];
+        console.log('childNode', childNode);
+        console.log('siblingNode', siblingNode);
         if (!siblingNode || siblingNode.type !== 'linkReference') return;
         const { label } = siblingNode;
         const match = embedTypeRegex.exec(children[index].value);

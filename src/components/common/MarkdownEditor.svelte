@@ -1,98 +1,5 @@
-<style lang="scss" scoped>
-  @import '../../styles/variables.scss';
-
-  :global(.CodeMirror) {
-    min-height: 0;
-    flex: 1;
-    font-size: 1.125rem;
-    line-height: 1.5;
-    color: $gray8 !important;
-    font-family: 'Fira Mono', monospace !important;
-  }
-
-  :global(.CodeMirror-lines) {
-    padding-bottom: 3rem !important;
-  }
-
-  :global(pre.CodeMirror-line) {
-    padding: 0 3rem !important;
-  }
-
-  :global(pre.CodeMirror-line-like) {
-    padding: 0 3rem !important;
-  }
-
-  :global(.CodeMirror-placeholder) {
-    color: $gray5 !important;
-    font-style: italic !important;
-  }
-
-  :global(.cm-header) {
-    line-height: 1.5 !important;
-    color: $gray9 !important;
-  }
-
-  :global(.cm-header-1) {
-    font-size: 2.5rem !important;
-  }
-
-  :global(.cm-header-2) {
-    font-size: 2rem !important;
-  }
-
-  :global(.cm-header-3) {
-    font-size: 1.5rem !important;
-  }
-
-  :global(.cm-header-4, .cm-header-5, .cm-header-6) {
-    font-size: 1.3125rem !important;
-  }
-
-  :global(.cm-strong, .cm-em) {
-    color: $gray9 !important;
-  }
-
-  .markdown-editor-codemirror {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    & > .wrapper {
-      min-height: 0px;
-      padding-bottom: 4rem;
-      flex: 1 1 0%;
-      display: flex;
-      flex-direction: column;
-
-      .write-header {
-        padding-top: 2rem;
-        padding-left: 3rem;
-        padding-right: 3rem;
-        .horizontal-bar {
-          background: $gray7;
-          border-radius: 1px;
-          height: 6px;
-          width: 4rem;
-          margin-top: 1.5rem;
-          margin-bottom: 1rem;
-        }
-      }
-
-      .markdown-wrapper {
-        flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .footer-wrapper {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        z-index: 10;
-      }
-    }
-  }
+<style lang="scss" global>
+  @import '../../styles/common/atom-one-light.scss';
 </style>
 
 <script context="module" lang="ts">
@@ -110,7 +17,7 @@
 </script>
 
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount, tick, createEventDispatcher } from 'svelte';
   import type { EditorFromTextArea } from 'codemirror';
 
   import write from '../../store/write';
@@ -119,14 +26,22 @@
   import Toolbar from '../write/Toolbar.svelte';
   import AddLink from '../write/AddLink.svelte';
   import WriteFooter from '../write/WriteFooter.svelte';
+  import { checkEmbed } from '../../lib/tools/utils';
+
+  const dispatch = createEventDispatcher();
+
+  export let title: string = '';
+  export let markdown: string = '';
+  export let initialBody: string = '';
+  console.log(markdown);
 
   let blockRef: HTMLDivElement;
   let toolbarRef: HTMLDivElement;
   let textareaRef: HTMLTextAreaElement;
   let footerRef: HTMLDivElement;
-
   let editor: EditorFromTextArea;
   // local State
+  let ignore: boolean = false;
   let hideUpper: boolean = false;
   let clientWidth: number = 0;
   let toolbarTop: number = 0;
@@ -217,9 +132,23 @@
     });
   };
 
+  const handleCancelAddLink = () => {
+    addLink = {
+      ...addLink,
+      visible: false,
+    };
+  };
+
+  const onChangeTitle = (e: KeyboardEvent) => {
+    const { value } = e.target as any;
+    dispatch('changeTitle', {
+      title: value,
+    });
+  };
+
   async function mountEditor() {
     if (!textareaRef || !CodeMirror) return;
-
+    // set code mirror
     const cm = CodeMirror.fromTextArea(textareaRef, {
       mode: 'markdown',
       theme: 'one-light',
@@ -228,7 +157,7 @@
     });
 
     editor = cm;
-    editor.setValue($write.markdown);
+    editor.setValue(initialBody);
 
     editor.on('change', (cm) => {
       write.changeMarkDown(cm.getValue());
@@ -254,6 +183,44 @@
         hideUpper = false;
       }
     });
+
+    editor.on('dragover', (cm, e) => {
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'copy';
+      }
+    });
+
+    editor.on('paste', ((editorEl: any, e: any) => {
+      const clipboardData: DataTransfer | null = e.clipboardData || e.originalEvent.clipboardData;
+      if (!clipboardData) return;
+
+      // replace text for embedding youtube, twitte, etc
+      const text = clipboardData.getData('Text');
+      const check = checkEmbed(text);
+      if (check) {
+        const selection = editorEl.getSelection();
+        e.preventDefault();
+        if (selection.length > 0) {
+          editorEl.replaceSelection(check);
+        } else {
+          const doc = editorEl.getDoc();
+          const cursor = doc.getCursor();
+          const pos = {
+            line: cursor.line,
+            ch: cursor.ch,
+          };
+          doc.replaceRange(check, pos);
+        }
+        return;
+      }
+
+      const { items } = clipboardData;
+      if (!items) return;
+      if (items.length !== 2) return;
+      if (items[1].kind === 'file') {
+        e.preventDefault();
+      }
+    }) as any);
 
     editor.focus();
   }
@@ -284,15 +251,9 @@
     window.addEventListener('resize', handleResize);
 
     return () => {
-      // editor.toTextArea();
       window.removeEventListener('resize', handleResize);
     };
   });
-
-  const onChangeTitle = (e: KeyboardEvent) => {
-    const { value } = e.target as any;
-    write.changeTitle(value);
-  };
 
   const onClickToolbar = (e: any) => {
     const { mode } = e.detail;
@@ -613,7 +574,7 @@ ${selected}
 <div class="markdown-editor-codemirror" bind:this="{blockRef}">
   <div class="wrapper">
     <div class="write-header">
-      <TitleTextarea title="{$write.title}" on:keypress="{onChangeTitle}" />
+      <TitleTextarea title="{title}" on:keypress="{onChangeTitle}" />
       <div class="horizontal-bar">
         <!-- horizontalBar -->
       </div>
@@ -621,7 +582,7 @@ ${selected}
         <!-- tag input fallback -->
       </slot>
     </div>
-    <Toolbar innerRef="{toolbarRef}" on:clickToolbar="{onClickToolbar}" />
+    <Toolbar innerRef="{toolbarRef}" shadow="{hideUpper}" on:clickToolbar="{onClickToolbar}" />
     <div class="markdown-wrapper">
       {#if addLink.visible}
         <AddLink
@@ -631,6 +592,7 @@ ${selected}
           bottom="{addLink.bottom}"
           stickToRight="{addLink.stickToRight}"
           on:confirmAddLink="{handleConfirmAddLink}"
+          on:close="{handleCancelAddLink}"
         />
       {/if}
       <textarea bind:this="{textareaRef}" style="display:none;"></textarea>

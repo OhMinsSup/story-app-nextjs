@@ -93,3 +93,18 @@ export const generateCookie = (session: any) => {
   const refresh_token = session.token.refresh_token ? `refresh_token=${session.token.refresh_token};` : '';
   return accessToken + refresh_token;
 };
+
+export function loadScript(url: string) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.onload = function onload() {
+      resolve(true);
+    };
+    script.onerror = function onerror() {
+      reject();
+    };
+    script.src = url;
+    if (!document || !document.head) return;
+    document.head.appendChild(script);
+  });
+}

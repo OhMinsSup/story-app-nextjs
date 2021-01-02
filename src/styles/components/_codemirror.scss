@@ -1,0 +1,65 @@
+.CodeMirror {
+  height: auto !important;
+  font-size: 1.125rem !important;
+  line-height: 1.5 !important;
+  color: $gray8 !important;
+  font-family: 'Fira Mono', monospace !important;
+  /* font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', */
+  .cm-header {
+    line-height: 2 !important;
+    color: $gray9 !important;
+  }
+  .cm-header-1 {
+    font-size: 2.5rem !important;
+  }
+  .cm-header-2 {
+    font-size: 2rem !important;
+  }
+  .cm-header-3 {
+    font-size: 1.5rem !important;
+  }
+  .cm-header-4,
+  .cm-header-5,
+  .cm-header-6 {
+    font-size: 1.3125rem !important;
+  }
+  .cm-strong,
+  .cm-em {
+    color: $gray9 !important;
+  }
+  .CodeMirror-placeholder {
+    color: $gray5 !important;
+    font-style: italic !important;
+  }
+
+  @media (max-width: 767px) {
+    font-size: 0.875rem !important;
+    .cm-header-1 {
+      font-size: 2rem !important;
+    }
+    .cm-header-2 {
+      font-size: 1.5rem !important;
+    }
+    .cm-header-3 {
+      font-size: 1.15rem !important;
+    }
+    .cm-header-4,
+    .cm-header-5,
+    .cm-header-6 {
+      font-size: 1rem !important;
+    }
+  }
+
+  .CodeMirror-lines {
+    padding: 4px 0 !important; /* Vertical padding around content */
+    padding-bottom: 3rem !important;
+  }
+}
+
+.CodeMirror pre.CodeMirror-line,
+.CodeMirror pre.CodeMirror-line-like {
+  padding: 0 3rem !important; /* Horizontal padding of content */
+  @media (max-width: 767px) {
+    padding: 0 1rem !important;
+  }
+}

@@ -4,40 +4,68 @@ import { writable } from 'svelte/store';
 export interface WriteState {
   markdown: string;
   title: string;
-  description: string;
+  html: string;
   tags: string[];
   publish: boolean;
+  textBody: string;
+  defaultDescription: string;
+  description: string;
   isPrivate: boolean;
+  urlSlug: string;
+  thumbnail: string | null;
+  postId: string | null;
+  isTemp: boolean;
+  initialTitle: string;
+  initialBody: string;
 }
 
 const initialState: WriteState = {
-  title: '',
   markdown: '',
-  description: '',
+  title: '',
+  html: '',
   tags: [],
   publish: false,
+  textBody: '',
+  defaultDescription: '',
+  description: '',
   isPrivate: false,
+  urlSlug: '',
+  thumbnail: null,
+  postId: null,
+  isTemp: false,
+  initialTitle: '',
+  initialBody: '',
 };
 
 function writeStore() {
   const { subscribe, update } = writable(initialState);
   return {
     subscribe,
+    // change markdown
     changeMarkDown: (markdown: string) =>
       update((state) => ({
         ...state,
         markdown,
       })),
+    // change title
     changeTitle: (title: string) =>
       update((state) => ({
         ...state,
         title,
       })),
+    // change url slug
+    changeUrlSlug: (urlSlug: string) =>
+      update((state) => ({
+        ...state,
+        urlSlug,
+      })),
+    // change tags
     changeTags: (tags: string[]) =>
       update((state) => ({
         ...state,
         tags,
       })),
+    // change description
     changeDescription: (description: string) =>
       update((state) => ({
         ...state,
@@ -57,6 +85,58 @@ function writeStore() {
       update((state) => ({
         ...state,
         publish: false,
+      })),
+    // clear editor post data
+    clearEditor: () => update(() => initialState),
+    // set html
+    setHtml: (html: string) =>
+      update((state) => ({
+        ...state,
+        html,
+      })),
+    // set text body
+    setTextBody: (textBody: string) =>
+      update((state) => ({
+        ...state,
+        textBody,
+      })),
+    // set default description
+    setDefaultDescription: (defaultDescription: string) =>
+      update((state) => ({
+        ...state,
+        defaultDescription,
+      })),
+    // set privacy
+    setPrivacy: (isPrivate: boolean) =>
+      update((state) => ({
+        ...state,
+        isPrivate,
+      })),
+    // set post thumbnail
+    setPostThumbnail: (thumbnail: string | null) =>
+      update((state) => ({
+        ...state,
+        thumbnail,
+      })),
+    // set post Id
+    setPostId: (postId: string | null) =>
+      update((state) => ({
+        ...state,
+        postId,
+        isTemp: false,
+      })),
+    // initalbody
+    setInitialBody: (body: string) =>
+      update((state) => ({
+        ...state,
+        initialBody: body,
+      })),
+    // initalTitle
+    setInitialTitle: (title: string) =>
+      update((state) => ({
+        ...state,
+        title,
+        initialTitle: title,
       })),
   };
 }
