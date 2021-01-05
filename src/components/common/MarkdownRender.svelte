@@ -42,7 +42,6 @@
         }
 
         const htmlRender = String(file);
-        console.log('render', htmlRender);
         // load twitter script if needed
         if (html.indexOf('class="twitter-tweet"') !== -1) {
           // if (window && (window as any).twttr) return;
@@ -65,6 +64,6 @@
   {/if}
 </svelte:head>
 <Typography />
-<div class="markdonw-render theme-dracula" contenteditable="true">
+<div class="markdonw-render theme-dracula">
   {@html html}
 </div>

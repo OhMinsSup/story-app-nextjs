@@ -8,6 +8,8 @@
   import write from '../../store/write';
   import embedPlugin from '../../lib/remark/embedPlugin';
   import { beforeUpdate } from 'svelte';
+  import DragDropUpload from '../../components/common/DragDropUpload.svelte';
+  import PasteUpload from '../../components/common/PasteUpload.svelte';
 
   const { title, markdown, thumbnail, publish, postId, isTemp, initialBody, initialTitle } = $write;
 
@@ -49,3 +51,5 @@
     <TagInput initialTags="{$write.tags}" />
   </div>
 </MarkdownEditor>
+<DragDropUpload />
+<PasteUpload />

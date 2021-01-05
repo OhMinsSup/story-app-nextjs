@@ -15,17 +15,14 @@ const converters = {
 
 export default function embedPlugin() {
   function transformer(tree, file) {
-    console.log('tree', tree);
     function visitor(node) {
       try {
         const { children } = node;
-        console.log('children', children);
         if (children.length < 2) return;
         const index = children.findIndex((childNode) => {
           if (!childNode.value) return false;
           return childNode.value.match(embedTypeRegex);
         });
-        console.log('index', index);
         if (index === -1) return;
         const childNode = children[index];
         const siblingNode = children[index + 1];
@@ -36,7 +33,7 @@ export default function embedPlugin() {
         const match = embedTypeRegex.exec(children[index].value);
         if (!match) return;
         const type = match[1];
-
+        console.log('type', type);
         childNode.type = 'html';
         childNode.value = converters[type](label);
         children.splice(index + 1, 1);

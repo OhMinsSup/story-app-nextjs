@@ -32,6 +32,7 @@
     "sirv": "^1.0.0",
     "strip-markdown": "^4.0.0",
     "svelte-icons": "^2.1.0",
+    "svelte-previous": "^2.0.0",
     "throttle-debounce": "^2.3.0",
     "yup": "^0.29.3"
   },
