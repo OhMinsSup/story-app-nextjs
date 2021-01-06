@@ -108,3 +108,34 @@ export function loadScript(url: string) {
     document.head.appendChild(script);
   });
 }
+
+export const getCookie = (cookies: string) => {
+  if (!cookies) return;
+  if (!cookies.includes('access_token')) return;
+
+  const nameEQ = `access_token=`;
+  const ca = cookies.split(';');
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) === 0) {
+      // eslint-disable-next-line consistent-return
+      return c.substring(nameEQ.length, c.length);
+    }
+  }
+  // eslint-disable-next-line consistent-return
+  return null;
+};
+
+export const ssrCookie = (headers: any) => {
+  const setCookie: string[] = headers['set-cookie'];
+  const filterFn = (cookie: string) => cookie.includes('access_token');
+
+  if (setCookie && setCookie.some(filterFn)) {
+    const findIndex = setCookie.findIndex(filterFn);
+    if (findIndex === -1) return null;
+    return getCookie(setCookie[findIndex]);
+  }
+  return null;
+};

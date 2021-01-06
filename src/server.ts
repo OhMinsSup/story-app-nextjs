@@ -48,6 +48,15 @@ polka() // You can also use Express
           };
         }
 
+        if (!cookies.access_token && cookies.refresh_token) {
+          return {
+            token: {
+              access_token: null,
+              refresh_token: cookies.refresh_token,
+            },
+          };
+        }
+
         if (cookies.access_token.includes('j:null') || cookies.refresh_token.includes('j:null')) {
           return {
             token: null,

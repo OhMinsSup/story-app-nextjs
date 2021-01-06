@@ -4,7 +4,7 @@
 
 <script context="module" lang="ts">
   import axios from 'axios';
-  import { generateCookie } from '../lib/utils';
+  import { generateCookie, ssrCookie } from '../lib/utils';
   import { SERVER_SIDE_API } from '../config/contants';
 
   export async function preload(page: any, session: any): Promise<{ user: User | null }> {
@@ -12,7 +12,11 @@
       axios.defaults.headers.Cookie = '';
       const cookie = generateCookie(session);
       axios.defaults.headers.Cookie = cookie;
-      const { data } = await axios.get(SERVER_SIDE_API.GET_CURRENT_USER);
+      const { data, headers } = await axios.get(SERVER_SIDE_API.GET_CURRENT_USER);
+      const token = ssrCookie(headers);
+      if (token) {
+        session.token.access_token = token;
+      }
 
       return {
         user: data.user,
