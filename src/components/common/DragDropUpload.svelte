@@ -21,7 +21,9 @@
 </style>
 
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
 
   let dragIndex: number = 0;
   let down: boolean = false;
@@ -32,6 +34,9 @@
     const { files } = e.dataTransfer || { files: null };
     if (!files) return;
     if (!files[0]) return;
+    dispatch('upload', {
+      file: files[0],
+    });
 
     dragIndex = 0;
     dragging = false;

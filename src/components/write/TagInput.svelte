@@ -1,4 +1,4 @@
-<style lang="scss" scoped>
+<style lang="scss">
   @import '../../styles/variables.scss';
 
   .tag-container {
@@ -70,6 +70,7 @@
 </style>
 
 <script lang="ts">
+  import debounce from 'lodash/debounce';
   import { fly } from 'svelte/transition';
   import write from '../../store/write';
 
@@ -78,6 +79,15 @@
   let tags: string[] = initialTags;
   let value: string = '';
   let focus: boolean = false;
+
+  const onChangeInput = (
+    e: KeyboardEvent & {
+      target: EventTarget & HTMLInputElement;
+      currentTarget: EventTarget & HTMLInputElement;
+    }
+  ) => {
+    value = e.target.value;
+  };
 
   const insertTag = (tag: string) => {
     value = '';
@@ -109,7 +119,7 @@
     tags = nextTags;
   };
 
-  const onKeyDown = (e: KeyboardEvent) => {
+  const onKeyDown = debounce((e: KeyboardEvent) => {
     if (e.key === 'Backspace' && value === '') {
       tags = tags.slice(0, tags.length - 1);
       return;
@@ -120,13 +130,9 @@
       e.preventDefault();
       insertTag(value);
     }
-  };
+  }, 250);
 
-  $: {
-    if (tags.length) {
-      write.changeTags(tags);
-    }
-  }
+  $: tags.length && write.changeTags(tags);
 </script>
 
 <div class="tag-container">
@@ -138,7 +144,8 @@
     class="tag-input"
     placeholder="태그를 입력하세요."
     bind:value
-    on:keydown="{onKeyDown}"
+    on:keypress="{onChangeInput}"
+    on:keydown|capture="{onKeyDown}"
     on:focus="{(e) => {
       focus = true;
     }}"

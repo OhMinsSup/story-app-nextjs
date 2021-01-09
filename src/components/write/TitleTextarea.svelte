@@ -22,4 +22,4 @@
   export let title = '';
 </script>
 
-<textarea value="{title}" on:keypress placeholder="제목을 입력하세요" rows="1" autocomplete="off"></textarea>
+<textarea value="{title}" on:keyup placeholder="제목을 입력하세요" rows="1" autocomplete="off"></textarea>

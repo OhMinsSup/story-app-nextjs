@@ -34,7 +34,8 @@
     "svelte-icons": "^2.1.0",
     "svelte-previous": "^2.0.0",
     "throttle-debounce": "^2.3.0",
-    "yup": "^0.29.3"
+    "yup": "^0.29.3",
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -57,6 +58,7 @@
     "@types/date-fns": "^2.6.0",
     "@types/express": "^4.17.9",
     "@types/express-session": "^1.17.0",
+    "@types/lodash": "^4.14.167",
     "@types/node": "^14.11.1",
     "@types/polka": "^0.5.1",
     "@types/prismjs": "^1.16.1",

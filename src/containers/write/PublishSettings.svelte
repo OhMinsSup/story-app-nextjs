@@ -23,6 +23,6 @@
   <PublishPrivacySettingContainer />
 </div>
 <div class="PublishActionButtons">
-  <RoundButton size="DEFAULT" color="gray" on:click="{onClosePublish}">취소</RoundButton>
-  <RoundButton size="DEFAULT">출간하기</RoundButton>
+  <RoundButton size="default" color="gray" on:click="{onClosePublish}">취소</RoundButton>
+  <RoundButton size="default">출간하기</RoundButton>
 </div>

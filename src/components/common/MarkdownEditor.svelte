@@ -30,10 +30,11 @@
 
   const dispatch = createEventDispatcher();
 
-  export let title: string = '';
-  export let markdown: string = '';
-  export let initialBody: string = '';
-  console.log(markdown);
+  export const title: string = '';
+  export const markdown: string = '';
+  export const initialBody: string = '';
+  export let lastUploadedImage: string = '';
+  export let previousUploadImage: string = '';
 
   let blockRef: HTMLDivElement;
   let toolbarRef: HTMLDivElement;
@@ -531,7 +532,9 @@
         }
       },
       link: () => handleOpenAddLink(),
-      image: () => {},
+      image: () => {
+        dispatch('upload');
+      },
       codeblock: () => {
         const selected = doc.getSelection();
         if (selected.length === 0) {
@@ -561,20 +564,19 @@ ${selected}
     codemirrorEditor.focus();
   };
 
-  $: {
-    if (footerRef) {
-      (async function () {
-        footerRef.style.width = `${clientWidth}px` || '50%';
-        await tick();
-      })();
-    }
-  }
+  $: footerRef &&
+    (async function () {
+      footerRef.style.width = `${clientWidth}px` || '50%';
+      await tick();
+    })();
+
+  $: lastUploadedImage && previousUploadImage !== lastUploadedImage && addImageToEditor(lastUploadedImage);
 </script>
 
 <div class="markdown-editor-codemirror" bind:this="{blockRef}">
   <div class="wrapper">
     <div class="write-header">
-      <TitleTextarea title="{title}" on:keypress="{onChangeTitle}" />
+      <TitleTextarea title="{title}" on:keyup="{onChangeTitle}" />
       <div class="horizontal-bar">
         <!-- horizontalBar -->
       </div>
@@ -598,7 +600,7 @@ ${selected}
       <textarea bind:this="{textareaRef}" style="display:none;"></textarea>
     </div>
     <div class="footer-wrapper" bind:this="{footerRef}">
-      <WriteFooter />
+      <WriteFooter on:tempSave />
     </div>
   </div>
 </div>

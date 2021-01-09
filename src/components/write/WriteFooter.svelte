@@ -49,9 +49,12 @@
 </style>
 
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   import ArrowBackIcon from 'svelte-icons/md/MdArrowBack.svelte';
   import RoundButton from '../common/RoundButton.svelte';
   import write from '../../store/write';
+
+  const dispatch = createEventDispatcher();
 
   export let edit = false;
 
@@ -62,6 +65,10 @@
   const onOpenPublish = () => {
     write.openPublish();
   };
+
+  const onTempSave = () => {
+    dispatch('tempSave');
+  };
 </script>
 
 <div class="write-footer-block">
@@ -71,7 +78,7 @@
     </div>
   </button>
   <div class="group">
-    <RoundButton inline="{true}" color="gray">임시저장</RoundButton>
+    <RoundButton inline="{true}" color="gray" on:click="{onTempSave}">임시저장</RoundButton>
     <RoundButton inline="{true}" color="teal" on:click="{onOpenPublish}">{edit ? '수정하기' : '출간하기'}</RoundButton>
   </div>
 </div>

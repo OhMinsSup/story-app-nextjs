@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
 
   const onPaste: EventListener = (e) => {
     const { clipboardData } = e as ClipboardEvent;
@@ -20,7 +22,9 @@
     if (!fileItem || !fileItem.getAsFile) return;
     const file = fileItem.getAsFile();
     if (!file) return;
-
+    dispatch('upload', {
+      file,
+    });
     e.preventDefault();
   };
 
