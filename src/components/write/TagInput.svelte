@@ -135,7 +135,7 @@
     }
   }, 250);
 
-  // $: tags.length && write.changeTags(tags);
+  $: tags.length && write.changeTags(tags);
 
   $: if (initialTags.length > 0 && !initTags) {
     initTags = true;
