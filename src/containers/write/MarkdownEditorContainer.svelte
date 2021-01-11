@@ -4,6 +4,7 @@
   import remark from 'remark';
   import strip from 'strip-markdown';
   import { usePrevious } from 'svelte-previous';
+  import isEqual from 'lodash/isEqual';
 
   import MarkdownEditor from '../../components/common/MarkdownEditor.svelte';
   import TagInput from '../../components/write/TagInput.svelte';
@@ -11,9 +12,13 @@
   import DragDropUpload from '../../components/common/DragDropUpload.svelte';
   import PasteUpload from '../../components/common/PasteUpload.svelte';
   import { useS3Upload, useUpload } from '../../lib/hooks';
-  import { writePostAPI } from '../../api/write';
+  import { editPostAPI, writePostAPI } from '../../api/write';
 
-  const { tags, title, initialBody, markdown } = $write;
+  // last Saved post Data
+  let lastSavedData = {
+    title: $write.initialTitle,
+    body: $write.initialBody,
+  };
 
   const onPublish = () => {
     remark()
@@ -76,6 +81,32 @@
       notifySuccess();
       return;
     }
+
+    // tempsaving unreleased post:
+    if ($write.isTemp) {
+      await editPostAPI($write.postId, {
+        title: $write.title,
+        body: $write.markdown,
+        tags: $write.tags,
+        is_markdown: true,
+        is_temp: true,
+        is_private: false,
+        thumbnail: null,
+      });
+      notifySuccess();
+      return;
+    }
+
+    if (isEqual(lastSavedData, { title: $write.title, body: $write.markdown })) {
+      return;
+    }
+    // TODO History
+    lastSavedData = {
+      ...lastSavedData,
+      title: $write.title,
+      body: $write.markdown,
+    };
+    notifySuccess();
   };
 
   // file이 변하면 upload
@@ -86,15 +117,21 @@
       $currentImage = imageUrl;
       image = imageUrl;
     })();
+
+  // $write store에 initialTitle, initialBody 변경되는 경우 lastSavedData도 변경
+  $: lastSavedData = {
+    ...lastSavedData,
+    title: $write.initialTitle,
+    body: $write.initialBody,
+  };
 </script>
 
 <svelte:head>
   <title>{$write.title ? `(작성중) ${$write.title}` : '새 글 작성'}</title>
 </svelte:head>
 <MarkdownEditor
-  title="{title}"
-  markdown="{markdown}"
-  initialBody="{initialBody}"
+  title="{$write.title}"
+  initialBody="{$write.initialBody}"
   lastUploadedImage="{image}"
   previousUploadImage="{$previousImage}"
   on:changeTitle="{onChangeTitle}"
@@ -102,7 +139,7 @@
   on:tempSave="{onTempSave}"
 >
   <div slot="tag-input">
-    <TagInput initialTags="{tags}" />
+    <TagInput initialTags="{$write.tags}" />
   </div>
 </MarkdownEditor>
 <DragDropUpload on:upload="{onDragDropUpload}" />

@@ -88,7 +88,6 @@
   onMount(async () => {
     if (searchInputRef) {
       (async function () {
-        console.log(searchInputRef);
         searchInputRef.classList.add(className);
         await tick();
       })();

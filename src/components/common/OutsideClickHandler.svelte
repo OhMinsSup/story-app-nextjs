@@ -21,7 +21,6 @@
 
   const onClickOutside = (event: MouseEvent) => {
     if (!isExcluded(event.target)) {
-      console.log('!!');
       dispatch('clickoutside');
     }
   };

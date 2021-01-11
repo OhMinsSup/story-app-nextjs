@@ -12,7 +12,14 @@
       axios.defaults.headers.Cookie = '';
       const cookie = generateCookie(session);
       axios.defaults.headers.Cookie = cookie;
-      const { data, headers } = await axios.get(SERVER_SIDE_API.GET_CURRENT_USER);
+      const { data, headers, status } = await axios.get(SERVER_SIDE_API.GET_CURRENT_USER);
+      if (status === 401) {
+        session.token.access_token = '';
+        session.token.refresh_token = '';
+        return {
+          user: null,
+        };
+      }
       const token = ssrCookie(headers);
       if (token) {
         session.token.access_token = token;

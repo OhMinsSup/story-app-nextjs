@@ -28,29 +28,27 @@
         )
       : '';
 
-  $: {
-    remark()
-      .use(breaks)
-      .use(prismPlugin)
-      .use(htmlPlugin)
-      .use(embedPlugin)
-      .use(slug)
-      .process(markdown, (err: any, file: any) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
+  $: remark()
+    .use(breaks)
+    .use(prismPlugin)
+    .use(htmlPlugin)
+    .use(embedPlugin)
+    .use(slug)
+    .process(markdown, (err: any, file: any) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
 
-        const htmlRender = String(file);
-        // load twitter script if needed
-        if (html.indexOf('class="twitter-tweet"') !== -1) {
-          // if (window && (window as any).twttr) return;
-          loadScript('https://platform.twitter.com/widgets.js');
-        }
+      const htmlRender = String(file);
+      // load twitter script if needed
+      if (html.indexOf('class="twitter-tweet"') !== -1) {
+        // if (window && (window as any).twttr) return;
+        loadScript('https://platform.twitter.com/widgets.js');
+      }
 
-        html = editing ? htmlRender : filter(htmlRender);
-      });
-  }
+      html = editing ? htmlRender : filter(htmlRender);
+    });
 </script>
 
 <svelte:head>

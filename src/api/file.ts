@@ -32,12 +32,6 @@ export const createSignedUrlAPI = async (file: File, info: { fileType: string; r
       },
     });
 
-    // if (!presignedUrl) {
-    //   throw new Error('PRESIGNED_URL_IS_EMPTY');
-    // }
-
-    // await s3upload(presignedUrl, file);
-
     return data;
   } catch (e) {
     console.error(e);

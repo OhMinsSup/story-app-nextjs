@@ -65,7 +65,7 @@ polka() // You can also use Express
 
         return {
           token: {
-            access_token: cookies.access_token || '',
+            access_token: cookies.access_token,
             refresh_token: cookies.refresh_token,
           },
         };
@@ -75,6 +75,6 @@ polka() // You can also use Express
   .listen(PORT, (err: any) => {
     if (err) {
       // eslint-disable-next-line no-console
-      console.error('error', err);
+      // console.error('error', err);
     }
   });

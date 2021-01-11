@@ -72,11 +72,13 @@
 <script lang="ts">
   import debounce from 'lodash/debounce';
   import { fly } from 'svelte/transition';
+  import { uuidv4 } from '../../lib/utils';
   import write from '../../store/write';
 
   export let initialTags: string[] = [];
 
-  let tags: string[] = initialTags;
+  let initTags: boolean = false;
+  let tags: string[] = [].concat(initialTags);
   let value: string = '';
   let focus: boolean = false;
 
@@ -111,6 +113,7 @@
     if (processed.charAt(0) === '#') {
       processed = processed.slice(1, processed.length);
     }
+
     tags = [...tags, processed];
   };
 
@@ -132,13 +135,19 @@
     }
   }, 250);
 
-  $: tags.length && write.changeTags(tags);
+  // $: tags.length && write.changeTags(tags);
+
+  $: if (initialTags.length > 0 && !initTags) {
+    initTags = true;
+    tags = tags.concat(initialTags);
+  }
 </script>
 
 <div class="tag-container">
-  {#each tags as tag}
+  {#each tags as tag (`${tag}-${uuidv4()}`)}
     <div class="tag" on:click="{() => onRemove(tag)}">{tag}</div>
   {/each}
+
   <input
     type="text"
     class="tag-input"

@@ -30,9 +30,8 @@
 
   const dispatch = createEventDispatcher();
 
-  export const title: string = '';
-  export const markdown: string = '';
-  export const initialBody: string = '';
+  export let title: string = '';
+  export let initialBody: string = '';
   export let lastUploadedImage: string = '';
   export let previousUploadImage: string = '';
 
