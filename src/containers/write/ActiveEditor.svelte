@@ -15,15 +15,11 @@
 
   // 컴포넌트 마운트일 때 포스트 정보 가져오기
   onMount(async () => {
-    if (initialized) return;
-
+    if (!id) return;
     await post.getPost(id);
     if (!$post.postInfo) return;
-
-    write.changeTags($post.postInfo.tags);
-    write.changeMarkDown($post.postInfo.body);
-    write.setInitialTitle($post.postInfo.title);
-    write.setInitialBody($post.postInfo.body);
+    if (initialized) return;
+    write.setInitialPost($post.postInfo);
     initialized = true;
   });
 

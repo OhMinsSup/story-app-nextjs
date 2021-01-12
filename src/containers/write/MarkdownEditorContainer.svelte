@@ -12,7 +12,6 @@
   import DragDropUpload from '../../components/common/DragDropUpload.svelte';
   import PasteUpload from '../../components/common/PasteUpload.svelte';
   import { useS3Upload, useUpload } from '../../lib/hooks';
-  import { editPostAPI, writePostAPI } from '../../api/write';
 
   // last Saved post Data
   let lastSavedData = {
@@ -47,7 +46,7 @@
   };
 
   // drag N drop / Paste upload
-  const onDragDropUpload = async (event: CustomEvent<{ file: File }>) => {
+  const onDragDropUpload = (event: CustomEvent<{ file: File }>) => {
     file = event.detail.file;
   };
 
@@ -73,18 +72,15 @@
         thumbnail: null,
       };
 
-      const response = await writePostAPI(body);
-      if (!response || !response.data) return;
-      const { post_id } = response.data;
-      write.setPostId(post_id);
-      await goto(`/write?id=${post_id}`);
+      await write.writePost(body);
+      await goto(`/write?id=${$write.postId}`);
       notifySuccess();
       return;
     }
 
     // tempsaving unreleased post:
     if ($write.isTemp) {
-      await editPostAPI($write.postId, {
+      await write.editPost($write.postId, {
         title: $write.title,
         body: $write.markdown,
         tags: $write.tags,
@@ -100,7 +96,9 @@
     if (isEqual(lastSavedData, { title: $write.title, body: $write.markdown })) {
       return;
     }
+
     // TODO History
+
     lastSavedData = {
       ...lastSavedData,
       title: $write.title,
@@ -117,13 +115,6 @@
       $currentImage = imageUrl;
       image = imageUrl;
     })();
-
-  // $write store에 initialTitle, initialBody 변경되는 경우 lastSavedData도 변경
-  $: lastSavedData = {
-    ...lastSavedData,
-    title: $write.initialTitle,
-    body: $write.initialBody,
-  };
 </script>
 
 <svelte:head>

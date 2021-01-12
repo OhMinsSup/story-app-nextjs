@@ -1,7 +1,13 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { writable } from 'svelte/store';
+import type { Post } from '../api/models/post/post.model';
+import type { WritePostModelRequsetBody } from '../api/models/write/write-post.model';
+import { editPostAPI, writePostAPI } from '../api/write';
 
 export interface WriteState {
+  // api calling state
+  postLoading: boolean;
+
   markdown: string;
   title: string;
   html: string;
@@ -20,6 +26,8 @@ export interface WriteState {
 }
 
 const initialState: WriteState = {
+  postLoading: false,
+
   markdown: '',
   title: '',
   html: '',
@@ -41,6 +49,72 @@ function writeStore() {
   const { subscribe, update } = writable(initialState);
   return {
     subscribe,
+    // edit post
+    editPost: async (postId: string, body: WritePostModelRequsetBody) => {
+      try {
+        update((state) => ({
+          ...state,
+          postLoading: true,
+        }));
+
+        const response = await editPostAPI(postId, body);
+        if (!response) {
+          update((state) => ({
+            ...state,
+            postLoading: false,
+          }));
+          return;
+        }
+        const { post_id } = response.data;
+        update((state) => ({
+          ...state,
+          postId: post_id,
+          postLoading: false,
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    // write post
+    writePost: async (body: WritePostModelRequsetBody) => {
+      try {
+        update((state) => ({
+          ...state,
+          postLoading: true,
+        }));
+
+        const response = await writePostAPI(body);
+        if (!response) {
+          update((state) => ({
+            ...state,
+            postLoading: false,
+          }));
+          return;
+        }
+
+        const { post_id } = response.data;
+        update((state) => ({
+          ...state,
+          postId: post_id,
+          postLoading: false,
+        }));
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    // get post data initial binding
+    setInitialPost: (postData: Post) =>
+      update((state) => ({
+        ...state,
+        postId: postData.id,
+        tags: postData.tags,
+        markdown: postData.body,
+        initialBody: postData.body,
+        initialTitle: postData.title,
+        thumbnail: postData.thumbnail,
+        isPrivate: postData.is_private,
+        isTemp: postData.is_temp,
+      })),
     // change markdown
     changeMarkDown: (markdown: string) =>
       update((state) => ({

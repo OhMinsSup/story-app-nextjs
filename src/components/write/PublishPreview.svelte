@@ -1,4 +1,4 @@
-<style lang="scss" scoped>
+<style lang="scss">
   @import '../../styles/variables.scss';
 
   .publish-preivew-block {
@@ -160,9 +160,9 @@
     {#if !!thumbnail}
       <div class="ThumbnailModify">
         <div class="actions">
-          <button>재업로드</button>
+          <button type="button" on:click="{() => dispatch('upload')}">재업로드</button>
           <div class="middledot"></div>
-          <button>제거</button>
+          <button type="button" on:click="{() => dispatch('resetThumbnail')}">제거</button>
         </div>
       </div>
     {/if}
@@ -173,7 +173,7 @@
         {:else}
           <div class="missing-thumbnail">
             <ImageVector />
-            <button type="button" class="upload-btn">썸네일 업로드</button>
+            <button type="button" on:click="{() => dispatch('upload')}" class="upload-btn">썸네일 업로드</button>
           </div>
         {/if}
       </div>
