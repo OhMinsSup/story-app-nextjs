@@ -4,6 +4,7 @@ export const API = {
 
 export const SERVER_SIDE_API = {
   GET_CURRENT_USER: `${API.BASE_LOCAL_URL_V1}/user/`,
+  GET_POST: `${API.BASE_LOCAL_URL_V1}/post/`,
 };
 
 export const VELOG_USER_KEY = '@@velog::CURRENT_USER';

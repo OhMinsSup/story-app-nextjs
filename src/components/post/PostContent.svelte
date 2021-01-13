@@ -13,8 +13,10 @@
   }
 </style>
 
-<script>
-  // your script goes here
+<script lang="ts">
+  export let body: string = '';
 </script>
 
-<div class="post-content">adasdasdad</div>
+<div class="post-content">
+  {@html body}
+</div>

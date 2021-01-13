@@ -64,24 +64,37 @@
   }
 </style>
 
-<script>
+<script lang="ts">
+  import { goto } from '@sapper/app';
   import { formatDate } from '../../lib/utils';
+  import TagList from '../common/TagList.svelte';
   import VelogResponsive from '../velog/VelogResponsive.svelte';
 
-  // your script goes here
+  export let title: string = '';
+  export let username: string = '';
+  export let created_at: number = new Date().getTime();
+  export let is_private: boolean = false;
+  export let tags: string[] = [];
 </script>
 
 <VelogResponsive>
   <div class="post-head">
     <div class="head-wrapper">
-      <h1>타이틀</h1>
+      <h1>{title}</h1>
       <div class="subinfo">
         <div class="information">
-          <span class="username"> <a href="/">veloss</a> </span>
+          <span class="username">
+            <a href="/" on:click|preventDefault="{() => goto(`/velog/@${username}`)}">{username}</a>
+          </span>
           <span class="separator">&middot;</span>
-          <span>{formatDate(new Date().getTime())}</span>
+          <span>{formatDate(created_at)}</span>
+          {#if is_private}
+            <span class="separator">&middot;</span>
+            <!-- Labels -->
+          {/if}
         </div>
       </div>
+      <TagList link="{true}" tags="{tags}" />
     </div>
   </div>
 </VelogResponsive>
