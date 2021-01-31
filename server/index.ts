@@ -30,7 +30,9 @@ async function bootstrap() {
     app.listen(PORT, (err?: any) => {
       if (err) throw err;
       // eslint-disable-next-line no-console
-      console.log(`React Renderer is running on http://localhost:${PORT}`);
+      console.log(
+        `🚀 React Server Renderer is running on http://localhost:${PORT}`
+      );
     });
   } catch (ex) {
     console.error(ex);

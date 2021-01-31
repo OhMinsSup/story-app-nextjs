@@ -1,13 +1,15 @@
 import React from 'react';
+import MainHeader from '~/components/main/MainHeader';
+import MainTemplate from '~/components/main/MainTemplate';
 
 interface PageIndexProps {}
 
-function PageIndex({}: PageIndexProps) {
+function PageIndex(_: PageIndexProps) {
   return (
-    <div>
-      Home???
+    <MainTemplate>
+      <MainHeader />
       <div>testin</div>
-    </div>
+    </MainTemplate>
   );
 }
 
