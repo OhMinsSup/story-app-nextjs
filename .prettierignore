@@ -1,8 +1,5 @@
-/dist
-/build
-/node_modules
-
-__sapper__
-
-src/service-worker.ts
-src/svelte.app.d.ts
+node_modules
+dist/.next
+yarn.lock
+package-lock.json
+public
