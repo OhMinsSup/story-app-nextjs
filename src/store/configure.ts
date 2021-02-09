@@ -6,12 +6,11 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const middleware = [...getDefaultMiddleware({ thunk: false })];
 
-const store = (initialState: any) => {
+const store = () => {
   return configureStore({
     reducer: rootReducer,
     middleware,
     devTools: isDev,
-    preloadedState: initialState || {},
   });
 };
 

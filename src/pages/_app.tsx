@@ -4,6 +4,7 @@ import React from 'react';
 import App, { AppContext, AppProps } from 'next/app';
 import { HelmetProvider } from 'react-helmet-async';
 import { wrapper, AppStore } from '~/store/configure';
+import Core from '~/containers/base/Core';
 
 interface Props extends AppProps {
   store: AppStore;
@@ -18,12 +19,14 @@ class AppPage extends App<Props> {
     }
     return { pageProps };
   }
+
   render() {
     const { Component, pageProps } = this.props;
     return (
       <>
         <HelmetProvider>
           <Component {...pageProps} />
+          <Core />
         </HelmetProvider>
       </>
     );

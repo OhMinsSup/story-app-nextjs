@@ -6,6 +6,7 @@ import media from '~/libs/styles/media';
 import LogoIcon from '../svg/LogoIcon';
 import Search2Icon from '../svg/Search2Icon';
 import RoundButton from '../common/RoundButton';
+import useHeader from '../common/hooks/useHeader';
 
 const ManHeaderBlock = styled.div`
   height: 4rem;
@@ -57,6 +58,7 @@ const Right = styled.div`
 
 interface MainHeaderProps {}
 function MainHeader(_: MainHeaderProps) {
+  const { onLoginClick } = useHeader();
   return (
     <ManHeaderBlock>
       <Inner>
@@ -71,7 +73,9 @@ function MainHeader(_: MainHeaderProps) {
               <Search2Icon />
             </SearchButton>
           </Link>
-          <RoundButton color="darkGray">로그인</RoundButton>
+          <RoundButton color="darkGray" onClick={onLoginClick}>
+            로그인
+          </RoundButton>
         </Right>
       </Inner>
     </ManHeaderBlock>
