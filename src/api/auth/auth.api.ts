@@ -1,12 +1,18 @@
 import client from '../api.client';
-import { SendAuthEmailResponse } from './auth.dto';
+import { CodeLoginResponse, SendAuthEmailResponse } from './auth.dto';
 
 /**
  * Send Auth Email
- * docs: https://documenter.getpostman.com/view/723994/S11RJuhq#7933badc-b964-4b84-88ff-4119134925a8
- * @param email
+ * @param {string} email 이메일 발송을 위한 값
  */
 export const sendAuthEmail = (email: string) =>
-  client.post<SendAuthEmailResponse>('/api/v1.0/auth/sendmail', {
+  client.post<SendAuthEmailResponse>('/auth/sendmail', {
     email,
   });
+
+/**
+ * Code Login
+ * @param {string} code 코드 인증을 위한 값
+ */
+export const codeLogin = (code: string) =>
+  client.get<CodeLoginResponse>(`/auth/code/${code}`);

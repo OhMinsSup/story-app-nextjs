@@ -1,7 +1,11 @@
 import useRequest from '~/libs/hooks/useRequest';
-import { sendAuthEmail } from './auth.api';
-import { SendAuthEmailResponse } from './auth.dto';
+import { codeLogin, sendAuthEmail } from './auth.api';
+import { CodeLoginResponse, SendAuthEmailResponse } from './auth.dto';
 
-export default function useSendEmailHook() {
+export function useSendEmailHook() {
   return useRequest<SendAuthEmailResponse>(sendAuthEmail);
+}
+
+export function useCodeLoginHook() {
+  return useRequest<CodeLoginResponse>(codeLogin);
 }

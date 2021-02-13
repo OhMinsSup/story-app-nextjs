@@ -1,4 +1,5 @@
 import React from 'react';
+import { ToastContainer } from 'react-toastify';
 import { shallowEqual, useSelector } from 'react-redux';
 import OpaqueLayer from '~/components/common/OpaqueLayer';
 import { RootState } from '~/store/modules';
@@ -15,6 +16,7 @@ function Core(_: CoreProps) {
     <>
       <OpaqueLayer visible={layer} />
       <AuthModalContainer />
+      <ToastContainer />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import '../../global.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 import React from 'react';
 import App, { AppContext, AppProps } from 'next/app';

@@ -4,7 +4,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import AuthForm from '~/components/auth/AuthForm';
 import AuthModal from '~/components/auth/AuthModal';
 
-import useSendEmailHook from '~/api/auth/auth.hook';
+import { useSendEmailHook } from '~/api/auth/auth.hook';
 import { RootState } from '~/store/modules';
 import system from '~/store/modules/system';
 
