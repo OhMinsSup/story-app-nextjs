@@ -1,10 +1,13 @@
 import React from 'react';
 import { useRouter } from 'next/router';
+
 import { wrapper } from '~/store/configure';
+
 import FloatingHomeHeader from '~/components/main/FloatingHomeHeader';
 import MainHeader from '~/components/main/MainHeader';
 import MainResponsive from '~/components/main/MainResponsive';
 import MainTemplate from '~/components/main/MainTemplate';
+import MainTab from '~/components/main/MainTab';
 
 interface PageIndexProps {}
 
@@ -28,7 +31,10 @@ function PageIndex(_: PageIndexProps) {
     <MainTemplate>
       <MainHeader />
       <FloatingHomeHeader />
-      <MainResponsive>{jsx}</MainResponsive>
+      <MainResponsive>
+        <MainTab tab={router.query.tab} />
+        {jsx}
+      </MainResponsive>
     </MainTemplate>
   );
 }
