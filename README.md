@@ -26,3 +26,33 @@
 ## EP.4 write 페이지 추가및 서버 사이드 렌더링 store 연동 수정
 
 작성페이지및 스토어 연동 수정을 했다. 그리고 redux saga는 사용하지 않을 예정이다.
+
+## EP.5 write 페이지에서 에디터 적용하기
+
+오늘은 글을 작성하는 페이지를 작업하고 있었다. 개발을 진행하면서 발생했던 이슈는 next.js에서 code mirror를 호출 할 때 에러를 발생하는 이슈가 있었다.
+[CodeMirror Issue - Navigator error](https://alonzoaustin.com/blog?title=QcbtUxpArUDnjT2B4VYh)
+
+서버 사이드 렌더링을 하면서 코드 미러를 못읽어 발생하는 이슈인 것 같다. 해결은 서버 사이드에서 발생하는 이슈이면 클라이언트 사이드 렌더링시 로드를 하게하면 고칠 수 있는 에러였다.
+
+```javascript
+  initialize = () => {
+    if (!this.editorElement.current) return;
+    const CodeMirror = require('codemirror');
+    require('codemirror/mode/markdown/markdown');
+    require('codemirror/mode/javascript/javascript');
+    require('codemirror/mode/jsx/jsx');
+    require('codemirror/addon/display/placeholder');
+    this.codemirror = CodeMirror.fromTextArea(this.editorElement.current, {
+      mode: 'markdown',
+      theme: 'one-light',
+      placeholder: '당신의 이야기를 적어보세요...',
+      lineWrapping: true,
+    });
+  };
+
+  componentDidMount() {
+    this.initialize();
+  }
+```
+
+다음번에는 계속 에디터 작업을 계속하면 될 것 같다.

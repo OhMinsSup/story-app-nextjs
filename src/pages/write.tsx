@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import ActiveEditor from '~/containers/write/ActiveEditor';
 import { wrapper } from '~/store/configure';
 
 const WritePageBlock = styled.div`
@@ -7,16 +8,25 @@ const WritePageBlock = styled.div`
   height: 100%;
 `;
 
-interface WritePageProps {}
-function WritePage(_: WritePageProps) {
-  return <WritePageBlock>작성</WritePageBlock>;
+interface WritePageProps {
+  isServer: boolean;
+}
+function WritePage({ isServer }: WritePageProps) {
+  return (
+    <WritePageBlock>
+      <ActiveEditor isServer={isServer} />
+    </WritePageBlock>
+  );
 }
 
 export default WritePage;
 
 // SSR (프론트 서버에서 실행)
 export const getServerSideProps = wrapper.getServerSideProps(async (_) => {
+  const isServer = typeof window === 'undefined';
   return {
-    props: {},
+    props: {
+      isServer,
+    },
   };
 });
