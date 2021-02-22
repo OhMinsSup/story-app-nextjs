@@ -27,7 +27,7 @@
 
 작성페이지및 스토어 연동 수정을 했다. 그리고 redux saga는 사용하지 않을 예정이다.
 
-## EP.5 write 페이지에서 에디터 적용하기
+## EP.5 write 페이지에서 에디터 적용하기 (1)
 
 오늘은 글을 작성하는 페이지를 작업하고 있었다. 개발을 진행하면서 발생했던 이슈는 next.js에서 code mirror를 호출 할 때 에러를 발생하는 이슈가 있었다.
 [CodeMirror Issue - Navigator error](https://alonzoaustin.com/blog?title=QcbtUxpArUDnjT2B4VYh)
