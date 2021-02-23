@@ -4,12 +4,13 @@ import type { EditorFromTextArea } from 'codemirror';
 import { useSpring, animated } from 'react-spring';
 import 'codemirror/lib/codemirror.css';
 
-import TitleTextarea, { TitleTextareaForSSR } from './TitleTextarea';
+import TitleTextarea from './TitleTextarea';
 
 import media, { mediaQuery } from '~/libs/styles/media';
 import palette from '~/libs/styles/palette';
 import zIndexes from '~/libs/styles/zIndexes';
 import detectIOS from '~/libs/detectIOS';
+import Toolbar from './Toolbar';
 
 function WriterHead({
   hide,
@@ -37,7 +38,12 @@ function WriterHead({
 
 interface WriteMarkdownEditorProps {
   isServer: boolean;
+  title: string;
+  initialBody: string;
+  onChangeMarkdown: (markdown: string) => void;
+  onChangeTitle: (title: string) => void;
 }
+
 interface WriteMarkdownEditorState {
   addLink: {
     top: number | null;
@@ -101,24 +107,132 @@ export class WriteMarkdownEditor extends Component<
       placeholder: '당신의 이야기를 적어보세요...',
       lineWrapping: true,
     });
+
+    if (!this.codemirror) return;
+
+    this.codemirror.setValue(this.props.initialBody);
+    this.codemirror.on('change', (cm) => {
+      this.props.onChangeMarkdown(cm.getValue());
+      this.stickToBottomIfNeeded();
+      const doc = cm.getDoc();
+
+      const { line } = doc.getCursor();
+      const last = doc.lastLine();
+      if (last - line < 5) {
+        const preview = document.getElementById('preview');
+        if (!preview) return;
+        preview.scrollTop = preview.scrollHeight;
+      }
+    });
+
+    this.codemirror.on('scroll', (cm) => {
+      const info = cm.getScrollInfo();
+      if (info.top > 0 && info.height > window.screen.height) {
+        this.setState({ hideUpper: true });
+      } else {
+        this.setState({ hideUpper: false });
+      }
+    });
+
+    this.codemirror.on('dragover', (_, e) => {
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = 'copy';
+      }
+    });
+
+    this.codemirror.on('paste', ((editor: any, e: any) => {
+      const clipboardData = e.clipboardData || e.originalEvent.clipboardData;
+      if (!clipboardData) return;
+
+      // replace text for embedding youtube, twitte, etc
+      const text = clipboardData.getData('Text');
+      const check = checkEmbed(text);
+      if (check) {
+        const selection = editor.getSelection();
+        e.preventDefault();
+        if (selection.length > 0) {
+          editor.replaceSelection(check);
+        } else {
+          const doc = editor.getDoc();
+          const cursor = doc.getCursor();
+          const pos = {
+            line: cursor.line,
+            ch: cursor.ch,
+          };
+          doc.replaceRange(check, pos);
+        }
+        return;
+      }
+
+      const { items } = clipboardData;
+      if (!items) return;
+      if (items.length !== 2) return;
+      if (items[1].kind === 'file') {
+        e.preventDefault();
+      }
+    }) as any);
+  };
+
+  stickToBottomIfNeeded = () => {
+    if (!this.block.current) return;
+    const { scrollHeight, scrollTop, clientHeight } = this.block.current;
+    const scrollBottom = scrollHeight - scrollTop - clientHeight;
+    if (scrollBottom < 192) {
+      this.block.current.scrollTo(0, scrollHeight);
+    }
   };
 
   componentDidMount() {
     this.initialize();
+    setTimeout(() => {
+      if (this.toolbarElement.current) {
+        this.toolbarTop = this.toolbarElement.current.getBoundingClientRect().top;
+      }
+    });
+
+    if (this.block.current) {
+      this.setState({
+        clientWidth: this.block.current.clientWidth,
+      });
+    }
+
+    window.addEventListener('resize', this.handleResize);
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
+  }
+
+  handleChangeTtitle = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    this.props.onChangeTitle(e.target.value);
+  };
+
+  handleResize = () => {
+    if (this.block.current) {
+      this.setState({
+        clientWidth: this.block.current.clientWidth,
+      });
+    }
+  };
 
   render() {
     return (
       <MarkdownEditorBlock ref={this.block} data-testid="codemirror">
         <div className="wrapper">
           <WriterHead hide={this.state.hideUpper}>
-            {this.props.isServer ? (
-              <TitleTextareaForSSR placeholder="제목을 입력하세요." rows={1} />
-            ) : (
-              <TitleTextarea placeholder="제목을 입력하세요." />
-            )}
+            <TitleTextarea
+              placeholder="제목을 입력하세요."
+              onChange={this.handleChangeTtitle}
+              value={this.props.title}
+            />
             <HorizontalBar />
           </WriterHead>
+          <Toolbar
+            shadow={this.state.hideUpper}
+            mode="MARKDOWN"
+            innerRef={this.toolbarElement}
+            ios={this.isIOS}
+          />
           <MarkdownWrapper>
             <textarea ref={this.editorElement} style={{ display: 'none' }} />
             {this.isIOS && <AppleTextarea />}
@@ -275,3 +389,53 @@ const AppleTextarea = styled.textarea`
     padding-bottom: 1rem;
   }
 `;
+
+type CheckerKey = keyof typeof checker;
+
+const checkEmbed = (text: string) => {
+  const keys = Object.keys(checker) as CheckerKey[];
+  for (let i = 0; i < keys.length; i += 1) {
+    const key = keys[i];
+    const fn = checker[keys[i]];
+    const code = fn(text);
+    if (code) {
+      return `!${key}[${code}]`;
+    }
+  }
+  return null;
+};
+
+const checker = {
+  youtube: (text: string) => {
+    const regex = /^<iframe.*src="https:\/\/www.youtube.com\/embed\/(.*?)".*<\/iframe>$/;
+    const result = regex.exec(text);
+    if (!result) return null;
+    return result[1];
+  },
+  twitter: (text: string) => {
+    if (!/^<blockquote class="twitter-tweet/.test(text)) return null;
+    const regex = /href="(.*?)"/g;
+    const links = [];
+    let match = regex.exec(text);
+    while (match) {
+      links.push(match[1]);
+      match = regex.exec(text);
+    }
+    const pathMatch = /twitter.com\/(.*?)\?/.exec(links[links.length - 1]);
+    if (!pathMatch) return null;
+    return pathMatch[1];
+  },
+  codesandbox: (text: string) => {
+    const regex = /^<iframe.*src="https:\/\/codesandbox.io\/embed\/(.*?)".*<\/iframe>$/s;
+    const result = regex.exec(text);
+    if (!result) return null;
+    return result[1];
+  },
+  codepen: (text: string) => {
+    const regex = /^<iframe.*src="https:\/\/codepen.io\/(.*?)".*/;
+    const result = regex.exec(text);
+    console.log(result);
+    if (!result) return null;
+    return result[1];
+  },
+};

@@ -1,7 +1,7 @@
-import { combineReducers } from '@reduxjs/toolkit';
+import { CombinedState, combineReducers } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
-import system from './system';
-import write from './write';
+import system, { SystemState } from './system';
+import write, { WriteState } from './write';
 
 const rootReducer = (state: any, action: any) => {
   switch (action.type) {
@@ -16,5 +16,10 @@ const rootReducer = (state: any, action: any) => {
     }
   }
 };
+
+export type RootState = CombinedState<{
+  system: SystemState;
+  write: WriteState;
+}>;
 
 export default rootReducer;

@@ -22,10 +22,6 @@ const style = css`
   }
 `;
 
-export const TitleTextareaForSSR = styled.textarea`
-  ${style}
-`;
-
 const TitleTextarea = styled(TextareaAutosize)`
   ${style}
 `;
