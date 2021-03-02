@@ -23,7 +23,9 @@ export default class extends Document {
   render() {
     return (
       <Html>
-        <Head />
+        <Head>
+          <link rel="stylesheet" type="text/css" href="css/global.css" />
+        </Head>
         <body>
           <Main />
           <NextScript />

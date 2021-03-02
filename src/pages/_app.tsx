@@ -2,7 +2,6 @@ import 'lazysizes';
 import 'lazysizes/plugins/parent-fit/ls.parent-fit';
 import 'lazysizes/plugins/blur-up/ls.blur-up';
 
-import '../../global.css';
 import 'react-toastify/dist/ReactToastify.css';
 
 import React from 'react';

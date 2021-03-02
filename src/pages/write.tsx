@@ -16,7 +16,7 @@ function WritePage({ isServer }: WritePageProps) {
   return (
     <>
       <Helmet>
-        <link href="css/atom-one-light.css" rel="stylesheet" />
+        <link href="css/atom-one-light.css" rel="stylesheet" type="text/css" />
       </Helmet>
       <WritePageBlock>
         <ActiveEditor isServer={isServer} />
