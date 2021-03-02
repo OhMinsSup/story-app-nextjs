@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components';
 import ActiveEditor from '~/containers/write/ActiveEditor';
 import { wrapper } from '~/store/configure';
@@ -13,9 +14,14 @@ interface WritePageProps {
 }
 function WritePage({ isServer }: WritePageProps) {
   return (
-    <WritePageBlock>
-      <ActiveEditor isServer={isServer} />
-    </WritePageBlock>
+    <>
+      <Helmet>
+        <link href="css/atom-one-light.css" rel="stylesheet" />
+      </Helmet>
+      <WritePageBlock>
+        <ActiveEditor isServer={isServer} />
+      </WritePageBlock>
+    </>
   );
 }
 

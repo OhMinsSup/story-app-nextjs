@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet-async';
 import WriteMarkdownEditor from '~/components/write/WriteMarkdownEditor';
 import { RootState } from '~/store/modules';
 import write from '~/store/modules/write';
+import TagInputContainer from './TagInputContainer';
 
 interface MarkdownEditorContainerProps {
   isServer: boolean;
@@ -33,6 +34,7 @@ function MarkdownEditorContainer({ isServer }: MarkdownEditorContainerProps) {
     title: initialTitle,
     body: initialBody,
   });
+  console.log(lastSavedData);
 
   useEffect(() => {
     setLastSavedData({
@@ -52,6 +54,7 @@ function MarkdownEditorContainer({ isServer }: MarkdownEditorContainerProps) {
         initialBody={initialBody}
         onChangeTitle={actionCreatros.changeTitle}
         onChangeMarkdown={actionCreatros.changeMarkdown}
+        tagInput={<TagInputContainer />}
       />
     </>
   );

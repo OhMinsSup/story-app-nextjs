@@ -11,6 +11,7 @@ import palette from '~/libs/styles/palette';
 import zIndexes from '~/libs/styles/zIndexes';
 import detectIOS from '~/libs/detectIOS';
 import Toolbar from './Toolbar';
+import AddLink from './AddLink';
 
 function WriterHead({
   hide,
@@ -40,6 +41,7 @@ interface WriteMarkdownEditorProps {
   isServer: boolean;
   title: string;
   initialBody: string;
+  tagInput: React.ReactNode;
   onChangeMarkdown: (markdown: string) => void;
   onChangeTitle: (title: string) => void;
 }
@@ -182,6 +184,11 @@ export class WriteMarkdownEditor extends Component<
     }
   };
 
+  addImageToEditor = (image: string) => {
+    if (!this.codemirror) return;
+    this.codemirror.getDoc().replaceSelection(`![](${encodeURI(image)})`);
+  };
+
   componentDidMount() {
     this.initialize();
     setTimeout(() => {
@@ -215,7 +222,392 @@ export class WriteMarkdownEditor extends Component<
     }
   };
 
+  handleOpenAddLink = () => {
+    if (!this.codemirror) return;
+    const doc = this.codemirror.getDoc();
+    const cursor = doc.getCursor();
+    const cursorPos = this.codemirror.cursorCoords(cursor);
+    if (!this.block.current) return;
+
+    const stickToRight = cursorPos.left > this.block.current.clientWidth - 341;
+    const calculatedTop =
+      this.block.current.scrollTop +
+      cursorPos.top +
+      this.codemirror.defaultTextHeight() / 2 +
+      1;
+
+    const isAtBottom = calculatedTop + 173 > this.block.current?.clientHeight;
+    const pos = isAtBottom
+      ? { top: null, bottom: 64 }
+      : { top: calculatedTop, bottom: null };
+    this.setState({
+      addLink: {
+        visible: true,
+        ...pos,
+        left: cursorPos.left,
+        stickToRight,
+      },
+    });
+  };
+
+  handleConfirmAddLink = (link: string) => {
+    // 링크삽입하는 내용
+    this.setState({
+      addLink: {
+        ...this.state.addLink,
+        visible: false,
+      },
+    });
+    if (!this.codemirror) return;
+    const doc = this.codemirror.getDoc();
+    const selection = doc.getSelection();
+    const cursor = doc.getCursor('end');
+    this.codemirror.focus();
+    if (selection.length === 0) {
+      doc.replaceSelection(`[링크텍스트](${link})`);
+      doc.setSelection(
+        {
+          line: cursor.line,
+          ch: cursor.ch + 1,
+        },
+        {
+          line: cursor.line,
+          ch: cursor.ch + 6,
+        }
+      );
+      return;
+    }
+    doc.replaceSelection(`[${selection}](${link})`);
+    doc.setCursor({
+      line: cursor.line,
+      ch: cursor.ch + link.length + 4,
+    });
+  };
+
+  handleCancelAddLink = () => {
+    this.setState({
+      addLink: {
+        ...this.state.addLink,
+        visible: false,
+      },
+    });
+  };
+
+  handleToolbarClick = (mode: string) => {
+    const codemirror = this.codemirror;
+
+    if (!codemirror) return;
+    const doc = codemirror.getDoc();
+
+    const cursor = doc.getCursor();
+    const selection = {
+      start: doc.getCursor('start'),
+      end: doc.getCursor('end'),
+    };
+
+    const line = doc.getLine(cursor.line);
+
+    const selectWholeLine = () => {
+      doc.setSelection(
+        {
+          line: cursor.line,
+          ch: 0,
+        },
+        {
+          line: cursor.line,
+          ch: line.length,
+        }
+      );
+    };
+
+    const handlers: {
+      [key: string]: any;
+    } = {
+      ...[1, 2, 3, 4] // creates handlers for heading1, heading2, heading3, heading4
+        .map((number) => () => {
+          // create handler function
+          const characters = '#'.repeat(number);
+          const plain = removeHeading(line);
+          selectWholeLine();
+          doc.replaceSelection(`${characters} ${plain}`);
+        })
+        .reduce((headingHandlers, handler, index) => {
+          // reduce into handlers object
+          return Object.assign(headingHandlers, {
+            [`heading${index + 1}`]: handler,
+          });
+        }, {}),
+      bold: () => {
+        const selected = doc.getSelection();
+        if (selected === '텍스트') {
+          const isBold = /\*\*(.*)\*\*/.test(
+            doc.getRange(
+              { line: selection.start.line, ch: selection.start.ch - 2 },
+              { line: selection.end.line, ch: selection.end.ch + 2 }
+            )
+          );
+
+          if (isBold) {
+            doc.setSelection(
+              { line: selection.start.line, ch: selection.start.ch - 2 },
+              { line: selection.end.line, ch: selection.end.ch + 2 }
+            );
+            doc.replaceSelection('텍스트');
+            doc.setSelection(
+              { line: selection.start.line, ch: selection.start.ch - 2 },
+              { line: selection.end.line, ch: selection.end.ch - 2 }
+            );
+            return;
+          }
+        }
+        if (/\*\*(.*)\*\*/.test(selected)) {
+          // matches **string**
+          doc.replaceSelection(selected.replace(/\*\*/g, ''));
+          doc.setSelection(
+            {
+              line: selection.start.line,
+              ch: selection.start.ch,
+            },
+            { line: selection.end.line, ch: selection.end.ch - 4 }
+          );
+          return;
+        }
+        if (selected.length > 0) {
+          doc.replaceSelection(`**${selected}**`);
+          doc.setSelection(
+            {
+              line: selection.start.line,
+              ch: selection.start.ch,
+            },
+            { line: selection.end.line, ch: selection.end.ch + 4 }
+          );
+          return;
+        }
+        doc.replaceSelection('**텍스트**');
+        doc.setSelection(
+          {
+            line: cursor.line,
+            ch: cursor.ch + 2,
+          },
+          {
+            line: cursor.line,
+            ch: cursor.ch + 5,
+          }
+        );
+      },
+      italic: () => {
+        let selected = doc.getSelection();
+
+        if (selected.length === 0) {
+          doc.replaceSelection(`_텍스트_`);
+          doc.setSelection(
+            {
+              line: cursor.line,
+              ch: cursor.ch + 1,
+            },
+            {
+              line: cursor.line,
+              ch: cursor.ch + 4,
+            }
+          );
+          return;
+        }
+
+        if (selected === '텍스트') {
+          const selectLeftAndRight = doc.getRange(
+            {
+              line: selection.start.line,
+              ch: selection.start.ch - 1,
+            },
+            {
+              line: selection.end.line,
+              ch: selection.end.ch + 1,
+            }
+          );
+          if (/_(.*)_/.test(selectLeftAndRight)) {
+            selected = selectLeftAndRight;
+            doc.setSelection(
+              {
+                line: selection.start.line,
+                ch: selection.start.ch - 1,
+              },
+              {
+                line: selection.end.line,
+                ch: selection.end.ch + 1,
+              }
+            );
+            selection.start = {
+              line: selection.start.line,
+              ch: selection.start.ch - 1,
+            };
+            selection.end = {
+              line: selection.end.line,
+              ch: selection.end.ch + 1,
+            };
+          }
+        }
+
+        if (/_(.*)_/.test(selected)) {
+          const plain = selected
+            .replace(/^_/, '') // remove starting _
+            .replace(/_$/, ''); // remove ending _
+          doc.replaceSelection(plain);
+          doc.setSelection(
+            {
+              line: selection.start.line,
+              ch: selection.start.ch,
+            },
+            { line: selection.end.line, ch: selection.end.ch - 2 }
+          );
+          return;
+        }
+        if (selected.length > 0) {
+          doc.replaceSelection(`_${selected}_`);
+          doc.setSelection(
+            {
+              line: selection.start.line,
+              ch: selection.start.ch,
+            },
+            { line: selection.end.line, ch: selection.end.ch + 2 }
+          );
+        }
+      },
+      strike: () => {
+        let selected = doc.getSelection();
+
+        if (selected.length === 0) {
+          doc.replaceSelection(`~~텍스트~~`);
+          doc.setSelection(
+            {
+              line: cursor.line,
+              ch: cursor.ch + 2,
+            },
+            {
+              line: cursor.line,
+              ch: cursor.ch + 5,
+            }
+          );
+          return;
+        }
+
+        if (selected === '텍스트') {
+          const selectLeftAndRight = doc.getRange(
+            {
+              line: selection.start.line,
+              ch: selection.start.ch - 2,
+            },
+            {
+              line: selection.end.line,
+              ch: selection.end.ch + 2,
+            }
+          );
+          if (/~~(.*)~~/.test(selectLeftAndRight)) {
+            selected = selectLeftAndRight;
+            doc.setSelection(
+              {
+                line: selection.start.line,
+                ch: selection.start.ch - 2,
+              },
+              {
+                line: selection.end.line,
+                ch: selection.end.ch + 2,
+              }
+            );
+            selection.start = {
+              line: selection.start.line,
+              ch: selection.start.ch - 2,
+            };
+            selection.end = {
+              line: selection.end.line,
+              ch: selection.end.ch + 2,
+            };
+          }
+        }
+
+        if (/~~(.*)~~/.test(selected)) {
+          const plain = selected
+            .replace(/^~~/, '') // remove starting ~~
+            .replace(/~~$/, ''); // remove ending ~~
+          doc.replaceSelection(plain);
+          doc.setSelection(
+            {
+              line: selection.start.line,
+              ch: selection.start.ch,
+            },
+            { line: selection.end.line, ch: selection.end.ch - 4 }
+          );
+          return;
+        }
+        if (selected.length > 0) {
+          doc.replaceSelection(`~~${selected}~~`);
+          doc.setSelection(
+            {
+              line: selection.start.line,
+              ch: selection.start.ch,
+            },
+            { line: selection.end.line, ch: selection.end.ch + 4 }
+          );
+        }
+      },
+      blockquote: () => {
+        const matches = /^> /.test(line);
+        doc.setSelection(
+          { line: cursor.line, ch: 0 },
+          { line: cursor.line, ch: line.length }
+        );
+        if (matches) {
+          doc.replaceSelection(line.replace(/^> /, ''));
+          doc.setCursor({
+            line: cursor.line,
+            ch: cursor.ch - 2,
+          });
+        } else {
+          doc.replaceSelection(`> ${line}`);
+          doc.setCursor({
+            line: cursor.line,
+            ch: cursor.ch + 2,
+          });
+        }
+      },
+      link: () => {
+        this.handleOpenAddLink();
+      },
+      image: () => {
+        console.log('???');
+        // this.props.onUpload();
+      },
+      codeblock: () => {
+        const selected = doc.getSelection();
+        if (selected.length === 0) {
+          doc.replaceSelection('```\n코드를 입력하세요\n```');
+          doc.setSelection(
+            {
+              line: cursor.line + 1,
+              ch: 0,
+            },
+            {
+              line: cursor.line + 1,
+              ch: 9,
+            }
+          );
+          return;
+        }
+        doc.replaceSelection(`\`\`\`
+${selected}
+\`\`\``);
+      },
+    };
+
+    const handler = handlers[mode];
+    if (!handler) return;
+
+    handler();
+    codemirror.focus();
+  };
+
   render() {
+    const { addLink } = this.state;
+
     return (
       <MarkdownEditorBlock ref={this.block} data-testid="codemirror">
         <div className="wrapper">
@@ -226,16 +618,27 @@ export class WriteMarkdownEditor extends Component<
               value={this.props.title}
             />
             <HorizontalBar />
+            {this.props.tagInput}
           </WriterHead>
           <Toolbar
             shadow={this.state.hideUpper}
             mode="MARKDOWN"
             innerRef={this.toolbarElement}
-            ios={this.isIOS}
+            onClick={this.handleToolbarClick}
           />
           <MarkdownWrapper>
+            {addLink.visible && (
+              <AddLink
+                defaultValue=""
+                left={addLink.left}
+                top={addLink.top}
+                bottom={addLink.bottom}
+                stickToRight={addLink.stickToRight}
+                onConfirm={this.handleConfirmAddLink}
+                onClose={this.handleCancelAddLink}
+              />
+            )}
             <textarea ref={this.editorElement} style={{ display: 'none' }} />
-            {this.isIOS && <AppleTextarea />}
           </MarkdownWrapper>
         </div>
 
@@ -373,22 +776,9 @@ const FooterWrapper = styled.div`
   z-index: ${zIndexes.WriteFooter};
 `;
 
-const AppleTextarea = styled.textarea`
-  flex: 1;
-  outline: none;
-  font-size: 1.125rem;
-  padding-left: 3rem;
-  padding-right: 3rem;
-  line-height: 1.5;
-  padding-bottom: 3rem;
-  color: ${palette.gray8};
-  ${media.custom(767)} {
-    font-size: 0.875rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    padding-bottom: 1rem;
-  }
-`;
+const removeHeading = (text: string) => {
+  return text.replace(/#{1,6} /, '');
+};
 
 type CheckerKey = keyof typeof checker;
 
