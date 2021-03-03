@@ -1,6 +1,7 @@
 import React from 'react';
 import EditorPanes from '~/components/write/EditorPanes';
 import MarkdownEditorContainer from './MarkdownEditorContainer';
+import MarkdownPreviewContainer from './MarkdownPreviewContainer';
 
 interface ActiveEditorProps {
   isServer: boolean;
@@ -10,7 +11,7 @@ function ActiveEditor({ isServer }: ActiveEditorProps) {
     <>
       <EditorPanes
         left={<MarkdownEditorContainer isServer={isServer} />}
-        right={<div>right</div>}
+        right={<MarkdownPreviewContainer />}
       />
     </>
   );
