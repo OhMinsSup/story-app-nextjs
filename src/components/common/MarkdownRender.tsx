@@ -83,8 +83,9 @@ type RenderedElement =
 
 interface MarkdownRenderProps {
   markdown: string;
+  editing?: boolean;
 }
-function MarkdownRender({ markdown }: MarkdownRenderProps) {
+function MarkdownRender({ markdown, editing }: MarkdownRenderProps) {
   const [html, setHtml] = useState(
     typeof window !== 'undefined'
       ? filter(
@@ -135,10 +136,14 @@ function MarkdownRender({ markdown }: MarkdownRenderProps) {
   }, [applyElement, markdown]);
   return (
     <Typography>
-      <MarkdownRenderBlock
-        className="dracula"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      {editing ? (
+        <MarkdownRenderBlock className="dracula">{element}</MarkdownRenderBlock>
+      ) : (
+        <MarkdownRenderBlock
+          className="dracula"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      )}
     </Typography>
   );
 }

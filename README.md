@@ -78,3 +78,16 @@
 ### 오늘 한 일
 
 - 마크다운 프리뷰 적용
+
+## EP.9 write 페이지에서 에디터 적용하기 (5)
+
+오늘은 react query를 통해서 포스트 정보를 가져와서 서버 사이드 렌더링을 적용 할려고 했는데... 음 잘안되는 것 같다.
+현재 발생하는 이슈는
+
+```javascript
+SerializableError: Error serializing `.dehydratedState.queries[0].state.data.config.transformRequest[0]` returned from `getServerSideProps`
+```
+
+이라는 에러가 발생하는데 이게 nextjs에서 제공하는 다이나믹 api를 사용해서 발생하는 이슈인지 아니면 nextjs에서 react query를 사용하는데 이슈가 있는건지 찾아봐야겠다.
+
+이것만하면 footer 부분하고 등록 UI를 만들면 실제 작성하는 페이지는 끝이난다.

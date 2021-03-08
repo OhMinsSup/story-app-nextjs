@@ -1,0 +1,27 @@
+import { NextApiRequest, NextApiResponse } from 'next';
+
+const handler = (req: NextApiRequest, res: NextApiResponse) => {
+  // Return the `set-cookie` header so we can display it in the browser and show that it works!
+  res.status(200).json({
+    id: 'c4cf86e0-c5fe-11e8-856c-a12db9b94467',
+    title: 'GoLang 탐방기 - golang이란?',
+    released_at: '2018-10-02T04:51:04.910Z',
+    updated_at: '2021-03-08T13:45:25.842Z',
+    tags: ['go', 'golang', '탐방기'],
+    body:
+      '## golang이란 \ngolang은 2007년에 구글에서 개발한 언어인데, 정확한 이름은 Go 언어입니다.\n\ngolang의 정식 웹사이트에서는 golang을 다음과 같이 설명하였습니다.\n\n>Go는 간결하고 신뢰성 있으며 효율적인 소프트웨어를 손쉽게 만들기 위한 오픈소스 프로그래밍 언어다.\n\nLink: [Golang](https://golang.org/)\n\ngolang은 프로그래밍 언어으로 간결한 문법과 생산성을 제공하는 프로그래밍을 할 수 있습니다. \n\n또한 언어자체에서 GC(galbage collection)을 지원하고, 정적타입과 동적타입을 동시에 제공하고\n\n스레드보다 좀 더 가벼운? 고로틴을 이용해서 좀 더 쉬운 동시성 프로그래밍을 제공합니다. \n\n지금부터 golang에 대해서 천천히 알아보겠습니다.\n\n## golang의 특징\n\ngolang은 아주 좋은 언어라고 개인적으로 생각합니다. 빠른 성능과 안정성, 편의성을 제공하기 때문에 쉽게 프로그래밍이 가능하기 때문이죠! (저의 개인적인 생각이지만)\n\n### 간결한 문법\ngo언어를 배우다 보면 문법들이 정말 쉽고 간결하다는 걸 느낄 수 있습니다. 그리고 무엇보다 키워드의 수가 적습니다. \n\n이게 뭐가 간결하다는 거야 라고 생각할 수 있습니다. \n\n자바나 c++, c#, php등 키워드의 수가 많은 언어를 공부하시다 보면 그 키워드를 배우고 이해해하는데 상당한 시간을 소비할 수 있습니다. \n\ngolang은 상대적으로 키워드 수가 적기 때문에 상당히 간결하고 배우는데 오랜시간이 걸리지 않습니다.\n\n### 개발 속도 및 컴파일 언어\n인터프리터 방식의 언어가 아닌 컴파일 방식의 언어로 개발을하게 되면 애플리케이션을 컴파일하면 정말 많은 시간이 걸리게 됩니다. \n\ngolang은 간결한 의존성 해석 알고리즘을 통해서 다른 컴파일 언어에 비해 빠르게 동작하는 컴파일러를 제공합니다.\n\n이게 무슨말이냐면 golang에서는 직접적인 참조를 하는 라이브러리만을 해석한다는 것입니다. 사용하지 않는 라이브러리는 해석을 하지 않기 때문에 좀 더 빠르게 해석하는 것이죠!\n\n### 동적 + 정적 언어\ngolang은 컴파일 기반 정적 타입 언어입니다. 하지만 동적 언어의 특성도 수용하기 때문에 golang은 컴파일러의 안정성을 보장 받으면서 동적언어의 유연함과 자유도를 얻을 수 있다는 것입니다.\n\n![Screenshot.png](https://images.velog.io/post-images/veloss/4fa88ac0-c602-11e8-856c-a12db9b94467/Screenshot.png)\n\n### 가비지 컬렉션(GC - 메모리 관리)\n\ngolang에는 메모리를 직접관리할 필요가 없습니다. 왜냐하면 가비지 컬렉션이 존재하지 때문이죠. golang의 가비지 컬렉션을 설명하기 전에 가비지 컬렉션이 대충 무엇인지 설명하겠습니다. \n        \nc, c++에서는 메모리를 할당하면 반드시 메모리를 해제 해주어야합니다. 로직 작성보다 메모리 관리에 더 많은 노력과 시간을 소모하게되어 생산성이 떨어지죠 \n\n그래서 메모리를 알아서 관리해주는 가비지 컬렉션 기술이 나왔고, java, c#에 등장하게 된거죠. 그리고 우리가 잘알고 있는 다른 언어들도 가상머신 위에서 가비지 컬렉션기술 이 사용되고 있었습니다.\n\n![가비지 컬렉션](https://pyrasis.com/assets/images/GoForTheReallyImpatientUnit01/4.png)\n        \ngolang은 메모리를 관리해주는 가비지 컬렉터가 실행 파일안에 내장되어 있어서, 가상머신위에서 실행되는 언어들처럼 가상 머신이 메모리를 관리를 해주는 것과 차이가 있습니다.\n\n좀 더 자세한 내용은 및에 링크를 걸었습니다. \n\nLink: [Golang의 GC](https://engineering.linecorp.com/ko/blog/detail/342)\n\n### 동시성\n아마 golang에서 대표적인 특징이고 강조하는 부분이 이부분이 아닐까합니다. 바로 동시성이죠! 어떤 프로그래밍을 하던 동시성 관련 문제는 개발자의 머리를 아프게 하죠.....\n\ngolang은 동시성 프로그래밍에 대한 지원은 정말 강력한 기능중 하나입니다. \n\ngolang에서는 동시성을 지원하기 위해서 고루틴이란는 것을 지원합니다. \n\n![고루틴](https://cdn-images-1.medium.com/max/1200/1*GWYUFH14uOVLNHY-L1tv2w.jpeg)\n\n고루틴은 스레드와 유사하지만 더 적은 메모리를 소비하여 더 적은 양의 코드로 구현할 수 있는 데이터 구조입니다. \n\n또한 고루틴들이 필요한 데이터를 먼저 사용하기 위해 경쟁하는 것이 아니라 고루틴 간에 데이터를 서로 전송할 수 있기 때문에 프로그래밍 모델이 더 간결해집니다. \n\n#### 여기서 고루틴이란? \n고루틴은 프로그램의 진입점 함수를 비롯하여 다른 고루틴과 함께 동시에 실행되는 함수입니다. \n\n만약 다른 프로그래밍에서 이런 일을 가능하게 할려면 스레드를 사용해야 하지만, go에서는 여러 개의 고루틴이 하나의 스레드에서 동작합니다. \n\n![스레드&&고루틴](https://ai2-s2-public.s3.amazonaws.com/figures/2017-08-08/7c2e2d00cdaa9637797ba56df8e80e7948397831/28-Figure3.1-1.png)\n\ngolang에서 대표적인 고루틴 이용예시는 net/http이다 net/http는 golang에 있는 라이브러리인데 net/http는 고루틴을 이용한 동시성 기능을 자체적으로 지원하는데, 만약 서버로 유입된 각각의 요청들이 자동적으로 각자의 고루틴에서 동작하게 된다. \n\n > \n 고루틴은 스레드보다 적은 메모리를 사용하여 go런타임이 설정 한 논이 프로세스의 개수에 따라 자동적으로 고루틴을 실행하게 된다고 합니다.\n\n```go\n     func main() {\n          fmt.Println("main 함수 시작", time.Now())\n\n          go long()\n          go short()\n\n          time.Sleep(5 * time.Second)\n          fmt.Println("main 함수 종료", time.Now())\n     }\n\n     func long() {\n         fmt.Println("long 함수 시작", time.Now())\n         time.Sleep(3 * time.Second)\n         fmt.Println("long 함수 시작", time.Now())\n     }\n        \n     func short() {\n        fmt.Println("short 함수 시작", time.Now())\n        time.Sleep(1 * time.Second)\n        fmt.Println("short 함수 시작", time.Now())\n     }\n ```\n고루틴과의 통신을 위해서는 채널이 있는데 이것까지 적으면 너무 길어져서 따로 포스팅을 하겠습니다.\n\n### 타입 시스템\n    \ngolang은 계층구조가 없는 유연한 타입 시스템을 제공하기 때문에 리팩토링에 대한 부담을 최소화하면서 코드를 재사용할 수 있다. \n\n객체지향에 비하여 훨씬 간편하게 객체지향 프로그래밍이 가능하다는 것입니다. \n    \n ```go\n        type Item struct {\n            name  string\n            price string\n        }\n\n        func (t Item) Cost() float64 {\n            return t.price * float64(t.price)\n        }\n\n        func main() {\n            shirt := Item{name: \'a\' price: 2000}\n\n            fmt.Println(shirt.Cost())\n        }\n ```\n\ngo는 합성이라고 부르는 디자인 패턴과 마찬가지로 방법으로, 기능을 재사용하기 위해 타입을 임베드한다. \n\n다른 언어들도 합성패턴을 사용하지만 종종 상속과 너무 강하게 연결되어 결국에는 코드 재사용이 복잡하고 어려워지는 경향이 있다. \n\n또한 golang은 모델의 타입을 모델링하는 것이 아니라 동작을 모델링할 수 있는 독특한 인터페이스를 구현할 수 있다.\n\n\n> \n정말 길었지만 간단하게 golang에 대해서 알아보았습니다. 앞으로도 golang의 기초적인 부분이나 좀 더 어려운 내용이 있으면 꾸준히 포스팅을 해나갈 예정입니다.\n\n틀린 부분이 있으면 언제든지 얘기해주시면 감사하겠습니다.',
+    short_description:
+      'golang이란\ngolang은 2007년에 구글에서 개발한 언어인데, 정확한 이름은 Go 언어입니다.\n\ngolang의 정식 웹사이트에서는 golang을 다음과 같이 설명하였습니다.\n\n>Go는 간결하고 신뢰성 있으며 효율적인 소프트웨어를 손쉽게 만들기 위한 오픈소스 프로그래밍 언어다.\n\nLink: Golang\n\ngolang은 프로그래밍 언어으로 간결한 문법과...',
+    is_markdown: true,
+    is_private: false,
+    is_temp: false,
+    thumbnail:
+      'https://images.velog.io/post-images/veloss/4a03cfa0-c605-11e8-ab77-93833eaf1fa8/837200ed5211.jpg',
+    comments_count: 0,
+    url_slug: 'GoLang-탐방기-golang이란-vpjmr8weoa',
+    likes: 1,
+    liked: false,
+  });
+};
+
+export default handler;

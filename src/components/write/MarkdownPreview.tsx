@@ -26,7 +26,7 @@ function MarkdownPreview({ markdown, title }: MarkdownPreviewProps) {
   return (
     <MarkdownPreviewBlock id="preview">
       <Title>{title}</Title>
-      <MarkdownRender markdown={markdown} />
+      <MarkdownRender markdown={markdown} editing={false} />
     </MarkdownPreviewBlock>
   );
 }

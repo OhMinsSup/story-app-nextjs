@@ -5,35 +5,45 @@ import 'lazysizes/plugins/blur-up/ls.blur-up';
 import 'react-toastify/dist/ReactToastify.css';
 
 import React from 'react';
-import App, { AppContext, AppProps } from 'next/app';
+import type { AppContext, AppInitialProps, AppProps } from 'next/app';
 import { HelmetProvider } from 'react-helmet-async';
-import { wrapper, AppStore } from '~/store/configure';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { Hydrate } from 'react-query/hydration';
+
+import { wrapper } from '~/store/configure';
 import Core from '~/containers/base/Core';
 
-interface Props extends AppProps {
-  store: AppStore;
-}
-
-class AppPage extends App<Props> {
-  static async getInitialProps(context: AppContext) {
-    const { ctx, Component } = context;
-    let pageProps = {};
-    if (Component.getInitialProps) {
-      pageProps = (await Component.getInitialProps(ctx)) || {};
-    }
-    return { pageProps };
+function AppPage({ Component, pageProps }: AppProps) {
+  const queryClientRef = React.useRef<QueryClient>();
+  if (!queryClientRef.current) {
+    queryClientRef.current = new QueryClient();
   }
 
-  render() {
-    const { Component, pageProps } = this.props;
-    return (
-      <>
-        <HelmetProvider>
-          <Component {...pageProps} />
-          <Core />
-        </HelmetProvider>
-      </>
-    );
-  }
+  return (
+    <>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClientRef.current}>
+          <Hydrate state={pageProps.dehydratedState}>
+            <Component {...pageProps} />
+            <Core />
+          </Hydrate>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </>
+  );
 }
+
+AppPage.getInitialProps = async ({
+  Component,
+  ctx,
+}: AppContext): Promise<AppInitialProps> => {
+  let pageProps = {};
+
+  if (Component.getInitialProps) {
+    pageProps = (await Component.getInitialProps(ctx)) || {};
+  }
+
+  return { pageProps };
+};
+
 export default wrapper.withRedux(AppPage);
