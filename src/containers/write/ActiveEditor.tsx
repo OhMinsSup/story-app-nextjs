@@ -7,10 +7,8 @@ import EditorPanes from '~/components/write/EditorPanes';
 import MarkdownEditorContainer from './MarkdownEditorContainer';
 import MarkdownPreviewContainer from './MarkdownPreviewContainer';
 
-interface ActiveEditorProps {
-  isServer: boolean;
-}
-function ActiveEditor({ isServer }: ActiveEditorProps) {
+interface ActiveEditorProps {}
+function ActiveEditor(_: ActiveEditorProps) {
   const [newPost, setNewPost] = useState(false);
   const postId = useSelector((state: RootState) => state.write.postId);
   const [askLoadTemp, setAskLoadTemp] = useState(false);
@@ -21,7 +19,7 @@ function ActiveEditor({ isServer }: ActiveEditorProps) {
   return (
     <>
       <EditorPanes
-        left={<MarkdownEditorContainer isServer={isServer} />}
+        left={<MarkdownEditorContainer />}
         right={<MarkdownPreviewContainer />}
       />
     </>

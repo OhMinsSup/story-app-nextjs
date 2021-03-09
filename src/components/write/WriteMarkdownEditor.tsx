@@ -38,7 +38,6 @@ function WriterHead({
 }
 
 interface WriteMarkdownEditorProps {
-  isServer: boolean;
   title: string;
   initialBody: string;
   tagInput: React.ReactNode;
@@ -92,7 +91,7 @@ export class WriteMarkdownEditor extends Component<
       appleCursorPos: 0,
     };
 
-    this.isIOS = detectIOS(props.isServer);
+    this.isIOS = detectIOS(typeof window === 'undefined');
     console.log(this.isIOS);
   }
 

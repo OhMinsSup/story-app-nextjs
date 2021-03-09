@@ -8,10 +8,8 @@ import { RootState } from '~/store/modules';
 import write from '~/store/modules/write';
 import TagInputContainer from './TagInputContainer';
 
-interface MarkdownEditorContainerProps {
-  isServer: boolean;
-}
-function MarkdownEditorContainer({ isServer }: MarkdownEditorContainerProps) {
+interface MarkdownEditorContainerProps {}
+function MarkdownEditorContainer(_: MarkdownEditorContainerProps) {
   const dispatch = useDispatch();
 
   const actionCreatros = useMemo(
@@ -49,7 +47,6 @@ function MarkdownEditorContainer({ isServer }: MarkdownEditorContainerProps) {
         <title>{title ? `(작성중) ${title}` : '새 글 작성'}</title>
       </Helmet>
       <WriteMarkdownEditor
-        isServer={isServer}
         title={title}
         initialBody={initialBody}
         onChangeTitle={actionCreatros.changeTitle}
