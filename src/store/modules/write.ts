@@ -3,6 +3,10 @@ import {
   changeTitle,
   changeMarkDown,
   changeTags,
+  clearEditor,
+  prepareEdit,
+  setInitialBody,
+  setInitialHead,
 } from './actions/write.action';
 
 export interface WriteState {
@@ -23,7 +27,7 @@ export interface WriteState {
   initialBody: string;
 }
 
-const initialState: WriteState = {
+export const initialState: WriteState = {
   markdown: '',
   title: '',
   html: '',
@@ -48,6 +52,10 @@ const write = createSlice({
     changeTitle,
     changeMarkDown,
     changeTags,
+    clearEditor,
+    prepareEdit,
+    setInitialBody,
+    setInitialHead,
   },
 });
 

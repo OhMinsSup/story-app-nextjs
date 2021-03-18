@@ -92,7 +92,6 @@ export class WriteMarkdownEditor extends Component<
     };
 
     this.isIOS = detectIOS(typeof window === 'undefined');
-    console.log(this.isIOS);
   }
 
   initialize = () => {

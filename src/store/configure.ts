@@ -17,7 +17,8 @@ const store = () => {
 export type AppStore = ReturnType<typeof store>;
 
 export const wrapper = createWrapper(store, {
-  debug: process.env.NODE_ENV !== 'production',
+  // debug: process.env.NODE_ENV !== 'production',
+  debug: false,
 });
 
 export default store;

@@ -98,3 +98,22 @@ SerializableError: Error serializing `.dehydratedState.queries[0].state.data.con
 그리고 찾으면서 next.js를 깊게 이해는 글을 찾았는데 나중에 한번 봐야겠다.
 
 https://qiita.com/jagaapple/items/faf125e28f8c2860269c
+
+## EP.11 write 페이지에서 에디터 적용하기 (6) - swr을 이용해서 ssr 및 csr 적용
+
+swr을 이용해서 작성 페이지 서버 사이트 렌더링 및 클라이언트 사이드 렌더링을 적용했다.
+처음에 swr에서 react-query 처럼 enabled 옵션이 없어서 어떻게 해야할지 고민이 되었는데
+
+```typescript
+const { data } = useSWR(
+  slug ? `http://localhost:3000/api/posts/${slug}` : null,
+  fetcher,
+  {
+    initialData: post,
+  }
+);
+```
+
+해당 코드의 null을 넘겨줘서 무효화 적용을 했다.
+
+https://swr.vercel.app/docs/arguments

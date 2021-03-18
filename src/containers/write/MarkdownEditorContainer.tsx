@@ -28,6 +28,8 @@ function MarkdownEditorContainer(_: MarkdownEditorContainerProps) {
     (state: RootState) => state.write
   );
 
+  console.log(title, initialBody);
+
   const [lastSavedData, setLastSavedData] = useState({
     title: initialTitle,
     body: initialBody,
