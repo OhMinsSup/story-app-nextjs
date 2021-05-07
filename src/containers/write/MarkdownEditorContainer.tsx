@@ -1,40 +1,60 @@
 import { bindActionCreators } from '@reduxjs/toolkit';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
+
+import remark from 'remark';
+import strip from 'strip-markdown';
 
 import WriteMarkdownEditor from '~/components/write/WriteMarkdownEditor';
 import { RootState } from '~/store/modules';
 import write from '~/store/modules/write';
+import WriteFooter from '~/components/write/WriteFooter';
 import TagInputContainer from './TagInputContainer';
 
 interface MarkdownEditorContainerProps {}
 function MarkdownEditorContainer(_: MarkdownEditorContainerProps) {
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  const actionCreatros = useMemo(
+  const onGoBack = () => {
+    router.back();
+  };
+
+  const actionCreators = useMemo(
     () =>
       bindActionCreators(
         {
+          openPublish: write.actions.openPublish,
           changeTitle: write.actions.changeTitle,
           changeMarkdown: write.actions.changeMarkDown,
+          setDefaultDescription: write.actions.setDefaultDescription,
         },
         dispatch
       ),
     [dispatch]
   );
 
-  const { title, initialBody, initialTitle } = useSelector(
+  const { title, initialBody, initialTitle, markdown, postId } = useSelector(
     (state: RootState) => state.write
   );
-
-  console.log(title, initialBody);
 
   const [lastSavedData, setLastSavedData] = useState({
     title: initialTitle,
     body: initialBody,
   });
-  console.log(lastSavedData);
+
+  const onPublish = useCallback(() => {
+    remark()
+      .use(strip)
+      .process(markdown.replace(/#(.*?)\n/g, ''), (err: any, file: any) => {
+        const text = String(file);
+        const sliced = text.replace(/\n/g, '').slice(0, 150);
+        actionCreators.setDefaultDescription(sliced);
+        actionCreators.openPublish();
+      });
+  }, [actionCreators, markdown]);
 
   useEffect(() => {
     setLastSavedData({
@@ -51,9 +71,17 @@ function MarkdownEditorContainer(_: MarkdownEditorContainerProps) {
       <WriteMarkdownEditor
         title={title}
         initialBody={initialBody}
-        onChangeTitle={actionCreatros.changeTitle}
-        onChangeMarkdown={actionCreatros.changeMarkdown}
+        onChangeTitle={actionCreators.changeTitle}
+        onChangeMarkdown={actionCreators.changeMarkdown}
         tagInput={<TagInputContainer />}
+        footer={
+          <WriteFooter
+            onTempSave={() => {}}
+            onGoBack={onGoBack}
+            onPublish={onPublish}
+            edit={!!postId}
+          />
+        }
       />
     </>
   );

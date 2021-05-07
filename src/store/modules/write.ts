@@ -7,6 +7,9 @@ import {
   prepareEdit,
   setInitialBody,
   setInitialHead,
+  openPublish,
+  closePublish,
+  setDefaultDescription,
 } from './actions/write.action';
 
 export interface WriteState {
@@ -56,6 +59,9 @@ const write = createSlice({
     prepareEdit,
     setInitialBody,
     setInitialHead,
+    openPublish,
+    closePublish,
+    setDefaultDescription,
   },
 });
 

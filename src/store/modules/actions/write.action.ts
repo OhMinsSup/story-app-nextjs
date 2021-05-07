@@ -2,6 +2,27 @@ import { CaseReducer, PayloadAction } from '@reduxjs/toolkit';
 import produce from 'immer';
 import { WriteState, initialState } from '../write';
 
+export const setDefaultDescription: CaseReducer<
+  WriteState,
+  PayloadAction<string>
+> = (state, { payload }) => {
+  return produce(state, (draft) => {
+    draft.defaultDescription = payload;
+  });
+};
+
+export const openPublish: CaseReducer<WriteState, PayloadAction> = (state) => {
+  return produce(state, (draft) => {
+    draft.publish = true;
+  });
+};
+
+export const closePublish: CaseReducer<WriteState, PayloadAction> = (state) => {
+  return produce(state, (draft) => {
+    draft.publish = false;
+  });
+};
+
 export const changeTitle: CaseReducer<WriteState, PayloadAction<string>> = (
   state,
   { payload }

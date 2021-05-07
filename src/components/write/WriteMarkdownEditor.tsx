@@ -41,6 +41,7 @@ interface WriteMarkdownEditorProps {
   title: string;
   initialBody: string;
   tagInput: React.ReactNode;
+  footer: React.ReactNode;
   onChangeMarkdown: (markdown: string) => void;
   onChangeTitle: (title: string) => void;
 }
@@ -640,7 +641,9 @@ ${selected}
           </MarkdownWrapper>
         </div>
 
-        <FooterWrapper style={{ width: '50%' }}>Footer</FooterWrapper>
+        <FooterWrapper style={{ width: '50%' }}>
+          {this.props.footer}
+        </FooterWrapper>
       </MarkdownEditorBlock>
     );
   }
