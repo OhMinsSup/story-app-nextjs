@@ -99,7 +99,7 @@ SerializableError: Error serializing `.dehydratedState.queries[0].state.data.con
 
 https://qiita.com/jagaapple/items/faf125e28f8c2860269c
 
-## EP.11 write 페이지에서 에디터 적용하기 (6) - swr을 이용해서 ssr 및 csr 적용
+## EP.11 write 페이지에서 에디터 적용하기 (6) - swr을 이용해서 ssr 및 csr 적용.
 
 swr을 이용해서 작성 페이지 서버 사이트 렌더링 및 클라이언트 사이드 렌더링을 적용했다.
 처음에 swr에서 react-query 처럼 enabled 옵션이 없어서 어떻게 해야할지 고민이 되었는데
