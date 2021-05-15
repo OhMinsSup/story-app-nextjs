@@ -23,7 +23,7 @@ function WriteFooter({
         <span>나가기</span>
       </BackButton>
       <Group>
-        <StyledButton inline color="lightGray" onClick={() => {}}>
+        <StyledButton inline color="lightGray" onClick={() => onTempSave()}>
           임시저장
         </StyledButton>
         <StyledButton inline color="teal" onClick={onPublish}>

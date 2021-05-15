@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components';
 import useSWR from 'swr';
 import ActiveEditor from '~/containers/write/ActiveEditor';
+import PublishScreen from '~/containers/write/PublishScreen';
 import { wrapper } from '~/store/configure';
 import write from '~/store/modules/write';
 
@@ -19,6 +20,7 @@ interface WritePageProps {
   slug: string;
   isServer: boolean;
 }
+
 function WritePage({ post, slug }: WritePageProps) {
   const { data } = useSWR(
     slug ? `http://localhost:3000/api/posts/${slug}` : null,
@@ -35,6 +37,7 @@ function WritePage({ post, slug }: WritePageProps) {
       </Helmet>
       <WritePageBlock>
         <ActiveEditor post={data} />
+        <PublishScreen />
       </WritePageBlock>
     </>
   );

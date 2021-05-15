@@ -605,7 +605,7 @@ ${selected}
   };
 
   render() {
-    const { addLink } = this.state;
+    const { addLink, clientWidth } = this.state;
 
     return (
       <MarkdownEditorBlock ref={this.block} data-testid="codemirror">
@@ -641,7 +641,7 @@ ${selected}
           </MarkdownWrapper>
         </div>
 
-        <FooterWrapper style={{ width: '50%' }}>
+        <FooterWrapper style={{ width: clientWidth || '50%' }}>
           {this.props.footer}
         </FooterWrapper>
       </MarkdownEditorBlock>

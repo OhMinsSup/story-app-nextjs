@@ -40,7 +40,7 @@ function MarkdownEditorContainer(_: MarkdownEditorContainerProps) {
     (state: RootState) => state.write
   );
 
-  const [lastSavedData, setLastSavedData] = useState({
+  const [, setLastSavedData] = useState({
     title: initialTitle,
     body: initialBody,
   });
@@ -76,7 +76,7 @@ function MarkdownEditorContainer(_: MarkdownEditorContainerProps) {
         tagInput={<TagInputContainer />}
         footer={
           <WriteFooter
-            onTempSave={() => {}}
+            onTempSave={() => console.log('call')}
             onGoBack={onGoBack}
             onPublish={onPublish}
             edit={!!postId}
