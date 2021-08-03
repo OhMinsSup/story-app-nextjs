@@ -120,3 +120,6 @@ dist
 # next.js
 .next/
 out/
+
+# vscode
+.vscode/
