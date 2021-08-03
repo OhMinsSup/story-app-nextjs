@@ -16,6 +16,8 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
+      "@atoms/*": ["src/atoms/*"],
+      "@klaytn/*": ["src/klaytn/*"],
       "@assets/*": ["src/assets/*"],
       "@libs/*": ["src/libs/*"],
       "@utils/*": ["src/utils/*"],
@@ -23,13 +25,9 @@
       "@contants/*": ["src/contants/*"],
       "@components/*": ["src/components/*"],
       "@hooks/*": ["src/hooks/*"],
-      "@api/*": ["src/api/*"],
+      "@api/*": ["src/api/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.d.ts", "**/*.ts", "**/*.tsx", "**/*.js"],
-  "exclude": [
-    "node_modules",
-    ".next", 
-    "out"
-  ]
+  "exclude": ["node_modules", ".next", "out"]
 }
