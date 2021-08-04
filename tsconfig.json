@@ -15,6 +15,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "jsxImportSource": "@emotion/react",
     "paths": {
       "@atoms/*": ["src/atoms/*"],
       "@klaytn/*": ["src/klaytn/*"],

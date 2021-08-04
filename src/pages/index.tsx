@@ -1,7 +1,10 @@
-import React from 'react'
+import React from 'react';
+import AppLayout from '@components/layouts/AppLayout';
 
-const index = () => {
-  return <div>Hello Next.js</div>
-}
+const IndexPage = () => {
+  return <div>Hello Next.js</div>;
+};
 
-export default index
+export default IndexPage;
+
+IndexPage.Layout = AppLayout;

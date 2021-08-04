@@ -1,40 +1,40 @@
-const dotenvLoad = require('dotenv-load')
-const withPWA = require('next-pwa')
-const withNextEnv = require('next-env')
-const { withPlugins } = require('next-compose-plugins')
+const dotenvLoad = require('dotenv-load');
+const withPWA = require('next-pwa');
+const withNextEnv = require('next-env');
+const { withPlugins } = require('next-compose-plugins');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
-})
-const fs = require('fs')
+});
+// const fs = require('fs')
 
-const runtimeCaching = require('next-pwa/cache')
+const runtimeCaching = require('next-pwa/cache');
 
-const IS_PROD = process.env.NODE_ENV === 'production'
+const IS_PROD = process.env.NODE_ENV === 'production';
 
-const IS_PROD_DEPLOY_GROUP = process.env.DEPLOY_GROUP === 'production'
+const IS_PROD_DEPLOY_GROUP = process.env.DEPLOY_GROUP === 'production';
 
-const DEPLOYED_ADDRESS = JSON.stringify(fs.readFileSync('deployedAddress', 'utf8').replace(/\n|\r/g, "")),
-const DEPLOYED_ABI = fs.existsSync('deployedABI') && fs.readFileSync('deployedABI', 'utf8'),
+// const DEPLOYED_ADDRESS = JSON.stringify(fs.readFileSync('deployedAddress', 'utf8').replace(/\n|\r/g, "")),
+// const DEPLOYED_ABI = fs.existsSync('deployedABI') && fs.readFileSync('deployedABI', 'utf8'),
 
 // * .env 파일을 불러옵니다.
 switch (process.env.DEPLOY_GROUP) {
   case 'production':
-    dotenvLoad('prod')
-    break
+    dotenvLoad('prod');
+    break;
   case 'development':
-    dotenvLoad('dev')
-    break
+    dotenvLoad('dev');
+    break;
   default:
-    dotenvLoad('template')
-    break
+    dotenvLoad('template');
+    break;
 }
 
 const nextConfig = {
   // * 리액트 개발 중 사용할 환경변수들을 설정
   env: {
     // * 여기에 웹팩에 주입될 환경변수들을 입력
-    DEPLOYED_ADDRESS,
-    DEPLOYED_ABI
+    // DEPLOYED_ADDRESS,
+    // DEPLOYED_ABI
   },
 
   // * 이용자에게 제공되는 헤더에 nextjs 로 개발되었음을 노출하지 않습니다.
@@ -59,17 +59,17 @@ const nextConfig = {
     // * 개발 중 사용될 웹팩 설정입니다.
     if (!IS_PROD) {
       // * HMR 시 CPU 사용량을 줄이는 빌드 최적화 코드
-      config.watchOptions.poll = 1000
-      config.watchOptions.aggregateTimeout = 300
+      config.watchOptions.poll = 1000;
+      config.watchOptions.aggregateTimeout = 300;
     }
 
     return {
       ...config,
       mode: IS_PROD ? 'production' : 'development',
       devtool: IS_PROD ? 'hidden-source-map' : 'inline-source-map',
-    }
+    };
   },
-}
+};
 
 const composeEnhancers = [
   withNextEnv,
@@ -84,6 +84,6 @@ const composeEnhancers = [
       },
     },
   ],
-]
+];
 
-module.exports = withPlugins(composeEnhancers, nextConfig)
+module.exports = withPlugins(composeEnhancers, nextConfig);
