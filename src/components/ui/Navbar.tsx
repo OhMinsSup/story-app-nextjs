@@ -61,6 +61,11 @@ const Navbar: React.FC<NavbarProps> = () => {
               <a className="form-sub site-nav-actions-icon-link">발행하기</a>
             </Link>
           </li>
+          <li className="site-nav-actions-item site-nav-desktop-only justify-center">
+            <button type="button" className="form-btn">
+              인증하기
+            </button>
+          </li>
         </ul>
       </div>
     </div>

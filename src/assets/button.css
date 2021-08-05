@@ -1,9 +1,4 @@
 .form-sub,
-a.form-sub {
-  color: #fff;
-}
-
-.form-sub,
 .form-btn,
 .form-forest,
 .form-gradient,
@@ -34,4 +29,15 @@ a.form-gradient {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   text-align: center;
+}
+
+.form-sub,
+a.form-sub {
+  color: var(--accent-0) !important;
+}
+
+.form-btn,
+a.form-btn {
+  background: #f3f3f4;
+  color: #0d0c22;
 }
