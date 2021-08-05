@@ -37,6 +37,17 @@
   --accent-8: #111111;
   --accent-9: #000;
 
+  --indigo-0: #edf2ff;
+  --indigo-1: #dbe4ff;
+  --indigo-2: #bac8ff;
+  --indigo-3: #91a7ff;
+  --indigo-4: #748ffc;
+  --indigo-5: #5c7cfa;
+  --indigo-6: #4c6ef5;
+  --indigo-7: #4263eb;
+  --indigo-8: #3b5bdb;
+  --indigo-9: #364fc7;
+
   --font-sans: -apple-system, system-ui, BlinkMacSystemFont, 'Helvetica Neue',
     'Helvetica', sans-serif;
 }
@@ -101,4 +112,112 @@ body {
 
 a {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+a img {
+  border: none;
+}
+
+input[type='text'],
+input[type='number'],
+input[type='search'],
+input[type='password'],
+input[type='email'],
+input[type='url'],
+input[type='tel'],
+.braintree-input,
+.selectize-input {
+  border: 1px solid transparent;
+}
+
+@media (min-width: 768px) {
+  input[type='text'],
+  input[type='number'],
+  input[type='search'],
+  input[type='password'],
+  input[type='email'],
+  input[type='url'],
+  input[type='tel'],
+  .braintree-input,
+  .selectize-input,
+  textarea,
+  .ql-container .ql-editor,
+  select,
+  .input-with-prefix {
+    font-size: 14px;
+  }
+}
+
+input[type='text'],
+input[type='number'],
+input[type='search'],
+input[type='password'],
+input[type='email'],
+input[type='url'],
+input[type='tel'],
+.braintree-input,
+.selectize-input,
+textarea,
+.ql-container .ql-editor,
+select,
+.input-with-prefix {
+  font-family: 'Haas Grot Text R Web', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 40px;
+  padding: 10px 16px;
+  outline: none;
+  border-radius: 8px;
+  -webkit-transition: background-color 200ms ease, outline 200ms ease,
+    color 200ms ease, -webkit-box-shadow 200ms ease;
+  transition: background-color 200ms ease, outline 200ms ease, color 200ms ease,
+    -webkit-box-shadow 200ms ease;
+  transition: background-color 200ms ease, outline 200ms ease, color 200ms ease,
+    box-shadow 200ms ease;
+  transition: background-color 200ms ease, outline 200ms ease, color 200ms ease,
+    box-shadow 200ms ease, -webkit-box-shadow 200ms ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  color: #0d0c22;
+  background-color: #f3f3f4;
+}
+
+input[type='search'] {
+  -webkit-appearance: textfield;
+}
+
+input[type='search' i] {
+  appearance: auto;
+  box-sizing: border-box;
+  padding: 1px 2px;
+}
+
+input {
+  -webkit-writing-mode: horizontal-tb !important;
+  text-rendering: auto;
+  color: -internal-light-dark(black, white);
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0px;
+  text-shadow: none;
+  display: inline-block;
+  text-align: start;
+  appearance: auto;
+  background-color: -internal-light-dark(rgb(255, 255, 255), rgb(59, 59, 59));
+  -webkit-rtl-ordering: logical;
+  cursor: text;
+  margin: 0em;
+  font: 400 13.3333px Arial;
+  padding: 1px 2px;
+  border-width: 2px;
+  border-style: inset;
+  border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+  border-image: initial;
 }

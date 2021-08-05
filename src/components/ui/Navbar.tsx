@@ -1,70 +1,70 @@
 import React from 'react';
-import { css } from '@emotion/react';
 import Link from 'next/link';
+
 import { PAGE_ENDPOINTS } from '@contants/contant';
+
+import LogoIcon from '@components/Icon/LogoIcon';
+import SearchIcon from '@components/Icon/SearchIcon';
 
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
   return (
-    <div css={rootStyles}>
-      <div css={siteNavContainerStyles}>
-        <nav className="desktop-only items-center">
+    <div className="site-nav">
+      <div className="site-nav-container">
+        <nav className="site-nav-desktop-only align-center">
           <div aria-label="Logo">
             <Link href={PAGE_ENDPOINTS.INDEX}>
-              <a>로고</a>
+              <a>
+                <LogoIcon />
+              </a>
             </Link>
           </div>
-          <ul className="desktop-nav flex h-full">
-            <li className="desktop-item relative">
+          <ul className="site-nav-desktop-nav">
+            <li className="site-nav-desktop-item site-nav-hover-item">
               <Link href={PAGE_ENDPOINTS.ILLUSTRATION}>
                 <a className="font-bold">일러스트</a>
               </Link>
             </li>
           </ul>
         </nav>
+        <ul className="site-nav-actions">
+          <li className="site-nav-actions-item site-nav-desktop-only">
+            <form className="site-nav-inline-search">
+              <SearchIcon />
+              <input
+                className="site-nav-inline-search-input"
+                type="search"
+                name="q"
+                placeholder="Search"
+                autoComplete="off"
+              />
+            </form>
+          </li>
+          <li className="site-nav-actions-item site-nav-desktop-only justify-center">
+            <Link href={PAGE_ENDPOINTS.INDEX}>
+              <a>
+                <img
+                  className="site-nav-avatar lazyloaded"
+                  alt="OhMinSeop"
+                  width="32"
+                  height="32"
+                  data-src="https://cdn.dribbble.com/users/4714321/avatars/normal/open-uri20200123-26444-dmet7r?1579773018"
+                  src="https://cdn.dribbble.com/users/4714321/avatars/normal/open-uri20200123-26444-dmet7r?1579773018"
+                />
+              </a>
+            </Link>
+            {/* Hover User Menu */}
+            <div className="site-nav-action-menu site-nav-user-menu"></div>
+          </li>
+          <li className="site-nav-actions-item site-nav-desktop-only justify-center">
+            <Link href={PAGE_ENDPOINTS.INDEX}>
+              <a className="form-sub site-nav-actions-icon-link">발행하기</a>
+            </Link>
+          </li>
+        </ul>
       </div>
     </div>
   );
 };
 
 export default Navbar;
-
-const rootStyles = css`
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 60px;
-  background: var(--accent-0);
-  z-index: 9996;
-  box-shadow: inset 0px -1px 0px var(--accent-2);
-  box-sizing: border-box;
-  will-change: transform;
-  user-select: none;
-
-  & .desktop-only {
-    @media (min-width: 920px) {
-      display: inherit;
-    }
-
-    .desktop-nav .desktop-item {
-      display: flex;
-      align-items: center;
-      font-family: 'Haas Grot Text R Web', 'Helvetica Neue', Helvetica, Arial,
-        sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 20px;
-      color: var(--accent-3);
-      padding-left: 12px;
-      padding-right: 12px;
-    }
-  }
-`;
-
-const siteNavContainerStyles = css`
-  display: flex;
-  justify-content: space-between;
-  margin-left: 24px;
-  margin-right: 24px;
-  height: 100%;
-`;
