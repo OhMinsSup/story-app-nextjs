@@ -1,13 +1,20 @@
-import React from 'react';
-import Link from 'next/link';
+import React, { useCallback } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-import { PAGE_ENDPOINTS } from '@contants/contant';
+import { PAGE_ENDPOINTS } from "@contants/contant";
 
-import LogoIcon from '@components/Icon/LogoIcon';
-import SearchIcon from '@components/Icon/SearchIcon';
+import LogoIcon from "@components/Icon/LogoIcon";
+import SearchIcon from "@components/Icon/SearchIcon";
 
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
+  const router = useRouter();
+
+  const onAuthPage = useCallback(() => {
+    router.push(PAGE_ENDPOINTS.LOGIN);
+  }, [router]);
+
   return (
     <div className="site-nav">
       <div className="site-nav-container">
@@ -15,7 +22,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           <div aria-label="Logo">
             <Link href={PAGE_ENDPOINTS.INDEX}>
               <a>
-                <LogoIcon />
+                <LogoIcon className="site-nav-desktop-logo fill-current" />
               </a>
             </Link>
           </div>
@@ -40,7 +47,9 @@ const Navbar: React.FC<NavbarProps> = () => {
               />
             </form>
           </li>
-          <li className="site-nav-actions-item site-nav-desktop-only justify-center">
+          <li
+            className="site-nav-actions-item site-nav-desktop-only justify-center"
+          >
             <Link href={PAGE_ENDPOINTS.INDEX}>
               <a>
                 <img
@@ -56,13 +65,17 @@ const Navbar: React.FC<NavbarProps> = () => {
             {/* Hover User Menu */}
             <div className="site-nav-action-menu site-nav-user-menu"></div>
           </li>
-          <li className="site-nav-actions-item site-nav-desktop-only justify-center">
+          <li
+            className="site-nav-actions-item site-nav-desktop-only justify-center"
+          >
             <Link href={PAGE_ENDPOINTS.INDEX}>
               <a className="form-sub site-nav-actions-icon-link">발행하기</a>
             </Link>
           </li>
-          <li className="site-nav-actions-item site-nav-desktop-only justify-center">
-            <button type="button" className="form-btn">
+          <li
+            className="site-nav-actions-item site-nav-desktop-only justify-center"
+          >
+            <button type="button" className="form-btn" onClick={onAuthPage}>
               인증하기
             </button>
           </li>

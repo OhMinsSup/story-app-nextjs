@@ -55,7 +55,7 @@ const nextConfig = {
   // https://nextjs.org/docs/api-reference/next.config.js/compression
   compress: true,
 
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     // * 개발 중 사용될 웹팩 설정입니다.
     if (!IS_PROD) {
       // * HMR 시 CPU 사용량을 줄이는 빌드 최적화 코드
@@ -63,10 +63,14 @@ const nextConfig = {
       config.watchOptions.aggregateTimeout = 300;
     }
 
+    if (!isServer) {
+      config.resolve.fallback.fs = false;
+    }
+
     return {
       ...config,
       mode: IS_PROD ? 'production' : 'development',
-      devtool: IS_PROD ? 'hidden-source-map' : 'inline-source-map',
+      devtool: IS_PROD ? 'hidden-source-map' : 'eval-source-map',
     };
   },
 };
