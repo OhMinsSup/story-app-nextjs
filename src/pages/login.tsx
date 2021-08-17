@@ -1,39 +1,41 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { css } from "@emotion/react";
-import { AiOutlineClose } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineKey } from "react-icons/ai";
 import { useRouter } from "next/router";
-import {
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-  useToast,
-} from "@chakra-ui/react";
+import { useDisclosure, useToast } from "@chakra-ui/react";
 
 import KaytonIcon from "@components/Icon/klaytnIcon";
 import { PAGE_ENDPOINTS } from "@contants/contant";
+
+import InstalledKaikasModal from "@components/auth/InstalledKaikasModal";
+import KeystoreAuthModal from "@components/auth/KeystoreAuthModal";
 
 interface LoginPageProps {}
 const LoginPage: React.FC<LoginPageProps> = () => {
   const router = useRouter();
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const {
+    isOpen: keystoreOpen,
+    onOpen: onKeystoreOpen,
+    onClose: onKeystoreClose,
+  } = useDisclosure();
+
+  const {
+    isOpen: installedOpen,
+    onOpen: onInstalledOpen,
+    onClose: onInstalledClose,
+  } = useDisclosure();
 
   // redirect to the Main
   const onPageMove = useCallback(() => {
     router.push(PAGE_ENDPOINTS.INDEX);
   }, [router]);
 
-  // If Kaikas is Login
+  // handle Kaikas login auth
   const onKaikasLogin = useCallback(async () => {
     try {
       if (typeof window.klaytn === "undefined") {
-        onOpen();
         const error = new Error();
         error.name = "klaytn Kaikas";
         error.message = "kaikas is undefined";
@@ -44,6 +46,11 @@ const LoginPage: React.FC<LoginPageProps> = () => {
       const account = accounts[0]; // We currently only ever provide a single account,
       console.log("account", account);
     } catch (error) {
+      if (error.name === "klaytn Kaikas") {
+        onInstalledOpen();
+        return;
+      }
+
       toast({
         title: "Story는 kaikas로 동작하고 있습니다. 크롬 PC 버전을 이용해주세요.",
         status: "error",
@@ -83,16 +90,28 @@ const LoginPage: React.FC<LoginPageProps> = () => {
                 <span>아래 지갑 중 사용할 지갑을 선택해주세요.</span>
               </div>
             </div>
-            <div className="flex justify-center">
+            <div
+              className="flex flex-col justify-center items-center space-y-3"
+            >
               <button type="button" css={buttonStyles} onClick={onKaikasLogin}>
                 <span>Kaikas로 로그인</span>
                 <div className="relative float-right">
                   <KaytonIcon />
                 </div>
               </button>
+              <button
+                type="button"
+                css={buttonStyles}
+                onClick={onKeystoreOpen}
+              >
+                <span>Keystore로 로그인</span>
+                <div className="relative float-right">
+                  <AiOutlineKey className="w-8 h-8 fill-current" />
+                </div>
+              </button>
             </div>
             <p className="text-sm text-gray-500 my-4 text-center">
-              사용 중인 지갑이 없으신가요?
+              <span>사용 중인 지갑이 없으신가요?</span>
               <a
                 rel="noreferrer"
                 target="_blank"
@@ -105,29 +124,8 @@ const LoginPage: React.FC<LoginPageProps> = () => {
           </div>
         </div>
       </div>
-      <Modal
-        isCentered
-        onClose={onClose}
-        isOpen={isOpen}
-        motionPreset="slideInBottom"
-      >
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Kaikas 설치</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            로그인을 하려면 Kaikas를 설치해주세요.
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="gray" mr={3} onClick={onClose}>
-              취소
-            </Button>
-            <Button color="gray.100" colorScheme="blackAlpha" variant="solid">
-              Kaikas 설치
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <InstalledKaikasModal isOpen={installedOpen} onClose={onInstalledClose} />
+      <KeystoreAuthModal isOpen={keystoreOpen} onClose={onKeystoreClose} />
     </>
   );
 };
@@ -136,7 +134,7 @@ export default LoginPage;
 
 const buttonStyles = css`
     width: 400px;
-    height: 80px;
+    height: 60px;
     font-weight: 700;
     font-size: 16px;
     line-height: 28px;
@@ -147,6 +145,9 @@ const buttonStyles = css`
     box-shadow: 0 4px 8px rgb(0 0 0 / 8%);
     border-radius: 4px;
     vertical-align: middle;
-    padding: 26px 24px;
+    padding: 0 24px;
     text-align: left;
+    &:hover {
+      background-color: var(--hover);
+    }
 `;
