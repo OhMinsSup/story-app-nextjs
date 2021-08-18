@@ -14,12 +14,17 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Text,
+  usePrevious,
 } from "@chakra-ui/react";
 import { FiFile } from "react-icons/fi";
-import { SubmitHandler, useController, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
+import useUpload from "@hooks/useUpload";
+import caver from "@klaytn/caver";
+import { validKeystore } from "@utils/utils";
 
 interface FormFieldValus {
-  keystore: File | undefined;
+  keystore?: File;
   password: string;
 }
 
@@ -30,51 +35,106 @@ interface KeystoreAuthModalProps {
 const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
   { isOpen, onClose },
 ) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const accept = "application/JSON";
+  const prevIsOpen = usePrevious(isOpen);
   const formRef = useRef<HTMLFormElement | null>(null);
-
-  const { control, reset, register, handleSubmit, formState: { errors } } =
-    useForm<FormFieldValus>({
-      mode: "onSubmit",
-      criteriaMode: "firstError",
-      defaultValues: {
-        keystore: undefined,
-        password: "",
-      },
-    });
+  const [file, upload, clear] = useUpload(accept);
 
   const {
-    field: { ref, value, ...inputProps },
-    fieldState: { invalid },
-  } = useController({
-    name: "keystore",
-    control,
-    rules: {
-      required: true,
+    reset,
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<FormFieldValus>({
+    mode: "onSubmit",
+    criteriaMode: "firstError",
+    defaultValues: {
+      keystore: undefined,
+      password: "",
     },
   });
 
-  console.log("error", errors);
+  // Keystore file upload set change hook form value
+  useEffect(() => {
+    if (!file) {
+      setValue("keystore", undefined, { shouldValidate: true });
+      return;
+    }
+    setValue("keystore", file, { shouldValidate: true });
+  }, [file]);
 
+  // keystore file upload
   const onClick = useCallback(() => {
-    inputRef.current?.click();
+    upload();
   }, []);
 
+  // Keystore file login
   const onLogin = useCallback(() => {
     formRef.current?.dispatchEvent(
       new Event("submit", { cancelable: true, bubbles: true }),
     );
   }, []);
 
-  const onSubmit: SubmitHandler<FormFieldValus> = (input) => {
-    console.log("login", input);
+  // read keystore file
+  const readKeystoreFile = (keystore?: File) => {
+    return new Promise<string | ArrayBuffer | null>((resolve, reject) => {
+      if (!keystore) {
+        const error = new Error();
+        error.name = "KeystoreFileNotFound";
+        error.message = "Keystore file is required";
+        return reject(error);
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        console.log(reader.result);
+        if (validKeystore(reader.result)) {
+          resolve(reader.result);
+        } else {
+          const error = new Error();
+          error.name = "InvalidKeystore";
+          error.message = "Invalid keystore file";
+          reject(error);
+        }
+      };
+
+      reader.readAsText(keystore);
+    });
   };
 
+  // onsubmit handler
+  const onSubmit: SubmitHandler<FormFieldValus> = async (input) => {
+    try {
+      const keystore = await readKeystoreFile(input.keystore);
+      const accountKey = caver.klay.accounts.decrypt(
+        keystore,
+        input.password,
+      );
+
+      const { privateKey } = accountKey;
+      console.log("accountKey", accountKey);
+      console.log("privateKey", privateKey);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // close modal reset hook form
   useEffect(() => {
-    return () => {
-      reset();
-    };
-  }, []);
+    if (prevIsOpen && !isOpen) {
+      clear();
+      reset({
+        keystore: undefined,
+        password: "",
+      });
+    }
+
+    // open set keystore file validation
+    if (isOpen) {
+      register("keystore", { required: true });
+    }
+  }, [isOpen, prevIsOpen]);
 
   return (
     <Modal
@@ -96,20 +156,20 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
                   pointerEvents="none"
                   children={<Icon as={FiFile} />}
                 />
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={inputRef}
-                  {...inputProps}
-                  className="hidden"
-                />
                 <Input
                   readOnly
+                  className="cursor-pointer"
                   placeholder="Keystore File"
+                  name="keystore"
+                  defaultValue={file ? file.name : ""}
                   onClick={onClick}
-                  value={value?.name ?? ""}
                 />
               </InputGroup>
+              {errors && errors.keystore && (
+                <Text fontSize="md" color="red.400">
+                  keystore 파일을 선택해주세요.
+                </Text>
+              )}
             </FormControl>
             <FormControl id="password" isRequired>
               <FormLabel>비밀번호</FormLabel>
@@ -117,8 +177,13 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
                 type="password"
                 placeholder="비밀번호"
                 id="password"
-                {...register("password")}
+                {...register("password", { required: true })}
               />
+              {errors && errors.password && (
+                <Text fontSize="md" color="red.400">
+                  비밀번호를 입력해주세요.
+                </Text>
+              )}
             </FormControl>
           </form>
         </ModalBody>
