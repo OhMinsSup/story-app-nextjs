@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "next",
+    "dev": "dotenv -e .env.local next",
     "build": "next build",
     "start": "cross-env NODE_ENV=production DEPLOY_GROUP=development next start -p 3000",
+    "build:dev": "dotenv -e .env.development next build && next export",
+    "build:prod": "dotenv -e .env.production next build && next export",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier-fix": "prettier --write ."
   },
@@ -54,10 +56,12 @@
     "@openzeppelin/contracts": "^4.2.0",
     "@types/node": "^16.4.10",
     "@types/react": "^17.0.15",
+    "dotenv-cli": "^4.0.0",
     "husky": "^7.0.1",
     "lint-staged": "^11.1.1",
     "postcss": "^8.3.6",
     "prettier": "^2.3.2",
+    "serverless": "^2.55.0",
     "typescript": "^4.3.5"
   },
   "husky": {
@@ -95,8 +99,8 @@
       "@config/*": [
         "src/config/*"
       ],
-      "@contants/*": [
-        "src/contants/*"
+      "@constants/*": [
+        "src/constants/*"
       ],
       "@components/*": [
         "src/components/*"
@@ -116,7 +120,7 @@
       "src/libs",
       "src/utils",
       "src/config",
-      "src/contants",
+      "src/constants",
       "src/components",
       "src/hooks",
       "src/api",

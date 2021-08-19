@@ -1,33 +1,29 @@
-const dotenvLoad = require('dotenv-load');
-const withPWA = require('next-pwa');
+// const dotenvLoad = require('dotenv-load');
 const withNextEnv = require('next-env');
 const { withPlugins } = require('next-compose-plugins');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+
 // const fs = require('fs')
-
-const runtimeCaching = require('next-pwa/cache');
-
 const IS_PROD = process.env.NODE_ENV === 'production';
-
 const IS_PROD_DEPLOY_GROUP = process.env.DEPLOY_GROUP === 'production';
 
 // const DEPLOYED_ADDRESS = JSON.stringify(fs.readFileSync('deployedAddress', 'utf8').replace(/\n|\r/g, "")),
 // const DEPLOYED_ABI = fs.existsSync('deployedABI') && fs.readFileSync('deployedABI', 'utf8'),
 
 // * .env 파일을 불러옵니다.
-switch (process.env.DEPLOY_GROUP) {
-  case 'production':
-    dotenvLoad('prod');
-    break;
-  case 'development':
-    dotenvLoad('dev');
-    break;
-  default:
-    dotenvLoad('template');
-    break;
-}
+// switch (process.env.DEPLOY_GROUP) {
+//   case 'production':
+//     dotenvLoad('prod');
+//     break;
+//   case 'development':
+//     dotenvLoad('dev');
+//     break;
+//   default:
+//     dotenvLoad('template');
+//     break;
+// }
 
 const nextConfig = {
   // * 리액트 개발 중 사용할 환경변수들을 설정
@@ -75,19 +71,6 @@ const nextConfig = {
   },
 };
 
-const composeEnhancers = [
-  withNextEnv,
-  withBundleAnalyzer,
-  [
-    withPWA,
-    {
-      pwa: {
-        dest: 'public',
-        disable: !IS_PROD,
-        runtimeCaching,
-      },
-    },
-  ],
-];
+const composeEnhancers = [withNextEnv, withBundleAnalyzer];
 
 module.exports = withPlugins(composeEnhancers, nextConfig);
