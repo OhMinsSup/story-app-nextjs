@@ -23,7 +23,7 @@
       "@libs/*": ["src/libs/*"],
       "@utils/*": ["src/utils/*"],
       "@config/*": ["src/config/*"],
-      "@contants/*": ["src/contants/*"],
+      "@constants/*": ["src/constants/*"],
       "@components/*": ["src/components/*"],
       "@hooks/*": ["src/hooks/*"],
       "@api/*": ["src/api/*"]

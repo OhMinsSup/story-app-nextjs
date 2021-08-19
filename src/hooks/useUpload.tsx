@@ -12,9 +12,8 @@ const useUpload = (accept?: string) => {
       input.accept = accept ?? "image/*";
       input.onchange = () => {
         clearTimeout(timeout);
-        console.log("onchange");
-        console.log(input.files);
         if (!input.files) return reject();
+
         const file = input.files[0];
         setFile(file);
         resolve(file);

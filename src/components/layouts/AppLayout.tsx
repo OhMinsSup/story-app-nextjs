@@ -1,18 +1,25 @@
-import React, { useEffect } from "react";
-// import Caver from "caver-js";
+import React from "react";
 import Navbar from "@components/ui/Navbar";
-import KaytonIcon from "@components/Icon/klaytnIcon";
-
-// const caver = new Caver("https://api.baobab.klaytn.net:8651/");
+import { css } from "@emotion/react";
 
 interface AppLayoutProps {}
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  useEffect(() => {
-  }, []);
   return (
     <>
       <Navbar />
-      <main>{children}</main>
+      <main
+        className="bg-white"
+        css={css`
+        flex: 1 0 auto;
+      `}
+      >
+        <div className="container-fluid">
+          filter area
+        </div>
+        <div>
+          {children}
+        </div>
+      </main>
     </>
   );
 };

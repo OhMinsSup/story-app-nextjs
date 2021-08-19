@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-import { PAGE_ENDPOINTS } from "@contants/contant";
+import { PAGE_ENDPOINTS } from "@constants/constant";
 
 import LogoIcon from "@components/Icon/LogoIcon";
 import SearchIcon from "@components/Icon/SearchIcon";

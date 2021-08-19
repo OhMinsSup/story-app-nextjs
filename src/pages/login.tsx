@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useDisclosure, useToast } from "@chakra-ui/react";
 
 import KaytonIcon from "@components/Icon/klaytnIcon";
-import { PAGE_ENDPOINTS } from "@contants/contant";
+import { PAGE_ENDPOINTS } from "src/constants/constant";
 
 import InstalledKaikasModal from "@components/auth/InstalledKaikasModal";
 import KeystoreAuthModal from "@components/auth/KeystoreAuthModal";

@@ -1,8 +1,8 @@
-import React from 'react';
-import AppLayout from '@components/layouts/AppLayout';
+import React from "react";
+import AppLayout from "@components/layouts/AppLayout";
 
 const IndexPage = () => {
-  return <div>Hello Next.js</div>;
+  return <>Hello Next.js</>;
 };
 
 export default IndexPage;
