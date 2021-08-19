@@ -1,11 +1,11 @@
-import ky from 'ky';
-import type { KyHeadersInit } from 'ky/distribution/types/options';
 import {
   GetServerSidePropsContext,
   GetStaticPathsContext,
   GetStaticPropsContext,
 } from 'next';
+import axios from 'axios';
 import { STORAGE_KEY } from '@constants/constant';
+import { API_HOST } from '@constants/env';
 import { client } from './client';
 
 export interface Options<Data = any> {
@@ -17,17 +17,13 @@ export interface Options<Data = any> {
     | null;
 }
 
+export type Header = { [key: string]: string };
+
 export interface Params<Body = any> {
   url: string;
   body?: Body;
-  headers?: KyHeadersInit;
+  headers?: Header;
   options?: Options;
-}
-
-export interface Response<R = any> {
-  statusCode: number;
-  success: boolean;
-  resultData: R;
 }
 
 class APIMoudle {
@@ -67,8 +63,7 @@ class APIMoudle {
   }: Params) {
     try {
       const authorization = this.authorized();
-      const result = await client.post(url, {
-        body,
+      const result = await client.post(url, body, {
         headers: {
           'Content-Type': 'application/json',
           ...(authorization && {
@@ -91,8 +86,7 @@ class APIMoudle {
   }: Params) {
     try {
       const authorization = this.authorized();
-      const result = await client.put(url, {
-        body,
+      const result = await client.put(url, body, {
         headers: {
           'Content-Type': 'application/json',
           ...(authorization && {
@@ -131,7 +125,9 @@ class APIMoudle {
 
   async getMockResponse(url: string) {
     try {
-      const result = await ky.get(url);
+      const prefixUrl = API_HOST + url;
+      const result = await axios(prefixUrl);
+      console.log('result');
       return result;
     } catch (error) {
       throw error;

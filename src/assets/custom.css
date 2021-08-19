@@ -1,0 +1,85 @@
+/*
+ * container-fluid styles
+ */
+.container-fluid {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (min-width: 1200px) {
+  .container-fluid {
+    padding-left: 72px;
+    padding-right: 72px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container-fluid {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+/*
+ * filter sub nav styles
+ */
+.filter-subnav {
+  background: #fff;
+  position: relative;
+  padding-top: 16px;
+}
+
+@media screen and (min-width: 959px) {
+  .filter-subnav {
+    padding-top: 32px;
+  }
+}
+
+.filter-subnav-inner {
+}
+
+.filter-views {
+  margin-right: 40px;
+}
+
+@media screen and (min-width: 1300px) {
+  .filter-views {
+    -ms-flex: 0 0 150px;
+    flex: 0 0 150px;
+  }
+}
+
+.fiter-settings {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+  -ms-flex: 0 0 200px;
+  flex: 0 0 200px;
+}
+
+/*
+ * filter sub nav styles
+ */
+
+/*
+ * contents area styles
+ */
+
+.wrap-inner {
+  padding: 32px 32px 40px;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.wrap-inner.flushed {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/*
+  * contents area styles
+  */

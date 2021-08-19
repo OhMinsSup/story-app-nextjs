@@ -8,3 +8,5 @@
 @import './modal.css';
 
 @tailwind utilities;
+
+@import './custom.css';

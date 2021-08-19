@@ -4,6 +4,12 @@ export const PAGE_ENDPOINTS = {
   ILLUSTRATION: '/illustration/',
 };
 
+export const API_ENDPOINTS = {
+  MOCK: {
+    ILLUSTRATION: '/mock-list.json',
+  },
+};
+
 export const WEB_APP = '@@Template';
 
 export const STORAGE_KEY = {
