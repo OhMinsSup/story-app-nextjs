@@ -42,7 +42,14 @@ const LoginPage: React.FC<LoginPageProps> = () => {
         throw error;
       }
 
+      // Kaikas가 설치가 안된 경우
+      if (!window.klaytn.isKaikas) {
+        onInstalledOpen();
+        return;
+      }
+
       const accounts = await window.klaytn.enable();
+      console.log("accounts", accounts);
       const account = accounts[0]; // We currently only ever provide a single account,
       console.log("account", account);
     } catch (error) {
