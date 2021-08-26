@@ -154,8 +154,9 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
               <InputGroup>
                 <InputLeftElement
                   pointerEvents="none"
-                  children={<Icon as={FiFile} />}
-                />
+                >
+                  <Icon as={FiFile} />
+                </InputLeftElement>
                 <Input
                   readOnly
                   className="cursor-pointer"
