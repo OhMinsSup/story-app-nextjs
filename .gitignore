@@ -124,3 +124,6 @@ out/
 
 # vscode
 .vscode/
+
+# prisma
+prisma/dev.db
