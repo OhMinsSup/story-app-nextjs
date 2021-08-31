@@ -4,11 +4,14 @@
  * default rpcURL is 'https://api.baobab.klaytn.net:8651'.
  */
 import Caver from 'caver-js';
+import { isKlaytn } from '@utils/utils';
 
-const BAOBAB_TESTNET_RPC_URL = 'https://api.baobab.klaytn.net:8651/';
+// const BAOBAB_TESTNET_RPC_URL = 'https://api.baobab.klaytn.net:8651/';
+// const rpcURL = BAOBAB_TESTNET_RPC_URL;
 
-const rpcURL = BAOBAB_TESTNET_RPC_URL;
-
-const caver = new Caver(rpcURL);
+let caver: any = null;
+if (!isKlaytn) {
+  caver = new Caver(window.klaytn);
+}
 
 export default caver;

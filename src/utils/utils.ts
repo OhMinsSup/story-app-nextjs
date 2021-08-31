@@ -9,3 +9,17 @@ export const validKeystore = (keystore?: string | ArrayBuffer | null) => {
   const keys = ['version', 'id', 'address', 'keyring'];
   return keys.every((key) => parsedKeystore[key]);
 };
+
+// valid klaytn and kaikas
+export const isKlaytn =
+  typeof window === 'undefined' ||
+  typeof window.klaytn === 'undefined' ||
+  !window.klaytn.isKaikas;
+
+// make signature from message
+export const signatureMessage = (
+  walletAddress: string,
+  requestType: string,
+) => {
+  return `address:${walletAddress}\n timestamp:${Date.now()} ${requestType}`;
+};

@@ -48,7 +48,7 @@ const nextConfig = {
 
   // * CDN 을 설정하려면 자산 접두사를 설정하고 Next.js가 호스팅되는 도메인으로 확인되도록 CDN의 출처를 구성이 가능합니다.
   // https://nextjs.org/docs/api-reference/next.config.js/cdn-support-with-asset-prefix
-  assetPrefix: IS_PROD ? process.env.NEXT_PUBLIC_SITE_URL : '',
+  // assetPrefix: IS_PROD ? process.env.NEXT_PUBLIC_SITE_URL : '',
 
   // * Next.js는 렌더링 된 콘텐츠와 정적 파일을 압축하기 위해 gzip 압축을 제공합니다.
   // https://nextjs.org/docs/api-reference/next.config.js/compression

@@ -88,7 +88,6 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
 
       const reader = new FileReader();
       reader.onload = () => {
-        console.log(reader.result);
         if (validKeystore(reader.result)) {
           resolve(reader.result);
         } else {

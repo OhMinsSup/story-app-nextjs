@@ -14,7 +14,7 @@ const AuthTemplate: React.FC<AuthTemplateProps> = ({ children }) => {
 
   return (
     <div
-      className="z-50 flex flex-row items-start justify-center h-screen md:pt-20 lg:pt-0 md:items-center"
+      className="z-50 flex flex-row items-start justify-center h-screen pt-20 lg:pt-0 md:items-center"
     >
       <button
         type="button"
@@ -24,10 +24,10 @@ const AuthTemplate: React.FC<AuthTemplateProps> = ({ children }) => {
         <AiOutlineClose className="w-8 h-8 fill-current" />
       </button>
       <div
-        className="w-full overflow-hidden bg-white border rounded-lg shadow-2xl md:mx-20 lg:w-2/3"
+        className="w-full overflow-hidden bg-white lg:border lg:rounded-lg lg:shadow-2xl md:mx-20 lg:w-2/3"
       >
         <div
-          className="px-4 py-8 leading-snug lg:w-3/4 lg:mx-auto lg:px-12 lg:py-12"
+          className="leading-snug lg:w-3/4 lg:mx-auto px-12 py-12"
         >
           {children}
         </div>

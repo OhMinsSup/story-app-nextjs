@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { css } from "@emotion/react";
 import { AiOutlineKey } from "react-icons/ai";
 import { useDisclosure, useToast } from "@chakra-ui/react";
@@ -8,6 +8,8 @@ import KaytonIcon from "@components/Icon/klaytnIcon";
 import InstalledKaikasModal from "@components/auth/InstalledKaikasModal";
 import KeystoreAuthModal from "@components/auth/KeystoreAuthModal";
 import AuthTemplate from "@components/template/AuthTemplate";
+import caver from "@klaytn/caver";
+import { isKlaytn, signatureMessage } from "@utils/utils";
 
 interface LoginPageProps {}
 const LoginPage: React.FC<LoginPageProps> = () => {
@@ -28,41 +30,45 @@ const LoginPage: React.FC<LoginPageProps> = () => {
   // handle Kaikas login auth
   const onKaikasLogin = useCallback(async () => {
     try {
-      if (typeof window.klaytn === "undefined") {
-        const error = new Error();
-        error.name = "klaytn Kaikas";
-        error.message = "kaikas is undefined";
-        throw error;
-      }
-
       // Kaikas가 설치가 안된 경우
-      if (!window.klaytn.isKaikas) {
+      if (isKlaytn) {
+        toast({
+          title: "Story는 kaikas로 동작하고 있습니다. 크롬 PC 버전을 이용해주세요.",
+          status: "error",
+          isClosable: true,
+        });
+
         onInstalledOpen();
         return;
       }
 
-      const accounts = await window.klaytn.enable();
-      console.log("accounts", accounts);
-      const address = accounts[0]; // We currently only ever provide a single account,
+      await window.klaytn.enable();
 
-      // const klaytn = caver.klay.accounts.create();
-      // console.log("klaytn", {
-      //   address: klaytn.address,
-      //   privateKey: klaytn.privateKey,
-      // });
-    } catch (error) {
-      if (error.name === "klaytn Kaikas") {
-        onInstalledOpen();
-        return;
-      }
+      const walletAddress = window.klaytn.selectedAddress;
+      const balance = await caver.klay.getBalance(walletAddress);
 
-      toast({
-        title: "Story는 kaikas로 동작하고 있습니다. 크롬 PC 버전을 이용해주세요.",
-        status: "error",
-        isClosable: true,
+      const signedMessage = await caver.klay.sign(
+        signatureMessage(walletAddress, "LoginRequest"),
+        walletAddress,
+      );
+
+      console.log({
+        walletAddress,
+        balance: caver.utils.fromPeb(balance, "KLAY"),
+        signedMessage,
       });
+    } catch (error) {
+      console.error(error);
     }
   }, []);
+
+  // useEffect(() => {
+  //   if (typeof window.klaytn !== "undefined") {
+  //     window.klaytn.on("accountsChanged", () => {
+  //       console.log("??/");
+  //     });
+  //   }
+  // }, []);
 
   return (
     <>
