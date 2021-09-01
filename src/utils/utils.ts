@@ -11,7 +11,7 @@ export const validKeystore = (keystore?: string | ArrayBuffer | null) => {
 };
 
 // valid klaytn and kaikas
-export const isKlaytn =
+export const existsKlaytn =
   typeof window === 'undefined' ||
   typeof window.klaytn === 'undefined' ||
   !window.klaytn.isKaikas;

@@ -9,7 +9,7 @@ import InstalledKaikasModal from "@components/auth/InstalledKaikasModal";
 import KeystoreAuthModal from "@components/auth/KeystoreAuthModal";
 import AuthTemplate from "@components/template/AuthTemplate";
 import caver from "@klaytn/caver";
-import { isKlaytn, signatureMessage } from "@utils/utils";
+import { existsKlaytn, signatureMessage } from "@utils/utils";
 
 interface LoginPageProps {}
 const LoginPage: React.FC<LoginPageProps> = () => {
@@ -31,7 +31,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
   const onKaikasLogin = useCallback(async () => {
     try {
       // Kaikas가 설치가 안된 경우
-      if (isKlaytn) {
+      if (existsKlaytn) {
         toast({
           title: "Story는 kaikas로 동작하고 있습니다. 크롬 PC 버전을 이용해주세요.",
           status: "error",
@@ -42,9 +42,9 @@ const LoginPage: React.FC<LoginPageProps> = () => {
         return;
       }
 
-      await window.klaytn.enable();
+      await klaytn.enable();
 
-      const walletAddress = window.klaytn.selectedAddress;
+      const walletAddress = klaytn.selectedAddress;
       const balance = await caver.klay.getBalance(walletAddress);
 
       const signedMessage = await caver.klay.sign(
@@ -61,14 +61,6 @@ const LoginPage: React.FC<LoginPageProps> = () => {
       console.error(error);
     }
   }, []);
-
-  // useEffect(() => {
-  //   if (typeof window.klaytn !== "undefined") {
-  //     window.klaytn.on("accountsChanged", () => {
-  //       console.log("??/");
-  //     });
-  //   }
-  // }, []);
 
   return (
     <>

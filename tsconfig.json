@@ -16,6 +16,7 @@
     "jsx": "preserve",
     "incremental": true,
     "jsxImportSource": "@emotion/react",
+    "typeRoots": ["types", "./node_modules/@types"],
     "paths": {
       "@atoms/*": ["src/atoms/*"],
       "@klaytn/*": ["src/klaytn/*"],
@@ -26,7 +27,8 @@
       "@constants/*": ["src/constants/*"],
       "@components/*": ["src/components/*"],
       "@hooks/*": ["src/hooks/*"],
-      "@api/*": ["src/api/*"]
+      "@api/*": ["src/api/*"],
+      "@store/*": ["src/store/*"]
     }
   },
   "include": [
