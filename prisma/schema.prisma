@@ -34,6 +34,7 @@ model Session {
     userId     Int
     timestamp  DateTime
     signatures String
+    disabled   Boolean  @default(false)
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     User       User     @relation(fields: [userId], references: [id])

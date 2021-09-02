@@ -13,9 +13,9 @@ const Core: React.FC = () => {
         setNetwork(klaytn.networkVersion);
       });
 
-      klaytn.on("accountsChanged", async () => {
+      klaytn.on("accountsChanged", () => {
         console.log(klaytn);
-        const account = klaytn.selectedAddresst;
+        const account = klaytn.selectedAddress;
         // TODO: checked current login account is same as account
       });
     }

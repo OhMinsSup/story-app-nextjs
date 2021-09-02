@@ -1,19 +1,26 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useState } from "react";
 import { css } from "@emotion/react";
 import { AiOutlineKey } from "react-icons/ai";
 import { useDisclosure, useToast } from "@chakra-ui/react";
 
+// components
 import KaytonIcon from "@components/Icon/klaytnIcon";
-
 import InstalledKaikasModal from "@components/auth/InstalledKaikasModal";
 import KeystoreAuthModal from "@components/auth/KeystoreAuthModal";
 import AuthTemplate from "@components/template/AuthTemplate";
+
+// no components
 import caver from "@klaytn/caver";
 import { existsKlaytn, signatureMessage } from "@utils/utils";
+import SignatureOverlayAlert from "@components/auth/SignatureOverlayAlert";
 
 interface LoginPageProps {}
 const LoginPage: React.FC<LoginPageProps> = () => {
   const toast = useToast();
+  // kaikas 서명 인증
+  const [signature, setSignature] = useState<string | null>(null);
+  // 서명 인증중 로딩 화면
+  const [isSignatureLoading, setSignatureLoading] = useState<boolean>(false);
 
   const {
     isOpen: keystoreOpen,
@@ -44,9 +51,10 @@ const LoginPage: React.FC<LoginPageProps> = () => {
 
       await klaytn.enable();
 
-      const walletAddress = klaytn.selectedAddress;
-      const balance = await caver?.klay.getBalance(walletAddress);
+      // 로딩 시작
+      setSignatureLoading(true);
 
+      const walletAddress = klaytn.selectedAddress;
       const signedMessage = await caver?.klay.sign(
         signatureMessage(walletAddress, "LoginRequest"),
         walletAddress,
@@ -54,11 +62,13 @@ const LoginPage: React.FC<LoginPageProps> = () => {
 
       console.log({
         walletAddress,
-        // balance: caver?.utils.fromPeb(balance, "KLAY"),
         signedMessage,
       });
     } catch (error) {
       console.error(error);
+    } finally {
+      // 로딩 종류
+      setSignatureLoading(false);
     }
   }, []);
 
@@ -112,6 +122,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
       </AuthTemplate>
       <InstalledKaikasModal isOpen={installedOpen} onClose={onInstalledClose} />
       <KeystoreAuthModal isOpen={keystoreOpen} onClose={onKeystoreClose} />
+      {isSignatureLoading && <SignatureOverlayAlert />}
     </>
   );
 };
