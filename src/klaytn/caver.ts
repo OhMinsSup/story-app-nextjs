@@ -9,7 +9,7 @@ import { existsKlaytn } from '@utils/utils';
 // const BAOBAB_TESTNET_RPC_URL = 'https://api.baobab.klaytn.net:8651/';
 // const rpcURL = BAOBAB_TESTNET_RPC_URL;
 
-let caver: any = null;
+let caver: Caver | null = null;
 if (!existsKlaytn) {
   caver = new Caver(window.klaytn);
 }

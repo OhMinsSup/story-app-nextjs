@@ -39,6 +39,8 @@
     "cross-env": "^7.0.3",
     "dotenv-load": "^2.0.0",
     "framer-motion": "^4",
+    "jsonwebtoken": "^8.5.1",
+    "lodash-es": "^4.17.21",
     "next": "^11.1.0",
     "next-compose-plugins": "^2.2.1",
     "next-env": "^1.1.1",
@@ -58,6 +60,8 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^11.0.1",
     "@openzeppelin/contracts": "^4.2.0",
+    "@types/jsonwebtoken": "^8.5.5",
+    "@types/lodash-es": "^4.17.4",
     "@types/node": "^16.4.10",
     "@types/react": "^17.0.15",
     "dotenv-cli": "^4.0.0",

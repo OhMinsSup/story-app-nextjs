@@ -8,21 +8,22 @@ datasource db {
 }
 
 model User {
-    id        Int       @id @default(autoincrement())
-    email     String    @unique
-    nickname  String
-    gender    String
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    Session   Session[]
-    account   Account?
+    id         Int       @id @default(autoincrement())
+    address    String    @unique
+    email      String    @unique
+    privateKey String?
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+    session    Session[]
+    profile    Profile?
 }
 
-model Account {
+model Profile {
     id         Int      @id @default(autoincrement())
     userId     Int
-    address    String   @unique
-    privateKey String?
+    nickname   String
+    profileUrl String?
+    gender     String
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     user       User     @relation(fields: [userId], references: [id])

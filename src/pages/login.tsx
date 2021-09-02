@@ -45,16 +45,16 @@ const LoginPage: React.FC<LoginPageProps> = () => {
       await klaytn.enable();
 
       const walletAddress = klaytn.selectedAddress;
-      const balance = await caver.klay.getBalance(walletAddress);
+      const balance = await caver?.klay.getBalance(walletAddress);
 
-      const signedMessage = await caver.klay.sign(
+      const signedMessage = await caver?.klay.sign(
         signatureMessage(walletAddress, "LoginRequest"),
         walletAddress,
       );
 
       console.log({
         walletAddress,
-        balance: caver.utils.fromPeb(balance, "KLAY"),
+        // balance: caver?.utils.fromPeb(balance, "KLAY"),
         signedMessage,
       });
     } catch (error) {

@@ -17,7 +17,7 @@ interface WalletWatchAsset {
 
 interface KlaytnSendAsyncParams {
   method: 'klay_sendTransaction' | 'wallet_watchAsset';
-  params: KlaytnSendAsyncTransactionParameter[] | WalletWatchAsset;
+  params: TransactionParameter[] | WalletWatchAsset;
   from?: string;
   id?: number;
 }
