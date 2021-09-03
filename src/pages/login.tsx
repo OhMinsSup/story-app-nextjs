@@ -1,7 +1,21 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
+import { DotLoader } from "react-spinners";
 import { css } from "@emotion/react";
 import { AiOutlineKey } from "react-icons/ai";
-import { useDisclosure, useToast } from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Button,
+  Heading,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react";
 
 // components
 import KaytonIcon from "@components/Icon/klaytnIcon";
@@ -11,23 +25,36 @@ import AuthTemplate from "@components/template/AuthTemplate";
 
 // no components
 import caver from "@klaytn/caver";
-import { existsKlaytn, signatureMessage } from "@utils/utils";
-import SignatureOverlayAlert from "@components/auth/SignatureOverlayAlert";
+import { existsKlaytn, isAxiosError, signatureMessage } from "@utils/utils";
+
+// api
+import { useMutationLogin } from "@api/story/auth";
+import { PAGE_ENDPOINTS } from "@constants/constant";
 
 interface LoginPageProps {}
 const LoginPage: React.FC<LoginPageProps> = () => {
+  const router = useRouter();
   const toast = useToast();
-  // kaikas 서명 인증
-  const [signature, setSignature] = useState<string | null>(null);
+
+  const cancelRef = useRef<any>(null);
+
+  // 로그인
+  const mutation = useMutationLogin();
+
   // 서명 인증중 로딩 화면
   const [isSignatureLoading, setSignatureLoading] = useState<boolean>(false);
 
+  // keystore 인증 모달
   const {
     isOpen: keystoreOpen,
     onOpen: onKeystoreOpen,
     onClose: onKeystoreClose,
   } = useDisclosure();
 
+  const { isOpen: authOpen, onOpen: onAuthOpen, onClose: onAuthClose } =
+    useDisclosure();
+
+  // kaikas 설치 모달
   const {
     isOpen: installedOpen,
     onOpen: onInstalledOpen,
@@ -55,17 +82,30 @@ const LoginPage: React.FC<LoginPageProps> = () => {
       setSignatureLoading(true);
 
       const walletAddress = klaytn.selectedAddress;
+      const timestamp = Date.now();
+      const requestType = "LoginRequest";
+
       const signedMessage = await caver?.klay.sign(
-        signatureMessage(walletAddress, "LoginRequest"),
+        signatureMessage(walletAddress, timestamp, requestType),
         walletAddress,
       );
 
-      console.log({
+      if (!signedMessage) {
+        throw new Error("signature error");
+      }
+
+      await mutation.mutateAsync({
         walletAddress,
-        signedMessage,
+        timestamp,
+        signature: signedMessage,
       });
     } catch (error) {
       console.error(error);
+      // 서버 에러
+      if (isAxiosError(error)) {
+        const { response: { data } } = error;
+        if (!data.ok) onAuthOpen();
+      }
     } finally {
       // 로딩 종류
       setSignatureLoading(false);
@@ -120,9 +160,79 @@ const LoginPage: React.FC<LoginPageProps> = () => {
           </a>
         </p>
       </AuthTemplate>
+      {/* 설치 모달 */}
       <InstalledKaikasModal isOpen={installedOpen} onClose={onInstalledClose} />
+      {/* keystore 인증 */}
       <KeystoreAuthModal isOpen={keystoreOpen} onClose={onKeystoreClose} />
-      {isSignatureLoading && <SignatureOverlayAlert />}
+      {/* 서명 처리 */}
+      <AlertDialog
+        motionPreset="slideInBottom"
+        leastDestructiveRef={undefined}
+        onClose={() => {}}
+        isOpen={isSignatureLoading}
+        isCentered
+      >
+        <AlertDialogOverlay />
+        <AlertDialogContent className="h-96">
+          <AlertDialogBody className="text-center justify-center flex flex-col">
+            <Heading className="mb-4" size="lg">Kaikas 서명이 필요합니다.</Heading>
+
+            <div className="w-full flex justify-center">
+              <DotLoader />
+            </div>
+
+            <div className="font-semibold mt-4">
+              <span>
+                계속 진행하려면 Kaikas 팝업창에서<br />
+              </span>
+              <span>내용을 확인 후 서명을 완료해주세요.</span>
+            </div>
+          </AlertDialogBody>
+          <AlertDialogFooter className="m-auto text-center font-extralight">
+            <div>
+              <span>
+                (페이지를 이탈할 경우 오류가 발행할 수 있습니다.<br />
+              </span>
+              <span>취소하려면, Kaikas에서 거부를 눌러주세요.)</span>
+            </div>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      {/* 인증 처리 */}
+      <AlertDialog
+        motionPreset="slideInBottom"
+        leastDestructiveRef={cancelRef}
+        onClose={onAuthClose}
+        isOpen={authOpen}
+        isCentered
+      >
+        <AlertDialogOverlay />
+        <AlertDialogContent>
+          <AlertDialogHeader>회원가입이 필요합니다.</AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>
+            계속하려면 회원가입을 해주세요.
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <Button
+              type="button"
+              colorScheme="gray"
+              ref={cancelRef}
+              onClick={onAuthClose}
+            >
+              취소
+            </Button>
+            <Button
+              type="button"
+              colorScheme="purple"
+              ml={3}
+              onClick={() => router.push(PAGE_ENDPOINTS.SIGNUP)}
+            >
+              확인
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

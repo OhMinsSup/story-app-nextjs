@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import omit from 'lodash-es/omit';
 import prisma from '@libs/prisma';
+import { Prisma } from '@prisma/client';
 import { generateToken } from '../../../server/token';
 
 type Body = {
@@ -12,6 +13,8 @@ type Body = {
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const body: Body = req.body ?? {};
+
+    console.log('body', body);
 
     const exists = await prisma.user.findFirst({
       where: {
@@ -52,15 +55,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         email: exists.email,
         profile: omit(exists.profile, [
           'userId',
-          'user',
           'createdAt',
           'updatedAt',
+          'gender',
         ]),
       },
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ data: null, error: 'An unexpected error ocurred' });
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // The .code property can be accessed in a type-safe manner
+      if (error.code === 'P2002') {
+        console.log(
+          'There is a unique constraint violation, a new user cannot be created with this email',
+        );
+      }
+    }
+    throw error;
   }
 };
 

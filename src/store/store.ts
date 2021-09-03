@@ -1,18 +1,23 @@
 import { useLayoutEffect } from 'react';
 import create, { UseStore } from 'zustand';
 import createContext from 'zustand/context';
+import { userInfo } from '@utils/utils';
+import { StorageUserInfo } from 'types/story-api';
 
 export interface State {
+  userInfo: StorageUserInfo | null;
   networkVersion: number | null;
 }
 
 export interface Dispatch {
   setNetworkVersion: (version: number | null) => void;
+  setAuth: (userInfo: StorageUserInfo | null) => void;
 }
 
 let store: UseStore<State & Dispatch> | undefined;
 
 const initialState: State = {
+  userInfo: userInfo(),
   networkVersion: null, // kaikas network version
 };
 
@@ -29,6 +34,11 @@ export const initializeStore = (preloadedState = {} as State) => {
     setNetworkVersion: (version: number | null) => {
       set({
         networkVersion: version,
+      });
+    },
+    setAuth: (userInfo: StorageUserInfo | null) => {
+      set({
+        userInfo,
       });
     },
   }));

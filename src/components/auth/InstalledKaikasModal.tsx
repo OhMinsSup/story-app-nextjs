@@ -45,8 +45,7 @@ const InstalledKaikasModal: React.FC<InstalledKaikasModalProps> = (
           </Button>
           <Button
             type="button"
-            color="gray.100"
-            colorScheme="blackAlpha"
+            colorScheme="purple"
             variant="solid"
             onClick={onClick}
           >

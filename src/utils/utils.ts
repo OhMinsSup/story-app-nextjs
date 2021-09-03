@@ -1,3 +1,6 @@
+import { AxiosError } from 'axios';
+import { STORAGE_KEY } from '@constants/constant';
+
 // valid check key store file
 export const validKeystore = (keystore?: string | ArrayBuffer | null) => {
   if (!keystore) return false;
@@ -19,7 +22,19 @@ export const existsKlaytn =
 // make signature from message
 export const signatureMessage = (
   walletAddress: string,
+  timestamp: number,
   requestType: string,
 ) => {
-  return `address:${walletAddress}\n timestamp:${Date.now()} ${requestType}`;
+  return `address:${walletAddress}\n timestamp:${timestamp} ${requestType}`;
 };
+
+export const userInfo = () => {
+  if (typeof window === 'undefined') return null;
+  const stringify = localStorage.getItem(STORAGE_KEY.USER_KEY);
+  if (!stringify) return null;
+  return JSON.parse(stringify) ?? null;
+};
+
+export function isAxiosError(error: AxiosError) {
+  return !!error.response;
+}
