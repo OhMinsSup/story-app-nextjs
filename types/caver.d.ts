@@ -105,10 +105,10 @@ declare module 'caver-js' {
      * const account = provider.selectedAddress
      * const balance = await caver.klay.getBalance(account)
      * */
-    public getBalance: (
+    public getBalance(
       account: string,
       defaultBlock?: number | string,
-    ) => Promise<string>;
+    ): Promise<string>;
 
     /**
      * @description 주어진 주소의 계정 정보를 반환합니다.
@@ -142,11 +142,11 @@ declare module 'caver-js' {
           } 
         }
      * */
-    public getAccount: (
+    public getAccount(
       address: string,
       defaultBlock?: number | string,
       callback?: (err: any, result: AccountResultObject | null) => void,
-    ) => Promise<AccountResultObject | null>;
+    ): Promise<AccountResultObject | null>;
 
     /**
      * @description 노드가 제어하는 ​​계정 목록을 반환합니다.
@@ -156,9 +156,9 @@ declare module 'caver-js' {
      * > caver.klay.getAccounts().then(console.log);
       ["0x11f4d0A3c12e86B4b5F39B213F7E19D048276DAe", "0xDCc6960376d6C6dEa93647383FfB245CfCed97Cf"]
      * */
-    public getAccounts: (
+    public getAccounts(
       callback?: (err: any, result: string[]) => void,
-    ) => Promise<string[]>;
+    ): Promise<string[]>;
 
     /**
      * @description 주어진 주소의 외부 소유 계정(EOA)의 계정 키를 반환합니다.
@@ -168,11 +168,11 @@ declare module 'caver-js' {
      * @param {Function} (선택 사항) 선택적 콜백, 첫 번째 매개변수로 오류 객체를 반환하고 두 번째 매개변수로 결과를 반환합니다
      * @returns {Promise<AllAccountKeyTypes | null>}
      * */
-    public getAccountKey: (
+    public getAccountKey(
       address: string,
       defaultBlock?: number | string,
       callback?: (err: any, result: AllAccountKeyTypes | null) => void,
-    ) => Promise<AllAccountKeyTypes | null>;
+    ): Promise<AllAccountKeyTypes | null>;
 
     /**
      * @description 특정 주소의 코드를 가져옵니다.
@@ -184,11 +184,11 @@ declare module 'caver-js' {
        "0x600160008035811a818181146012578301005b601b6001356025565b8060005260206000f25b600060078202905091905056"
      * @returns {Promise<string>} 주어진 주소 주소의 데이터를 반환합니다.
      * */
-    public getCode: (
+    public getCode(
       address: string,
       defaultBlock?: number | string,
       callback?: (err: any, result: string) => void,
-    ) => Promise<string>;
+    ): Promise<string>;
 
     /**
      * @description Klaytn 네트워크에 특정한 서명된 데이터를 생성합니다.
@@ -204,11 +204,11 @@ declare module 'caver-js' {
      * caver.klay.sign('Message to sign', '0x1427ac5d0f1c3174ee6ea05d29a9b05fd31d7579').then(console.log)
      * 0xde8bd2f5a45de6b1baea57ed0219735ab60f0ef55c5e31a4b774824abea31bfc34c8bdbca43ed4155e8e6a8e0d11d7aba191ba025e0487ada2bcc422252b81591b
      * */
-    public sign: (
+    public sign(
       message: string,
       address: string,
       callback?: (err: any, result: string) => void,
-    ) => Promise<string>;
+    ): Promise<string>;
 
     /**
      * @description 이 주소에서 보낸 트랜잭션 수를 가져옵니다.
@@ -220,11 +220,11 @@ declare module 'caver-js' {
        "0x600160008035811a818181146012578301005b601b6001356025565b8060005260206000f25b600060078202905091905056"
      * @returns {Promise<number>} 지정된 주소에서 보낸 트랜잭션 수입니다.
      * */
-    public getTransactionCount: (
+    public getTransactionCount(
       address: string,
       blockNumber?: number | string,
       callback?: (err: any, result: number) => void,
-    ) => Promise<number>;
+    ): Promise<number>;
 
     /**
      * @description 특정 블록 번호 시점에 입력 계정에 비어 있지 않은 codeHash가 있으면 true를 반환합니다.
@@ -234,11 +234,11 @@ declare module 'caver-js' {
      * @param {Function} (선택 사항) 선택적 콜백, 첫 번째 매개변수로 오류 객체를 반환하고 두 번째 매개변수로 결과를 반환합니다
      * @returns {Promise<boolean>} true는 입력 매개변수가 기존 스마트 계약 주소임을 의미합니다
      * */
-    public isContractAccount: (
+    public isContractAccount(
       address: string,
       defaultBlock?: number | string,
       callback?: (err: any, result: boolean) => void,
-    ) => Promise<boolean>;
+    ): Promise<boolean>;
   }
 
   export default class Caver implements klay {
