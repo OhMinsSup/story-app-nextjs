@@ -1,8 +1,7 @@
-import React, { useCallback } from "react";
+import React, { useEffect, useRef } from "react";
 import { css } from "@emotion/react";
-import { useRouter } from "next/router";
-
-import AuthTemplate from "@components/template/AuthTemplate";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import {
   Checkbox,
   FormControl,
@@ -13,13 +12,53 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+
+// components
+import AuthTemplate from "@components/template/AuthTemplate";
 import ProfileUploadIcon from "@components/Icon/ProfileUploadIcon";
+
+// no components
+import { signUpSchema } from "@libs/yup/schema";
+import { generateAvatar } from "@utils/utils";
+
+interface FormFieldValues {
+  profileUrl?: string;
+  nickname: string;
+  email: string;
+  walletAddress: string;
+  gender: "M" | "F";
+}
 
 interface SignupProps {}
 const SignupPage: React.FC<SignupProps> = () => {
-  const router = useRouter();
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const { handleSubmit, register, reset, control, watch } = useForm<
+    FormFieldValues
+  >({
+    mode: "onSubmit",
+    resolver: yupResolver(signUpSchema),
+    criteriaMode: "firstError",
+    reValidateMode: "onChange",
+    defaultValues: {
+      profileUrl: "",
+      nickname: "",
+      email: "",
+      walletAddress: "",
+      gender: "M",
+    },
+  });
 
-  const [value, setValue] = React.useState("1");
+  console.log(watch());
+
+  // 회원가입
+  const onSubmit: SubmitHandler<FormFieldValues> = (input) => {};
+
+  // set init form validation
+  useEffect(() => {
+    reset({
+      walletAddress: klaytn.selectedAddress,
+    });
+  }, [reset]);
 
   return (
     <>
@@ -30,6 +69,8 @@ const SignupPage: React.FC<SignupProps> = () => {
           회원가입
         </h3>
         <form
+          ref={formRef}
+          onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col justify-center items-center space-y-3"
         >
           <div className="profile-image-content text-center">
@@ -41,29 +82,36 @@ const SignupPage: React.FC<SignupProps> = () => {
           </div>
           <FormControl id="nickname" isRequired>
             <FormLabel>닉네임</FormLabel>
-            <Input type="text" placeholder="닉네임" />
+            <Input type="text" placeholder="닉네임" {...register("nickname")} />
           </FormControl>
           <FormControl id="address" isRequired>
             <FormLabel>지갑 주소</FormLabel>
             <Input
               type="text"
               placeholder="지갑 주소"
-              defaultValue="12312312312312"
               disabled
+              {...register("walletAddress")}
             />
           </FormControl>
           <FormControl id="email" isRequired>
             <FormLabel>이메일 주소</FormLabel>
-            <Input type="text" placeholder="이메일 주소" />
+            <Input type="text" placeholder="이메일 주소" {...register("email")} />
           </FormControl>
           <FormControl id="gender">
             <FormLabel>성별</FormLabel>
-            <RadioGroup onChange={setValue} value={value}>
-              <Stack direction="row">
-                <Radio value="1">남성</Radio>
-                <Radio value="2">여성</Radio>
-              </Stack>
-            </RadioGroup>
+            <Controller
+              name="gender"
+              control={control}
+              defaultValue="M"
+              render={({ field }) => (
+                <RadioGroup {...field}>
+                  <Stack direction="row">
+                    <Radio value="M">남성</Radio>
+                    <Radio value="F">여성</Radio>
+                  </Stack>
+                </RadioGroup>
+              )}
+            />
           </FormControl>
         </form>
         <p className="text-sm text-gray-500 mt-12 text-center">

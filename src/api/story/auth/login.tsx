@@ -13,8 +13,8 @@ import {
 
 export function useMutationLogin() {
   const { setAuth } = useAuth();
-  const [_, setUserInfo] = useUserInfo();
-  const [__, setToken] = useToken();
+  const [, setUserInfo] = useUserInfo();
+  const [, setToken] = useToken();
 
   return useMutation<
     StoryApi<MutationLoginResponse | null>,

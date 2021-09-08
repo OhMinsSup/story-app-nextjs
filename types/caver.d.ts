@@ -1,73 +1,68 @@
 /// <reference types="klaytn.d.ts" />
 
 declare module 'caver-js' {
-  interface HttpProvider {}
+  class Account {
+    /**
+     * @constructor
+     */
+    constructor();
 
-  interface WebsocketProvider {}
+    /**
+     * @description 여러 계정이 있는 인메모리 지갑을 포함합니다. 이 계정들은 caver.klay.sendTransaction를 사용할 때 쓸 수 있습니다.
+     */
+    public wallet: any;
 
-  interface IpcProvider {}
+    /**
+     * @description 개인키와 공개키를 사용하여 계정 개체를 생성합니다.
+     * @param {string=} 엔트로피를 증가시키는 임의의 문자열입니다.
+     * @example
+     * caver.klay.accounts.create();
+      {
+          address: '0x79FF91738661760AC67b3E951c0B4f1F70F80478',
+          privateKey: '0x{private key}',
+          signTransaction: [Function: signTransaction],
+          sign: [Function: sign],
+          encrypt: [Function: encrypt],
+          getKlaytnWalletKey: [Function: getKlaytnWalletKey] 
+      }
+     */
+    public create(
+      entropy?: string,
+    ): Omit<AccountInstance, 'accountKeyType' | 'accountKey'>;
 
-  export type AccountKeyLegacy = {
-    keyType: 1;
-    key: Object;
-  };
-
-  export type AccountKeyPublic = {
-    keyType: 2;
-    key: {
-      x: string;
-      y: string;
-    };
-  };
-
-  export type AccountKeyFail = {
-    keyType: 3;
-    key: Object;
-  };
-
-  export type AccountKeyWeightedMultiSig = {
-    keyType: 4;
-    key: {
-      threshold: number;
-      keys: [
-        {
-          weight: number;
-          key: Pick<AccountKeyPublic, 'key'>;
-        },
-      ];
-    };
-  };
-
-  export type AccountKeyRoleBased = {
-    keyType: 5;
-    key: AccountKeyPublic[];
-  };
-
-  export type AllAccountKeyTypes =
-    | AccountKeyLegacy
-    | AccountKeyPublic
-    | AccountKeyFail
-    | AccountKeyWeightedMultiSig
-    | AccountKeyRoleBased;
-
-  interface AccountResultObject {
-    accType: number;
-    account: {
-      nonce: number;
-      balance: string;
-      humanReadable: boolean;
-      key: AllAccountKeyTypes;
-    };
+    /**
+     * @description 주어진 AccountKey로 Account 인스턴스를 생성합니다. Account는 계정 주소와 AccountKey를 관리하기 위한 클래스입니다.
+     * @param address
+     * @param accountKey
+     * @example
+     * caver.klay.accounts.createWithAccountKey('0x62ca8964610a9d447e1a64753a09fc8b3d40b405', '0x{private key}')
+        Account {
+          address: [Getter/Setter],
+          accountKey: [Getter/Setter],
+          privateKey: [Getter/Setter],
+          signTransaction: [Function: signTransaction],
+          sign: [Function: sign],
+          encrypt: [Function: encrypt],
+          getKlaytnWalletKey: [Function: getKlaytnWalletKey] 
+        }
+     */
+    public createWithAccountKey(
+      address: string,
+      accountKey: string | string[] | AccountKey,
+    ): AccountInstance;
   }
 
-  export class Klay {
+  class Klay {
     /**
      * @constructor
      * @param {Caver}  연결할 노드의 url 문자열입니다. 공급자 인스턴스를 직접 전달할 수 있습니다
      * */
-    constructor(
-      provider: string | HttpProvider | WebsocketProvider | IpcProvider,
-    );
+    constructor(provider: string);
+
+    /**
+     * @description caver.klay.accounts는 Klaytn 계정과 서명 트랜잭션과 데이터를 생성하는 함수를 포함합니다.
+     */
+    public accounts: Account;
 
     /**
      * @description 다음 메서드의 매개변수에 from 속성이 지정되지 않은 경우 이 기본 주소가 기본 from 속성으로 사용됩니다.
@@ -116,7 +111,7 @@ declare module 'caver-js' {
      * @param {string} address 잔액을 가져올 주소입니다.
      * @param {number | string} (선택 사항) 이 매개변수를 전달하면 caver.klay.defaultBlock으로 설정된 기본 블록을 사용하지 않습니다.
      * @param {Function} (선택 사항) 선택적 콜백, 첫 번째 매개변수로 오류 객체를 반환하고 두 번째 매개변수로 결과를 반환합니다
-     * @returns {Promise<AccountResultObject | null>} Promise는 계정 정보를 포함하는 JSON 개체인 JSON 개체를 반환합니다.
+     * @returns {Promise<GetAccountResult | null>} Promise는 계정 정보를 포함하는 JSON 개체인 JSON 개체를 반환합니다.
      * @example
      * > caver.klay.getAccount('0x52791fcf7900a64a6bcab8b89a78ae4cc60da01c').then(console.log);
         { 
@@ -145,8 +140,8 @@ declare module 'caver-js' {
     public getAccount(
       address: string,
       defaultBlock?: number | string,
-      callback?: (err: any, result: AccountResultObject | null) => void,
-    ): Promise<AccountResultObject | null>;
+      callback?: (err: any, result: GetAccountResult | null) => void,
+    ): Promise<GetAccountResult | null>;
 
     /**
      * @description 노드가 제어하는 ​​계정 목록을 반환합니다.
@@ -241,15 +236,135 @@ declare module 'caver-js' {
     ): Promise<boolean>;
   }
 
-  export default class Caver implements klay {
+  class Utils {
+    /**
+     * @description 주어진 문자열이 유효한 Klaytn 주소인지 확인합니다. 주소에 대문자와 소문자가 있으면 체크섬도 확인합니다.
+     * @param address 주소 문자열입니다.
+     * @returns {boolean} 주어진 문자열이 유효한 Klaytn 주소이면 true입니다.
+     * @example
+     * > caver.utils.isAddress('0xc1912fee45d61c87cc5ea59dae31190fffff232d');
+        true
+
+        > caver.utils.isAddress('c1912fee45d61c87cc5ea59dae31190fffff232d');
+        true
+
+        > caver.utils.isAddress('0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D');
+        true // as all is uppercase, no checksum will be checked
+
+        > caver.utils.isAddress('0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d');
+        true
+
+        > caver.utils.isAddress('0xC1912fEE45d61C87Cc5EA59DaE31190FFFFf232d');
+        false // wrong checksum
+     */
+    public isAddress(address: string): boolean;
+  }
+
+  export default class Caver {
     /**
      * @constructor
-     * @param {string | HttpProvider | WebsocketProvider | IpcProvider}  연결할 노드의 url 문자열입니다. 공급자 인스턴스를 직접 전달할 수 있습니다
+     * @param {string}  연결할 노드의 url 문자열입니다. 공급자 인스턴스를 직접 전달할 수 있습니다
      * */
-    constructor(
-      provider: string | HttpProvider | WebsocketProvider | IpcProvider,
-    );
+    constructor(provider: string);
 
     public klay: Klay;
+
+    /**
+     * @description caver.utils는 유틸리티 기능을 제공합니다.
+     */
+    public utils: Utils;
   }
 }
+
+interface GetAccountResult {
+  accType: number;
+  account: {
+    nonce: number;
+    balance: string;
+    humanReadable: boolean;
+    key: AllAccountKeyTypes;
+  };
+}
+
+interface AccountInstance {
+  // 계정 주소.
+  address: string;
+  // 계정에 있는 accountKey의 기본 키 문자열. 이 속성은 이전 버전과의 호환성을 위해 남겨졌습니다.
+  // privateKey는 accountKey의 기본 키만 나타내므로, privateKey를 사용하여 서명하거나 트랜잭션을 보내지 않는 편이 좋습니다.
+  // transactionKey, updateKey 또는 feePayerKey를 사용하는 것이 좋습니다.
+  privateKey: string;
+  //  계정이 가진 accountKey의 유형. AccountKeyPublic, AccountKeyMultiSig,
+  //  또는 AccountKeyRoleBased일 수 있습니다.
+  accountKeyType:
+    | 'AccountKeyPublic'
+    | 'AccountKeyMultiSig'
+    | 'AccountKeyRoleBased';
+  // 계정의 키. AccountKeyPublic, AccountKeyMultiSig 또는 AccountKeyRoleBased입니다.
+  accountKey: string | string[] | AccountKey;
+  // 트랜잭션에 서명하는 함수. caver.klay.accounts.signTransaction를 참조하세요.
+  signTransaction: Function;
+  // 트랜잭션에 서명하는 함수. See caver.klay.accounts.sign.
+  sign: Function;
+  // Account를 주어진 비밀번호로 암호화하는 함수.
+  encrypt: Function;
+  // The function to get Klaytn Wallet Key.
+  getKlaytnWalletKey: Function;
+}
+
+// 계정이 가진 accountKey의 모든 키. AccountKeyPublic의 경우 단일 개인키 문자열입니다.
+// AccountKeyMultiSig의 경우 모든 개인키 문자열이 포함된 배열을 반환합니다.
+// AccountKeyRoleBased의 경우 각 역할에 연계된 키를 가지는 객체가 반환됩니다.
+interface AccountKey {
+  // RoleTransaction에 사용되는 키. AccountKeyPublic 또는 AccountKeyMultiSig는 어떤 역할에도 묶이지 않으므로,
+  // transactionKey는 키와 동일한 값을 가집니다.
+  transactionKey: string | string[];
+  // Key used for the RoleAccountUpdate. AccountKeyPublic 또는 AccountKeyMultiSig는 어떤 역할에도 묶이지 않으므로,
+  // updateKey는 키와 동일한 값을 가집니다.
+  updateKey: string | string[];
+  // Key used for RoleFeePayer. AccountKeyPublic 또는 AccountKeyMultiSig는 어떤 역할에도 묶이지 않으므로,
+  // feePayerKey는 키와 동일한 값을 가집니다.
+  feePayerKey: string | string[];
+}
+
+interface AccountKeyLegacy {
+  keyType: 1;
+  key: Object;
+}
+
+interface AccountKeyPublic {
+  keyType: 2;
+  key: {
+    x: string;
+    y: string;
+  };
+}
+
+interface AccountKeyFail {
+  keyType: 3;
+  key: Object;
+}
+
+interface AccountKeyMultiSig {
+  keyType: 4;
+  key: {
+    threshold: number;
+    keys: [
+      {
+        weight: number;
+        key: Pick<AccountKeyPublic, 'key'>;
+      },
+    ];
+  };
+}
+
+interface AccountKeyRoleBased {
+  keyType: 5;
+  key: AccountKeyPublic[];
+}
+
+type AllAccountKeyTypes =
+  | AccountKeyLegacy
+  | AccountKeyPublic
+  | AccountKeyFail
+  | AccountKeyMultiSig
+  | AccountKeyRoleBased;

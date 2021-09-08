@@ -19,14 +19,16 @@ model User {
 }
 
 model Profile {
-    id         Int      @id @default(autoincrement())
-    userId     Int
-    nickname   String
-    profileUrl String?
-    gender     String
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    user       User     @relation(fields: [userId], references: [id])
+    id             Int      @id @default(autoincrement())
+    userId         Int
+    nickname       String
+    profileUrl     String?
+    avatarSvg      String
+    defaultProfile Boolean  @default(true)
+    gender         String
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    user           User     @relation(fields: [userId], references: [id])
 }
 
 model Session {

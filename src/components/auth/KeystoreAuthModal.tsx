@@ -106,7 +106,7 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
   const onSubmit: SubmitHandler<FormFieldValus> = async (input) => {
     try {
       const keystore = await readKeystoreFile(input.keystore);
-      const accountKey = caver.klay.accounts.decrypt(
+      const accountKey = caver?.klay.accounts.decrypt(
         keystore,
         input.password,
       );
