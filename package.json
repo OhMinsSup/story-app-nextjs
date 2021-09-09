@@ -40,7 +40,13 @@
     "axios": "^0.21.1",
     "caver-js": "^1.6.3",
     "cross-env": "^7.0.3",
-    "dotenv-load": "^2.0.0",
+    "filepond": "^4.29.0",
+    "filepond-plugin-file-validate-size": "^2.2.4",
+    "filepond-plugin-file-validate-type": "^1.2.6",
+    "filepond-plugin-get-file": "^1.0.7",
+    "filepond-plugin-image-preview": "^4.6.9",
+    "filepond-plugin-image-validate-size": "^1.2.6",
+    "filepond-plugin-media-preview": "^1.0.9",
     "framer-motion": "^4",
     "jsonwebtoken": "^8.5.1",
     "lodash-es": "^4.17.21",
@@ -53,6 +59,7 @@
     "postcss-preset-env": "^6.7.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-filepond": "^7.1.1",
     "react-hook-form": "^7.12.2",
     "react-icons": "^4.2.0",
     "react-query": "^3.21.1",
@@ -90,18 +97,18 @@
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
       "next lint",
-      "prettier --write",
+      "prettier --write .",
       "git add"
     ],
     "**/*.{md,mdx,json}": [
-      "prettier --write",
+      "prettier --write .",
       "git add"
     ]
   },
   "next-unused": {
     "alias": {
-      "@atoms/*": [
-        "src/atoms/*"
+      "@store/*": [
+        "src/store/*"
       ],
       "@klaytn/*": [
         "src/klaytn/*"
@@ -133,7 +140,7 @@
     },
     "debug": true,
     "include": [
-      "src/atoms",
+      "src/store",
       "src/klaytn",
       "src/assets",
       "src/libs",

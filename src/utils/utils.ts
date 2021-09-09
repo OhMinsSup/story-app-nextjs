@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import multiavatar from '@multiavatar/multiavatar/esm';
+// import multiavatar from '@multiavatar/multiavatar/esm';
 import { STORAGE_KEY } from '@constants/constant';
 
 // valid check key store file
@@ -40,7 +40,7 @@ export function isAxiosError(error: AxiosError) {
   return !!error.response;
 }
 
-export const generateAvatar = () => {
-  const svgCode = multiavatar(Math.random().toString(36).substr(2, 11));
-  return svgCode;
-};
+// export const generateAvatar = () => {
+//   const svgCode = multiavatar(Math.random().toString(36).substr(2, 11));
+//   return svgCode;
+// };
