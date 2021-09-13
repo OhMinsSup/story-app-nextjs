@@ -114,7 +114,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
   }, []);
 
   // 회원가입 페이지 이동
-  const onMoveToRegister = useCallback(() => {
+  const onMoveToRegister = useCallback(async () => {
     router.push(PAGE_ENDPOINTS.SIGNUP);
   }, []);
 

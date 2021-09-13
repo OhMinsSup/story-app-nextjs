@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
   LOCAL: {
     AUTH: {
       LOGIN: '/auth/login',
+      SIGNUP: '/auth/signup',
     },
   },
 };

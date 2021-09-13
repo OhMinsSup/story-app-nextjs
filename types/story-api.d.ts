@@ -39,3 +39,24 @@ export interface MutationLoginResponse {
     profileUrl: string | null;
   };
 }
+
+// ================== Signup ================== //
+
+export interface MutationSignupInput {
+  profileUrl?: string;
+  nickname: string;
+  email: string;
+  walletAddress: string;
+  gender: string;
+  signature: string[] | string;
+}
+
+export interface MutationSignupResponse {
+  id: number;
+  email: string;
+  accessToken: string;
+  profile: {
+    nickname: string;
+    profileUrl: string | null;
+  };
+}

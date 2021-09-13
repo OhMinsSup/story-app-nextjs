@@ -6,7 +6,8 @@ import { AiOutlineDelete } from "react-icons/ai";
 import {
   Avatar,
   AvatarBadge,
-  Checkbox,
+  Button,
+  Divider,
   FormControl,
   FormLabel,
   Icon,
@@ -14,15 +15,15 @@ import {
   Radio,
   RadioGroup,
   Stack,
-  Text,
 } from "@chakra-ui/react";
 
 // components
 import AuthTemplate from "@components/template/AuthTemplate";
+import FileUpload from "@components/common/FileUpload";
 
 // no components
 import { signUpSchema } from "@libs/yup/schema";
-import FileUpload from "@components/common/FileUpload";
+import type { ActualFileObject } from "filepond";
 
 interface FormFieldValues {
   profileUrl?: string;
@@ -35,10 +36,10 @@ interface FormFieldValues {
 interface SignupProps {}
 const SignupPage: React.FC<SignupProps> = () => {
   const formRef = useRef<HTMLFormElement | null>(null);
-  const [file, setFile] = useState<any>(null);
+  const [file, setFile] = useState<ActualFileObject | null>(null);
   const [preview, setPreview] = useState<string>("");
 
-  const { handleSubmit, register, reset, control, watch, setValue } = useForm<
+  const { handleSubmit, register, reset, control } = useForm<
     FormFieldValues
   >({
     mode: "onSubmit",
@@ -54,10 +55,10 @@ const SignupPage: React.FC<SignupProps> = () => {
     },
   });
 
-  console.log(watch());
-
   // 회원가입
-  const onSubmit: SubmitHandler<FormFieldValues> = (input) => {};
+  const onSubmit: SubmitHandler<FormFieldValues> = (input) => {
+    console.log("input", input);
+  };
 
   // set init form validation
   useEffect(() => {
@@ -80,6 +81,13 @@ const SignupPage: React.FC<SignupProps> = () => {
   const onRemovePreview = useCallback(() => {
     setPreview("");
     setFile(null);
+  }, []);
+
+  // 회원가입
+  const onClickSubmit = useCallback(() => {
+    formRef.current?.dispatchEvent(
+      new Event("submit", { cancelable: true, bubbles: true }),
+    );
   }, []);
 
   return (
@@ -115,8 +123,7 @@ const SignupPage: React.FC<SignupProps> = () => {
               <WrapperBlock>
                 <FileUpload
                   onSetUploadFile={(file) => {
-                    console.log(file?.file);
-                    setFile(file?.file);
+                    setFile(file?.file ?? null);
                   }}
                   labelIdle={`
               <div style="margin-top:3.2rem;">
@@ -175,19 +182,18 @@ const SignupPage: React.FC<SignupProps> = () => {
             />
           </FormControl>
         </form>
-        <p className="text-sm text-gray-500 mt-12 text-center">
-          <Stack spacing={5} direction="column">
-            <Checkbox>
-              <Text fontSize="md">만 19세 이상입니다.</Text>
-            </Checkbox>
-            <Checkbox>
-              <Text fontSize="md">(필수) 서비스 이용약관에 동의합니다.</Text>
-            </Checkbox>
-            <Checkbox>
-              <Text fontSize="md">(필수) 개인정보 수집 및 이용에 동의합니다.</Text>
-            </Checkbox>
-          </Stack>
-        </p>
+        <Divider className="my-5" />
+        <div className="flex justify-end space-x-3">
+          <Button
+            type="button"
+            // isLoading
+            onClick={onClickSubmit}
+            loadingText="회원가입중..."
+            colorScheme="purple"
+          >
+            회원가입
+          </Button>
+        </div>
       </AuthTemplate>
     </>
   );

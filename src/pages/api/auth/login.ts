@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import omit from 'lodash-es/omit';
 import prisma from '@libs/prisma';
-import { Prisma } from '@prisma/client';
-import { generateToken } from '../../../server/token';
+import { generateToken } from 'src/server/token';
 
 type Body = {
   walletAddress: string;

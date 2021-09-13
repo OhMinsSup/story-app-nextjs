@@ -9,9 +9,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const IS_PROD = process.env.NODE_ENV === 'production';
 const IS_PROD_DEPLOY_GROUP = process.env.DEPLOY_GROUP === 'production';
 
-console.log('NEXT_PUBLIC_SITE_URL', process.env.NEXT_PUBLIC_SITE_URL);
-console.log('NEXT_PUBLIC_API_HOST', process.env.NEXT_PUBLIC_API_HOST);
-
 // const DEPLOYED_ADDRESS = JSON.stringify(fs.readFileSync('deployedAddress', 'utf8').replace(/\n|\r/g, "")),
 // const DEPLOYED_ABI = fs.existsSync('deployedABI') && fs.readFileSync('deployedABI', 'utf8'),
 
