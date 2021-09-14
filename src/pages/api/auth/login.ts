@@ -5,16 +5,14 @@ import { generateToken } from 'src/server/token';
 
 type Body = {
   walletAddress: string;
-  signature: string[] | string;
-  timestamp: number;
+  signature: string;
 };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const body: Body = req.body ?? {};
 
-    console.log('body', body);
-
+    // 유저가 존재하는지 확인
     const exists = await prisma.user.findFirst({
       where: {
         address: body.walletAddress,
@@ -25,14 +23,23 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     if (!exists) {
+      // 서명 스키마를 먼저 생성하고 이후에 사용자를 생성한다.
+      const signature = await prisma.signature.create({
+        data: {
+          signature: body.signature,
+        },
+      });
+
+      // 존재하지 않는 경우 서명 스키마의 아이디값을 넘겨준다.
       return res.status(404).json({
         ok: false,
         resultCode: 2001,
         message: '존재하지 않는 유저 정보입니다.',
-        payload: null,
+        payload: signature.id,
       });
     }
 
+    // 액세스 토큰을 생성한다.
     const accessToken = await generateToken(
       {
         userId: exists.id,

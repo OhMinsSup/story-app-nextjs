@@ -2,14 +2,16 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import omit from 'lodash-es/omit';
 import prisma from '@libs/prisma';
 import { generateToken } from 'src/server/token';
+import { GenderType } from 'types/story-api';
 
 type Body = {
-  profileUrl?: string;
+  profileUrl: string;
   nickname: string;
   email: string;
   walletAddress: string;
-  gender: string;
-  signature: string[] | string;
+  gender: GenderType;
+  signature: string;
+  defaultProfile: boolean;
 };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -41,6 +43,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
+    // 유저 생성
     const user = await prisma.user.create({
       data: {
         email: body.email,
@@ -48,24 +51,19 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
-    const avatar = `https://ui-avatars.com/api/?format=svg&background=random&name=${body.nickname}`;
+    // 프로필 생성
     const profile = await prisma.profile.create({
       data: {
         userId: user.id,
         nickname: body.nickname,
         gender: body.gender,
-        ...(body.profileUrl
-          ? {
-              profileUrl: body.profileUrl,
-              avatarSvg: '',
-              defaultProfile: false,
-            }
-          : {
-              avatarSvg: avatar,
-            }),
+        profileUrl: body.defaultProfile ? '' : body.profileUrl,
+        avatarSvg: body.defaultProfile ? body.profileUrl : '',
+        defaultProfile: body.defaultProfile,
       },
     });
 
+    // 액세스 토큰 생성
     const accessToken = await generateToken(
       {
         userId: user.id,

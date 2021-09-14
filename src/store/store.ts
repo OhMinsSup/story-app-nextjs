@@ -2,16 +2,18 @@ import { useLayoutEffect } from 'react';
 import create, { UseStore } from 'zustand';
 import createContext from 'zustand/context';
 import { userInfo } from '@utils/utils';
-import { StorageUserInfo } from 'types/story-api';
+import { StorageUserInfo, WalletSignature } from 'types/story-api';
 
 export interface State {
   userInfo: StorageUserInfo | null;
   networkVersion: number | null;
+  walletSignature: WalletSignature | null;
 }
 
 export interface Dispatch {
   setNetworkVersion: (version: number | null) => void;
   setAuth: (userInfo: StorageUserInfo | null) => void;
+  setWalletSignature: (walletSignature: WalletSignature | null) => void;
 }
 
 let store: UseStore<State & Dispatch> | undefined;
@@ -19,6 +21,7 @@ let store: UseStore<State & Dispatch> | undefined;
 const initialState: State = {
   userInfo: userInfo(),
   networkVersion: null, // kaikas network version
+  walletSignature: null, // login signature data
 };
 
 const zustandContext = createContext<State & Dispatch>();
@@ -39,6 +42,11 @@ export const initializeStore = (preloadedState = {} as State) => {
     setAuth: (userInfo: StorageUserInfo | null) => {
       set({
         userInfo,
+      });
+    },
+    setWalletSignature: (walletSignature: WalletSignature | null) => {
+      set({
+        walletSignature,
       });
     },
   }));

@@ -11,6 +11,8 @@ export interface StorageUserInfo {
 
 // ================== Common =================== //
 
+export type GenderType = 'M' | 'F';
+
 export interface ResponseModel<Payload = any> {
   ok: boolean;
   resultCode: number;
@@ -40,6 +42,12 @@ export interface MutationLoginResponse {
   };
 }
 
+export interface WalletSignature {
+  walletAddress: string;
+  timestamp: number;
+  signature: string;
+}
+
 // ================== Signup ================== //
 
 export interface MutationSignupInput {
@@ -47,7 +55,7 @@ export interface MutationSignupInput {
   nickname: string;
   email: string;
   walletAddress: string;
-  gender: string;
+  gender: GenderType;
   signature: string[] | string;
 }
 

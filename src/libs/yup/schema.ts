@@ -16,5 +16,10 @@ export const signUpSchema = yup.object().shape({
     })
     .required('지갑 주소를 입력해주세요.'),
   gender: yup.string().oneOf(['M', 'F']),
-  profileUrl: yup.string(),
+  profileUrl: yup.string().notRequired(),
+  signature: yup
+    .string()
+    .required(
+      'signature를 입력해주세요. 계속된 오류가 있으면 다시 로그인부터 시도해주세요.',
+    ),
 });
