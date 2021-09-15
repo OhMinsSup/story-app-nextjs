@@ -40,7 +40,11 @@ export function isAxiosError(error: AxiosError) {
   return !!error.response;
 }
 
-export const generateAvatar = () => {
-  const svgCode = multiavatar(Math.random().toString(36).substr(2, 11));
+export const generateKey = () => {
+  return Math.random().toString(36).substr(2, 11);
+};
+
+export const generateAvatar = (key: string) => {
+  const svgCode = multiavatar(key);
   return svgCode;
 };

@@ -11,7 +11,9 @@ export const signUpSchema = yup.object().shape({
     .string()
     .test('wallet address testing', '지갑 유형으로 입력해주세요', (value) => {
       if (!value) return false;
-      if (caver?.utils.isAddress(value)) return true;
+      if (caver?.utils.isAddress(value)) {
+        return true;
+      }
       return false;
     })
     .required('지갑 주소를 입력해주세요.'),

@@ -1,10 +1,19 @@
 import { useMutation } from "react-query";
 import { AxiosError } from "axios";
 
+// api
 import { api } from "@api/module";
+
+// no compoents
 import { API_ENDPOINTS } from "@constants/constant";
+
+// hooks
 import { useToken, useUserInfo } from "@hooks/useStorage";
+
+// store
 import useAuth from "@store/useAuth";
+import useWalletSignature from "@store/useWalletSignature";
+
 import {
   MutationSignupInput,
   MutationSignupResponse,
@@ -12,6 +21,7 @@ import {
 } from "types/story-api";
 
 export function useMutationSignUp() {
+  const { setWalletSignature } = useWalletSignature();
   const { setAuth } = useAuth();
   const [, setUserInfo] = useUserInfo();
   const [, setToken] = useToken();
@@ -30,18 +40,19 @@ export function useMutationSignUp() {
     {
       onSuccess: (data, variables, context) => {
         if (data?.data.payload) {
-          const { payload } = data?.data;
+          const { payload: { id, email, profile, accessToken } } = data?.data;
 
           const user = {
-            id: payload.id,
-            email: payload.email,
-            nickname: payload.profile.nickname,
-            profileUrl: payload.profile.profileUrl,
+            id,
+            email,
+            nickname: profile.nickname,
+            profileUrl: profile.profileUrl,
           };
 
-          setToken(payload.accessToken);
+          setToken(accessToken);
           setUserInfo(user);
           setAuth(user);
+          setWalletSignature(null);
         }
       },
     },

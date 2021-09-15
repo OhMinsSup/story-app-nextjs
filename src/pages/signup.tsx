@@ -3,6 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import styled from "@emotion/styled";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { AiOutlineDelete } from "react-icons/ai";
+import { useRouter } from "next/router";
 import {
   Avatar,
   AvatarBadge,
@@ -24,8 +25,8 @@ import FileUpload from "@components/common/FileUpload";
 
 // no components
 import { signUpSchema } from "@libs/yup/schema";
+import { generateKey } from "@utils/utils";
 import type { ActualFileObject } from "filepond";
-import { generateAvatar } from "@utils/utils";
 import type { GenderType } from "types/story-api";
 
 // store
@@ -33,6 +34,7 @@ import useWalletSignature from "@store/useWalletSignature";
 
 // api
 import { useMutationSignUp } from "@api/story/auth";
+import { PAGE_ENDPOINTS } from "@constants/constant";
 
 interface FormFieldValues {
   profileUrl?: string | null;
@@ -54,6 +56,7 @@ const defaultValues: FormFieldValues = {
 
 interface SignupProps {}
 const SignupPage: React.FC<SignupProps> = () => {
+  const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
   const [file, setFile] = useState<ActualFileObject | null>(null);
 
@@ -85,11 +88,14 @@ const SignupPage: React.FC<SignupProps> = () => {
     try {
       const body = {
         ...input,
-        profileUrl: input.profileUrl || generateAvatar(),
+        profileUrl: input.profileUrl || generateKey(),
         defaultProfile: !input.profileUrl,
         signature: "",
       };
-      await mutateAsync(body);
+      const { data: { ok } } = await mutateAsync(body);
+      if (ok) {
+        router.replace(PAGE_ENDPOINTS.INDEX);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -204,7 +210,7 @@ const SignupPage: React.FC<SignupProps> = () => {
               type="text"
               placeholder="지갑 주소"
               errorBorderColor="red.300"
-              disabled
+              readOnly
               isInvalid={!!errors.walletAddress?.message}
               {...register("walletAddress")}
             />

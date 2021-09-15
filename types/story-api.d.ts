@@ -44,7 +44,7 @@ export interface MutationLoginResponse {
 
 export interface WalletSignature {
   walletAddress: string;
-  timestamp: number;
+  signatureId: number;
   signature: string;
 }
 

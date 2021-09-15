@@ -35,7 +35,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         ok: false,
         resultCode: 2001,
         message: '존재하지 않는 유저 정보입니다.',
-        payload: signature.id,
+        payload: {
+          signatureId: signature.id,
+          signature: signature.signature,
+        },
       });
     }
 

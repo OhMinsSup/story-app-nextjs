@@ -28,9 +28,6 @@ import caver from "@klaytn/caver";
 import { existsKlaytn, isAxiosError, signatureMessage } from "@utils/utils";
 import { PAGE_ENDPOINTS } from "@constants/constant";
 
-// store
-import useWalletSignature from "@store/useWalletSignature";
-
 // api
 import { useMutationLogin } from "@api/story/auth";
 
@@ -41,7 +38,6 @@ const LoginPage: React.FC<LoginPageProps> = () => {
 
   // 로그인
   const { mutateAsync } = useMutationLogin();
-  const { setWalletSignature } = useWalletSignature();
 
   // 서명 인증 중 로딩 화면
   const [isSignatureLoading, setSignatureLoading] = useState<boolean>(false);
@@ -79,12 +75,12 @@ const LoginPage: React.FC<LoginPageProps> = () => {
         return;
       }
 
-      await klaytn.enable();
+      const accounts = await klaytn.enable();
 
       // 로딩 시작
       setSignatureLoading(true);
 
-      const walletAddress = klaytn.selectedAddress;
+      const walletAddress = accounts[0];
       const timestamp = Date.now();
       const requestType = "LoginRequest";
 
@@ -104,9 +100,6 @@ const LoginPage: React.FC<LoginPageProps> = () => {
       };
 
       await mutateAsync(input);
-
-      // set wallet signature data
-      setWalletSignature(input);
     } catch (error) {
       console.error(error);
       // 서버 에러
