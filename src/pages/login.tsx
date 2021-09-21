@@ -1,14 +1,18 @@
 import React, { useCallback, useState } from "react";
-import { useDisclosure } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 // components
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
 
 // icons
 import LoadingButton from "@mui/lab/LoadingButton";
 import VpnKey from "@mui/icons-material/VpnKey";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 
 // components
 import SignatureLoadingDialog from "@components/auth/SignatureLoadingDialog";
@@ -19,6 +23,7 @@ import KeystoreAuthModal from "@components/auth/KeystoreAuthModal";
 
 // no components
 import caver from "@klaytn/caver";
+import { PAGE_ENDPOINTS } from "@constants/constant";
 import { existsKlaytn, isAxiosError, signatureMessage } from "@utils/utils";
 
 // api
@@ -26,26 +31,25 @@ import { useMutationLogin } from "@api/story/auth";
 
 interface LoginPageProps {}
 const LoginPage: React.FC<LoginPageProps> = () => {
+  const router = useRouter();
   // 로그인
   const { mutateAsync } = useMutationLogin();
 
   // 서명 인증 중 로딩 화면
   const [isSignatureLoading, setSignatureLoading] = useState<boolean>(false);
-
   // 회원가입 이동 모달
-  const { onOpen: onAuthOpen } = useDisclosure();
-
+  const [isReigsterOpen, setRegisterOpen] = useState<boolean>(false);
   // kaikas 설치 모달
-  const {
-    onOpen: onInstalledOpen,
-  } = useDisclosure();
+  const [isInstallOpen, setInstallOpen] = useState<boolean>(false);
+  // keystore 인증 모달
+  const [isKeystoreOpen, setKeystoreOpen] = useState<boolean>(false);
 
   // handle Kaikas login auth
   const onKaikasLogin = useCallback(async () => {
     try {
       // Kaikas가 설치가 안된 경우
       if (existsKlaytn) {
-        onInstalledOpen();
+        setInstallOpen(true);
         return;
       }
 
@@ -79,7 +83,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
       // 서버 에러
       if (isAxiosError(error)) {
         const { response: { data } } = error;
-        if (!data.ok) onAuthOpen();
+        if (!data.ok) setRegisterOpen(true);
       }
     } finally {
       // 로딩 종류
@@ -89,6 +93,20 @@ const LoginPage: React.FC<LoginPageProps> = () => {
 
   return (
     <>
+      <AppBar position="static" className=" shadow-none" color="transparent">
+        <Toolbar>
+          <IconButton
+            size="large"
+            aria-label="account of current user"
+            aria-controls="back press button"
+            aria-haspopup="false"
+            color="inherit"
+            onClick={() => router.replace(PAGE_ENDPOINTS.INDEX)}
+          >
+            <ArrowBack />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
       <Container component="main" maxWidth="xs">
         <Box
           sx={{
@@ -117,8 +135,8 @@ const LoginPage: React.FC<LoginPageProps> = () => {
             <LoadingButton
               color="primary"
               size="large"
-              onClick={() => {}}
-              loading={false}
+              onClick={onKaikasLogin}
+              loading={isSignatureLoading}
               loadingPosition="start"
               startIcon={<KaytonIcon />}
               variant="contained"
@@ -130,8 +148,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
             <LoadingButton
               color="primary"
               size="large"
-              onClick={() => {}}
-              loading={false}
+              onClick={() => setKeystoreOpen(true)}
               loadingPosition="start"
               startIcon={<VpnKey />}
               variant="contained"
@@ -154,10 +171,19 @@ const LoginPage: React.FC<LoginPageProps> = () => {
           </p>
         </Box>
       </Container>
-      <KeystoreAuthModal isOpen={false} onClose={() => {}} />
-      <InstalledKaikasModal isOpen={false} onClose={() => {}} />
-      <SignatureLoadingDialog loading={false} />
-      <SignupDialog enabled={false} onClose={() => {}} />
+      <KeystoreAuthModal
+        isOpen={isKeystoreOpen}
+        onClose={() => setKeystoreOpen(false)}
+      />
+      <InstalledKaikasModal
+        isOpen={isInstallOpen}
+        onClose={() => setInstallOpen(false)}
+      />
+      <SignatureLoadingDialog loading={isSignatureLoading} />
+      <SignupDialog
+        enabled={isReigsterOpen}
+        onClose={() => setRegisterOpen(false)}
+      />
     </>
   );
 };

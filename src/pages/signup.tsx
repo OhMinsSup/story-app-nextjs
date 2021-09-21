@@ -15,12 +15,17 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import LoadingButton from "@mui/lab/LoadingButton";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+
+// icons
+import ArrowBack from "@mui/icons-material/ArrowBack";
 
 // no components
 import { signUpSchema } from "@libs/yup/schema";
 import { generateKey } from "@utils/utils";
 import { PAGE_ENDPOINTS } from "@constants/constant";
-import type { ActualFileObject } from "filepond";
 import type { GenderType } from "types/story-api";
 
 // store
@@ -53,7 +58,7 @@ interface SignupProps {}
 const SignupPage: React.FC<SignupProps> = () => {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
-  const [file, setFile] = useState<ActualFileObject | null>(null);
+  const [file, setFile] = useState<any | null>(null);
 
   const { mutateAsync, isLoading } = useMutationSignUp();
   const { walletSignature } = useWalletSignature();
@@ -128,134 +133,150 @@ const SignupPage: React.FC<SignupProps> = () => {
   }, []);
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Typography
-          className="font-bold text-center tracking-tight text-gray-700 mb-3"
-          component="h1"
-          variant="h5"
-        >
-          회원가입
-        </Typography>
-        <Box
-          component="form"
-          className="space-y-3"
-          onSubmit={handleSubmit(onSubmit)}
-          ref={formRef}
-          sx={{ mt: 1 }}
-        >
-          <UserProfile
-            avatarkey={key}
-            defaultThumbnail={true}
-            thumbnail={watchProfuleUrl ?? null}
-            onClearThumbnail={() => {}}
-            onUpload={() => {}}
-          />
-          <TextField
-            required
-            label="닉네임"
-            placeholder="닉네임"
-            autoComplete="off"
-            color="info"
-            variant="standard"
-            fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
-            error={!!(errors?.nickname?.message)}
-            helperText={!!(errors?.nickname?.message)
-              ? errors?.nickname?.message
-              : ""}
-            {...register("nickname")}
-          />
-          <TextField
-            required
-            aria-readonly
-            label="지갑 주소"
-            placeholder="지갑 주소"
-            autoComplete="off"
-            color="info"
-            variant="standard"
-            fullWidth
-            className="cursor-none"
-            InputProps={{
-              readOnly: true,
-            }}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            error={!!(errors?.walletAddress?.message)}
-            helperText={!!(errors?.walletAddress?.message)
-              ? errors.walletAddress.message
-              : ""}
-            {...register("walletAddress", { required: true })}
-          />
-          <TextField
-            required
-            label="이메일"
-            placeholder="이메일"
-            autoComplete="off"
-            color="info"
-            variant="standard"
-            fullWidth
-            InputLabelProps={{
-              shrink: true,
-            }}
-            error={!!(errors?.email?.message)}
-            helperText={!!(errors?.email?.message)
-              ? errors?.email?.message
-              : ""}
-            {...register("email")}
-          />
-          <FormControl component="fieldset" color="info">
-            <FormLabel component="legend">성별</FormLabel>
-            <Controller
-              name="gender"
-              control={control}
-              defaultValue="M"
-              render={({ field }) => (
-                <RadioGroup
-                  row
-                  {...field}
-                  aria-label="gender"
-                  name="row-radio-buttons-group"
-                >
-                  <FormControlLabel
-                    value="M"
-                    control={<Radio color="info" />}
-                    label="남성"
-                  />
-                  <FormControlLabel
-                    value="F"
-                    control={<Radio color="info" />}
-                    label="여성"
-                  />
-                </RadioGroup>
-              )}
-            />
-          </FormControl>
-          <LoadingButton
-            color="info"
+    <>
+      <AppBar position="static" className=" shadow-none" color="transparent">
+        <Toolbar>
+          <IconButton
             size="large"
-            onClick={onClickSubmit}
-            loading={isLoading}
-            loadingPosition="start"
-            variant="contained"
-            className="w-full"
-            fullWidth
+            aria-label="account of current user"
+            aria-controls="back press button"
+            aria-haspopup="false"
+            color="inherit"
+            onClick={() => router.replace(PAGE_ENDPOINTS.LOGIN)}
+          >
+            <ArrowBack />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Container component="main" maxWidth="xs">
+        <Box
+          sx={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Typography
+            className="font-bold text-center tracking-tight text-gray-700 mb-3"
+            component="h1"
+            variant="h5"
           >
             회원가입
-          </LoadingButton>
+          </Typography>
+          <Box
+            component="form"
+            className="space-y-3"
+            onSubmit={handleSubmit(onSubmit)}
+            ref={formRef}
+            sx={{ mt: 1 }}
+          >
+            <UserProfile
+              avatarkey={key}
+              defaultThumbnail={true}
+              thumbnail={watchProfuleUrl ?? null}
+              onClearThumbnail={() => {}}
+              onUpload={() => {}}
+            />
+            <TextField
+              required
+              label="닉네임"
+              placeholder="닉네임"
+              autoComplete="off"
+              color="info"
+              variant="standard"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              error={!!(errors?.nickname?.message)}
+              helperText={!!(errors?.nickname?.message)
+                ? errors?.nickname?.message
+                : ""}
+              {...register("nickname")}
+            />
+            <TextField
+              required
+              aria-readonly
+              label="지갑 주소"
+              placeholder="지갑 주소"
+              autoComplete="off"
+              color="info"
+              variant="standard"
+              fullWidth
+              className="cursor-none"
+              InputProps={{
+                readOnly: true,
+              }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              error={!!(errors?.walletAddress?.message)}
+              helperText={!!(errors?.walletAddress?.message)
+                ? errors.walletAddress.message
+                : ""}
+              {...register("walletAddress", { required: true })}
+            />
+            <TextField
+              required
+              label="이메일"
+              placeholder="이메일"
+              autoComplete="off"
+              color="info"
+              variant="standard"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              error={!!(errors?.email?.message)}
+              helperText={!!(errors?.email?.message)
+                ? errors?.email?.message
+                : ""}
+              {...register("email")}
+            />
+            <FormControl component="fieldset" color="info">
+              <FormLabel component="legend">성별</FormLabel>
+              <Controller
+                name="gender"
+                control={control}
+                defaultValue="M"
+                render={({ field }) => (
+                  <RadioGroup
+                    row
+                    {...field}
+                    aria-label="gender"
+                    name="row-radio-buttons-group"
+                  >
+                    <FormControlLabel
+                      value="M"
+                      control={<Radio color="info" />}
+                      label="남성"
+                    />
+                    <FormControlLabel
+                      value="F"
+                      control={<Radio color="info" />}
+                      label="여성"
+                    />
+                  </RadioGroup>
+                )}
+              />
+            </FormControl>
+            <LoadingButton
+              color="info"
+              size="large"
+              onClick={onClickSubmit}
+              loading={isLoading}
+              loadingPosition="start"
+              variant="contained"
+              className="w-full"
+              fullWidth
+            >
+              회원가입
+            </LoadingButton>
+          </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </>
   );
 };
 
