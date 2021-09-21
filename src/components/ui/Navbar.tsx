@@ -2,86 +2,200 @@ import React, { useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-import { PAGE_ENDPOINTS } from "@constants/constant";
+import { alpha, styled } from "@mui/material/styles";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import InputBase from "@mui/material/InputBase";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Button from "@mui/material/Button";
 
-import LogoIcon from "@components/Icon/LogoIcon";
-import SearchIcon from "@components/Icon/SearchIcon";
+// icons
+import SearchIcon from "@mui/icons-material/Search";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import MoreIcon from "@mui/icons-material/MoreVert";
+
+// store
+import useAuth from "@store/useAuth";
+
+// utils
+import { blueGrey, grey } from "@mui/material/colors";
+import { PAGE_ENDPOINTS } from "@constants/constant";
+import { generateAvatar } from "@utils/utils";
+
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
+    marginLeft: theme.spacing(3),
+    width: "auto",
+  },
+}));
+
+const SearchIconWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.white, 0.25),
+  },
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: theme.palette.common.black,
+  "& .MuiInputBase-input": {
+    backgroundColor: alpha(blueGrey[200], 0.15),
+    padding: theme.spacing(1, 1, 1, 0),
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    borderRadius: theme.shape.borderRadius,
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("md")]: {
+      width: "20ch",
+    },
+  },
+}));
+
+const mobileMenuId = "primary-search-account-menu-mobile";
+const menuId = "primary-search-account-menu";
 
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
   const router = useRouter();
+  const { userInfo } = useAuth();
 
   const onAuthPage = useCallback(() => {
     router.push(PAGE_ENDPOINTS.LOGIN);
   }, [router]);
 
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={null}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={false}
+      onClose={() => {}}
+    >
+      <MenuItem onClick={() => {}}>
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls="primary-search-account-menu"
+          aria-haspopup="true"
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton>
+        <p>Profile</p>
+      </MenuItem>
+    </Menu>
+  );
+
+  const renderMenu = (
+    <Menu
+      anchorEl={null}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right",
+      }}
+      open={false}
+      onClose={() => {}}
+    >
+      <MenuItem onClick={() => {}}>Profile</MenuItem>
+      <MenuItem onClick={() => {}}>My account</MenuItem>
+    </Menu>
+  );
+
   return (
-    <div className="site-nav">
-      <div className="site-nav-container">
-        <nav className="site-nav-desktop-only align-center">
-          <div aria-label="Logo">
-            <Link href={PAGE_ENDPOINTS.INDEX}>
-              <a>
-                <LogoIcon className="site-nav-desktop-logo fill-current" />
-              </a>
-            </Link>
-          </div>
-          <ul className="site-nav-desktop-nav">
-            <li className="site-nav-desktop-item site-nav-hover-item">
-              <Link href={PAGE_ENDPOINTS.ILLUSTRATION}>
-                <a className="font-bold">일러스트</a>
-              </Link>
-            </li>
-          </ul>
-        </nav>
-        <ul className="site-nav-actions">
-          <li className="site-nav-actions-item site-nav-desktop-only">
-            <form className="site-nav-inline-search">
+    <>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+          >
+            Story
+          </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <Search sx={{ display: { xs: "none", md: "flex" } }}>
+            <SearchIconWrapper>
               <SearchIcon />
-              <input
-                className="site-nav-inline-search-input"
-                type="search"
-                name="q"
-                placeholder="Search"
-                autoComplete="off"
-              />
-            </form>
-          </li>
-          <li
-            className="site-nav-actions-item site-nav-desktop-only justify-center"
-          >
-            <Link href={PAGE_ENDPOINTS.INDEX}>
-              <a>
-                <img
-                  className="site-nav-avatar lazyloaded"
-                  alt="OhMinSeop"
-                  width="32"
-                  height="32"
-                  data-src="https://cdn.dribbble.com/users/4714321/avatars/normal/open-uri20200123-26444-dmet7r?1579773018"
-                  src="https://cdn.dribbble.com/users/4714321/avatars/normal/open-uri20200123-26444-dmet7r?1579773018"
-                />
-              </a>
-            </Link>
-            {/* Hover User Menu */}
-            <div className="site-nav-action-menu site-nav-user-menu"></div>
-          </li>
-          <li
-            className="site-nav-actions-item site-nav-desktop-only justify-center"
-          >
-            <Link href={PAGE_ENDPOINTS.INDEX}>
-              <a className="form-sub site-nav-actions-icon-link">발행하기</a>
-            </Link>
-          </li>
-          <li
-            className="site-nav-actions-item site-nav-desktop-only justify-center"
-          >
-            <button type="button" className="form-btn" onClick={onAuthPage}>
-              인증하기
-            </button>
-          </li>
-        </ul>
-      </div>
-    </div>
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="검색"
+              inputProps={{ "aria-label": "search" }}
+            />
+          </Search>
+          <Box sx={{ display: { xs: "none", md: "flex" } }}>
+            <div className="inline-block mx-3 align-middle p-2 space-x-5">
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-controls={menuId}
+                aria-haspopup="true"
+                onClick={() => {}}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+              <Button
+                size="medium"
+                variant="outlined"
+                color="secondary"
+                onClick={onAuthPage}
+              >
+                인증하기
+              </Button>
+            </div>
+          </Box>
+          <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            <IconButton
+              size="large"
+              aria-label="show more"
+              aria-controls={mobileMenuId}
+              aria-haspopup="true"
+              onClick={() => {}}
+              color="inherit"
+            >
+              <MoreIcon />
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      {renderMobileMenu}
+      {renderMenu}
+    </>
   );
 };
 

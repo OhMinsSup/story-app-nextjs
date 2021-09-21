@@ -48,8 +48,7 @@ export function useMutationLogin() {
           const user = {
             id,
             email,
-            nickname: profile.nickname,
-            profileUrl: profile.profileUrl,
+            profile,
           };
 
           setToken(accessToken);

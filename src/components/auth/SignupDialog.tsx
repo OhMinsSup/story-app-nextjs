@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { useRouter } from "next/router";
 
 // components
 import Button from "@mui/material/Button";
@@ -8,33 +9,33 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 
-interface InstalledKaikasModalProps {
-  isOpen: boolean;
+// no components
+import { PAGE_ENDPOINTS } from "@constants/constant";
+
+interface SignupDialogProps {
+  enabled: boolean;
   onClose: () => void;
 }
-const InstalledKaikasModal: React.FC<InstalledKaikasModalProps> = (
-  { isOpen, onClose },
-) => {
-  const onClick = useCallback(() => {
-    const url =
-      "https://chrome.google.com/webstore/detail/kaikas/jblndlipeogpafnldhgmapagcccfchpi";
-    const win = window.open(url, "_blank");
-    if (!win) return;
-    win.focus();
+const SignupDialog: React.FC<SignupDialogProps> = ({ enabled, onClose }) => {
+  const router = useRouter();
+
+  // 회원가입 페이지 이동
+  const onMoveToRegister = useCallback(() => {
+    router.push(PAGE_ENDPOINTS.SIGNUP);
   }, []);
 
   return (
     <Dialog
-      open={isOpen}
+      open={enabled}
       maxWidth="sm"
       fullWidth
     >
       <DialogTitle>
-        Kaikas 설치
+        회원가입
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          로그인을 하려면 Kaikas를 설치해주세요.
+          계속하려면 회원가입을 해주세요.
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -51,13 +52,13 @@ const InstalledKaikasModal: React.FC<InstalledKaikasModalProps> = (
           size="medium"
           variant="contained"
           color="info"
-          onClick={onClick}
+          onClick={onMoveToRegister}
         >
-          Kaikas 설치
+          확인
         </Button>
       </DialogActions>
     </Dialog>
   );
 };
 
-export default InstalledKaikasModal;
+export default SignupDialog;

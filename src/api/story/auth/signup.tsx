@@ -38,15 +38,14 @@ export function useMutationSignUp() {
       });
     },
     {
-      onSuccess: (data, variables, context) => {
+      onSuccess: (data) => {
         if (data?.data.payload) {
           const { payload: { id, email, profile, accessToken } } = data?.data;
 
           const user = {
             id,
             email,
-            nickname: profile.nickname,
-            profileUrl: profile.profileUrl,
+            profile,
           };
 
           setToken(accessToken);

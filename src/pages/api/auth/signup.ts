@@ -63,6 +63,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
+    // 세션 정보 생성
+    await prisma.session.create({
+      data: {
+        userId: user.id,
+        signature: body.signature,
+      },
+    });
+
     // 액세스 토큰 생성
     const accessToken = await generateToken(
       {

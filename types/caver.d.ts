@@ -50,6 +50,8 @@ declare module 'caver-js' {
       address: string,
       accountKey: string | string[] | AccountKey,
     ): AccountInstance;
+
+    public decrypt(...args: any[]): any;
   }
 
   class Klay {

@@ -90,7 +90,7 @@ const SignupPage: React.FC<SignupProps> = () => {
         ...input,
         profileUrl: input.profileUrl || generateKey(),
         defaultProfile: !input.profileUrl,
-        signature: "",
+        signature: input.signature,
       };
       const { data: { ok } } = await mutateAsync(body);
       if (ok) {

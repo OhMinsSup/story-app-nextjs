@@ -11,11 +11,7 @@ const IndexPage = () => {
 
   return (
     <MainTemplate>
-      <div className="main main-full">
-        <ol className="shots-grid group dribbbles container-fluid is-scrolled">
-          {items.map((item) => <Card key={item.tokenId} item={item} />)}
-        </ol>
-      </div>
+      {/* TODO: Item */}
     </MainTemplate>
   );
 };

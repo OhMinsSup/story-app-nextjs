@@ -5,8 +5,12 @@ import { AxiosResponse } from 'axios';
 export interface StorageUserInfo {
   id: number;
   email: string;
-  nickname: string;
-  profileUrl: string | null;
+  profile: {
+    nickname: string;
+    profileUrl: string | null;
+    avatarSvg: string | null;
+    defaultProfile: boolean;
+  };
 }
 
 // ================== Common =================== //
@@ -39,6 +43,8 @@ export interface MutationLoginResponse {
   profile: {
     nickname: string;
     profileUrl: string | null;
+    avatarSvg: string | null;
+    defaultProfile: boolean;
   };
 }
 
@@ -66,5 +72,7 @@ export interface MutationSignupResponse {
   profile: {
     nickname: string;
     profileUrl: string | null;
+    avatarSvg: string | null;
+    defaultProfile: boolean;
   };
 }

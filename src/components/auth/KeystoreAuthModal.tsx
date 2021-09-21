@@ -1,27 +1,21 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Icon,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-  usePrevious,
-} from "@chakra-ui/react";
-import { FiFile } from "react-icons/fi";
-import { SubmitHandler, useForm } from "react-hook-form";
-import useUpload from "@hooks/useUpload";
+
+import { usePrevious } from "react-use";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+
+// components
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogActions from "@mui/material/DialogActions";
+
+// no component
 import caver from "@klaytn/caver";
 import { validKeystore } from "@utils/utils";
+import useUpload from "@hooks/useUpload";
 
 interface FormFieldValus {
   keystore?: File;
@@ -45,6 +39,8 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
     register,
     handleSubmit,
     setValue,
+    control,
+    watch,
     formState: { errors },
   } = useForm<FormFieldValus>({
     mode: "onSubmit",
@@ -136,73 +132,90 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
   }, [isOpen, prevIsOpen]);
 
   return (
-    <Modal
-      isCentered
-      onClose={onClose}
-      isOpen={isOpen}
-      motionPreset="slideInBottom"
+    <Dialog
+      open={true}
+      maxWidth="sm"
+      fullWidth
     >
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Keystore 로그인</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody className="space-y-3">
-          <form onSubmit={handleSubmit(onSubmit)} ref={formRef}>
-            <FormControl id="keystore" isRequired>
-              <FormLabel>Keystore 파일</FormLabel>
-              <InputGroup>
-                <InputLeftElement
-                  pointerEvents="none"
-                >
-                  <Icon as={FiFile} />
-                </InputLeftElement>
-                <Input
-                  readOnly
-                  className="cursor-pointer"
-                  placeholder="Keystore File"
-                  name="keystore"
-                  defaultValue={file ? file.name : ""}
-                  onClick={onClick}
-                />
-              </InputGroup>
-              {errors && errors.keystore && (
-                <Text fontSize="md" color="red.400">
-                  keystore 파일을 선택해주세요.
-                </Text>
-              )}
-            </FormControl>
-            <FormControl id="password" isRequired>
-              <FormLabel>비밀번호</FormLabel>
-              <Input
+      <DialogTitle>
+        Keystore 로그인
+      </DialogTitle>
+      <DialogContent>
+        <Box
+          component="form"
+          className="space-y-3"
+          onSubmit={handleSubmit(onSubmit)}
+          ref={formRef}
+          sx={{ mt: 1 }}
+        >
+          <TextField
+            required
+            aria-readonly
+            label="Keystore 파일"
+            placeholder="Keystore File"
+            autoComplete="off"
+            color="info"
+            variant="standard"
+            fullWidth
+            className="cursor-pointer"
+            onClick={onClick}
+            InputProps={{
+              readOnly: true,
+            }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={file?.name ?? ""}
+            error={!!(errors?.keystore?.type)}
+            helperText={!!(errors?.keystore?.type)
+              ? "keystore 파일을 선택해주세요."
+              : ""}
+            {...register("keystore", { required: true })}
+          />
+          <Controller
+            control={control}
+            name="password"
+            rules={{ required: true }}
+            render={({ field }) => (
+              <TextField
+                required
                 type="password"
+                label="비밀번호"
+                fullWidth
                 placeholder="비밀번호"
-                id="password"
-                {...register("password", { required: true })}
+                autoComplete="on"
+                variant="standard"
+                color="info"
+                error={!!(errors?.password?.type)}
+                helperText={!!(errors?.password?.type) ? "비밀번호를 입력해주세요." : ""}
+                {...field}
               />
-              {errors && errors.password && (
-                <Text fontSize="md" color="red.400">
-                  비밀번호를 입력해주세요.
-                </Text>
-              )}
-            </FormControl>
-          </form>
-        </ModalBody>
-        <ModalFooter>
-          <Button type="button" colorScheme="gray" mr={3} onClick={onClose}>
-            취소
-          </Button>
-          <Button
-            type="button"
-            color="gray.100"
-            colorScheme="blackAlpha"
-            variant="solid"
-            onClick={onLogin}
-          >
-            로그인
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+            )}
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          type="button"
+          size="medium"
+          variant="outlined"
+          color="secondary"
+          autoFocus
+          onClick={onClose}
+        >
+          취소
+        </Button>
+        <Button
+          type="button"
+          size="medium"
+          variant="contained"
+          color="info"
+          onClick={onLogin}
+        >
+          로그인
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

@@ -1,27 +1,5 @@
 @tailwind base;
-@import './base.css';
-@import './icon.css';
-@import './button.css';
 
 @tailwind components;
-@import './navbar.css';
-@import './modal.css';
 
 @tailwind utilities;
-
-@import './landing.css';
-
-.profile-image-content {
-  width: 120px;
-  height: 120px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.profile-overlay {
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  opacity: 0.1;
-  cursor: pointer;
-}
