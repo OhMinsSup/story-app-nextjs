@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { useDisclosure, useToast } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/react";
 
 // components
 import Box from "@mui/material/Box";
@@ -20,15 +20,12 @@ import KeystoreAuthModal from "@components/auth/KeystoreAuthModal";
 // no components
 import caver from "@klaytn/caver";
 import { existsKlaytn, isAxiosError, signatureMessage } from "@utils/utils";
-import { PAGE_ENDPOINTS } from "@constants/constant";
 
 // api
 import { useMutationLogin } from "@api/story/auth";
 
 interface LoginPageProps {}
 const LoginPage: React.FC<LoginPageProps> = () => {
-  const toast = useToast();
-
   // 로그인
   const { mutateAsync } = useMutationLogin();
 
@@ -48,12 +45,6 @@ const LoginPage: React.FC<LoginPageProps> = () => {
     try {
       // Kaikas가 설치가 안된 경우
       if (existsKlaytn) {
-        toast({
-          title: "Story는 kaikas로 동작하고 있습니다. 크롬 PC 버전을 이용해주세요.",
-          status: "error",
-          isClosable: true,
-        });
-
         onInstalledOpen();
         return;
       }
@@ -163,7 +154,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
           </p>
         </Box>
       </Container>
-      <KeystoreAuthModal isOpen={true} onClose={() => {}} />
+      <KeystoreAuthModal isOpen={false} onClose={() => {}} />
       <InstalledKaikasModal isOpen={false} onClose={() => {}} />
       <SignatureLoadingDialog loading={false} />
       <SignupDialog enabled={false} onClose={() => {}} />

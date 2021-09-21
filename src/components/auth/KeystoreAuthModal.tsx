@@ -40,7 +40,6 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
     handleSubmit,
     setValue,
     control,
-    watch,
     formState: { errors },
   } = useForm<FormFieldValus>({
     mode: "onSubmit",
@@ -133,7 +132,7 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = (
 
   return (
     <Dialog
-      open={true}
+      open={isOpen}
       maxWidth="sm"
       fullWidth
     >
