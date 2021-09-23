@@ -1,38 +1,38 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { useRouter } from "next/router";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
 
 // components
-import UserProfile from "@components/common/UserProfile";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import LoadingButton from "@mui/lab/LoadingButton";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
+import UserProfile from '@components/common/UserProfile';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import LoadingButton from '@mui/lab/LoadingButton';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
 
 // icons
-import ArrowBack from "@mui/icons-material/ArrowBack";
+import ArrowBack from '@mui/icons-material/ArrowBack';
 
 // no components
-import { signUpSchema } from "@libs/yup/schema";
-import { generateKey } from "@utils/utils";
-import { PAGE_ENDPOINTS } from "@constants/constant";
-import type { GenderType } from "types/story-api";
+import { signUpSchema } from '@libs/yup/schema';
+import { generateKey } from '@utils/utils';
+import { PAGE_ENDPOINTS } from '@constants/constant';
+import type { GenderType } from 'types/story-api';
 
 // store
-import useWalletSignature from "@store/useWalletSignature";
+import useWalletSignature from '@store/useWalletSignature';
 
 // api
-import { useMutationSignUp } from "@api/story/auth";
+import { useMutationSignUp } from '@api/story/auth';
 
 interface FormFieldValues {
   profileUrl?: string | null;
@@ -42,15 +42,6 @@ interface FormFieldValues {
   gender: GenderType;
   signature: string;
 }
-
-const defaultValues: FormFieldValues = {
-  profileUrl: null,
-  nickname: "",
-  email: "",
-  walletAddress: "",
-  signature: "",
-  gender: "M",
-};
 
 const key = generateKey();
 
@@ -71,17 +62,22 @@ const SignupPage: React.FC<SignupProps> = () => {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<
-    FormFieldValues
-  >({
-    mode: "onSubmit",
+  } = useForm<FormFieldValues>({
+    mode: 'onSubmit',
     resolver: yupResolver(signUpSchema),
-    criteriaMode: "firstError",
-    reValidateMode: "onChange",
-    defaultValues,
+    criteriaMode: 'firstError',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      profileUrl: null,
+      nickname: '',
+      email: '',
+      walletAddress: '',
+      signature: '',
+      gender: 'M',
+    },
   });
 
-  const watchProfuleUrl = watch("profileUrl");
+  const watchProfuleUrl = watch('profileUrl');
 
   // 회원가입
   const onSubmit: SubmitHandler<FormFieldValues> = async (input) => {
@@ -92,7 +88,9 @@ const SignupPage: React.FC<SignupProps> = () => {
         defaultProfile: !input.profileUrl,
         signature: input.signature,
       };
-      const { data: { ok } } = await mutateAsync(body);
+      const {
+        data: { ok },
+      } = await mutateAsync(body);
       if (ok) {
         router.replace(PAGE_ENDPOINTS.INDEX);
       }
@@ -101,12 +99,13 @@ const SignupPage: React.FC<SignupProps> = () => {
     }
   };
 
+  console.log(watch());
   // set init form validation
   useEffect(() => {
     if (!walletSignature) return;
     reset({
-      gender: "M",
-      walletAddress: klaytn.selectedAddress,
+      gender: 'M',
+      walletAddress: walletSignature.walletAddress,
       signature: walletSignature.signature,
     });
   }, [reset, walletSignature]);
@@ -115,20 +114,20 @@ const SignupPage: React.FC<SignupProps> = () => {
   useEffect(() => {
     if (!file) return;
     const url = window.URL.createObjectURL(file);
-    setValue("profileUrl", url);
+    setValue('profileUrl', url);
     return () => window.URL.revokeObjectURL(url);
   }, [file]);
 
   // 프리뷰 삭제
   const onRemovePreview = useCallback(() => {
-    setValue("profileUrl", null);
+    setValue('profileUrl', null);
     setFile(null);
   }, []);
 
   // 회원가입
   const onClickSubmit = useCallback(() => {
     formRef.current?.dispatchEvent(
-      new Event("submit", { cancelable: true, bubbles: true }),
+      new Event('submit', { cancelable: true, bubbles: true }),
     );
   }, []);
 
@@ -152,9 +151,9 @@ const SignupPage: React.FC<SignupProps> = () => {
         <Box
           sx={{
             marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
           <Typography
@@ -178,61 +177,81 @@ const SignupPage: React.FC<SignupProps> = () => {
               onClearThumbnail={() => {}}
               onUpload={() => {}}
             />
-            <TextField
-              required
-              label="닉네임"
-              placeholder="닉네임"
-              autoComplete="off"
-              color="info"
-              variant="standard"
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              error={!!(errors?.nickname?.message)}
-              helperText={!!(errors?.nickname?.message)
-                ? errors?.nickname?.message
-                : ""}
-              {...register("nickname")}
+            <Controller
+              control={control}
+              name="nickname"
+              render={({ field }) => (
+                <TextField
+                  required
+                  label="닉네임"
+                  placeholder="닉네임"
+                  autoComplete="off"
+                  color="info"
+                  variant="standard"
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  error={!!errors?.nickname?.message}
+                  helperText={
+                    !!errors?.nickname?.message ? errors?.nickname?.message : ''
+                  }
+                  {...field}
+                />
+              )}
             />
-            <TextField
-              required
-              aria-readonly
-              label="지갑 주소"
-              placeholder="지갑 주소"
-              autoComplete="off"
-              color="info"
-              variant="standard"
-              fullWidth
-              className="cursor-none"
-              InputProps={{
-                readOnly: true,
-              }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              error={!!(errors?.walletAddress?.message)}
-              helperText={!!(errors?.walletAddress?.message)
-                ? errors.walletAddress.message
-                : ""}
-              {...register("walletAddress", { required: true })}
+            <Controller
+              control={control}
+              name="walletAddress"
+              render={({ field }) => (
+                <TextField
+                  required
+                  aria-readonly
+                  label="지갑 주소"
+                  placeholder="지갑 주소"
+                  autoComplete="off"
+                  color="info"
+                  variant="standard"
+                  fullWidth
+                  className="cursor-none"
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  error={!!errors?.walletAddress?.message}
+                  helperText={
+                    !!errors?.walletAddress?.message
+                      ? errors.walletAddress.message
+                      : ''
+                  }
+                  {...field}
+                />
+              )}
             />
-            <TextField
-              required
-              label="이메일"
-              placeholder="이메일"
-              autoComplete="off"
-              color="info"
-              variant="standard"
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-              error={!!(errors?.email?.message)}
-              helperText={!!(errors?.email?.message)
-                ? errors?.email?.message
-                : ""}
-              {...register("email")}
+            <Controller
+              control={control}
+              name="email"
+              render={({ field }) => (
+                <TextField
+                  required
+                  label="이메일"
+                  placeholder="이메일"
+                  autoComplete="off"
+                  color="info"
+                  variant="standard"
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  error={!!errors?.email?.message}
+                  helperText={
+                    !!errors?.email?.message ? errors?.email?.message : ''
+                  }
+                  {...field}
+                />
+              )}
             />
             <FormControl component="fieldset" color="info">
               <FormLabel component="legend">성별</FormLabel>

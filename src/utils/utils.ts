@@ -48,3 +48,20 @@ export const generateAvatar = (key: string) => {
   const svgCode = multiavatar(key);
   return svgCode;
 };
+
+export const getUserThumbnail = ({
+  defaultProfile,
+  avatarSvg,
+  profileUrl,
+  nickname,
+}: {
+  defaultProfile: boolean;
+  avatarSvg: string | null;
+  profileUrl: string | null;
+  nickname: string;
+}) => {
+  const svgCode = `data:image/svg+xml;utf8,${encodeURIComponent(
+    generateAvatar(avatarSvg ?? nickname),
+  )}`;
+  return defaultProfile ? svgCode : profileUrl ?? svgCode;
+};

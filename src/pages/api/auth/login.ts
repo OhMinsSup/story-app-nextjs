@@ -19,6 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
       include: {
         profile: true,
+        session: true,
       },
     });
 
@@ -38,6 +39,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         payload: {
           signatureId: signature.id,
           signature: signature.signature,
+        },
+      });
+    }
+
+    // 세션이 존재하고 이미 존재하는 세션하고 새로운 세샨이 다르면 업데이트
+    if (exists.session && exists.session?.signature !== body.signature) {
+      await prisma.signature.update({
+        data: {
+          signature: body.signature,
+        },
+        where: {
+          id: exists.session.id,
         },
       });
     }
