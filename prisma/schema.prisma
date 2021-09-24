@@ -15,7 +15,6 @@ model User {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     profile    Profile?
-    session    Session?
 }
 
 model Profile {
@@ -23,7 +22,7 @@ model Profile {
     userId         Int
     nickname       String
     profileUrl     String?
-    avatarSvg      String
+    avatarSvg      String?
     defaultProfile Boolean  @default(true)
     gender         String
     createdAt      DateTime @default(now())
@@ -32,18 +31,10 @@ model Profile {
 }
 
 model Signature {
-    id        Int      @id @default(autoincrement())
-    signature String
-    disabled  Boolean  @default(false)
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
-model Session {
-    id        Int      @id @default(autoincrement())
-    userId    Int
-    signature String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    user      User     @relation(fields: [userId], references: [id])
+    id         Int      @id @default(autoincrement())
+    userId     Int?
+    signature  String
+    isVerified Boolean  @default(false)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 }

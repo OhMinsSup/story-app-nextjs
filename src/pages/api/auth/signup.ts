@@ -63,11 +63,37 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
-    // 세션 정보 생성
-    await prisma.session.create({
+    // 현재 회원가입을 할려고 하는 signature 정보를 가져온다.
+    const currentSignature = await prisma.signature.findFirst({
+      where: {
+        AND: [
+          {
+            isVerified: false,
+          },
+          {
+            signature: body.signature,
+          },
+        ],
+      },
+    });
+
+    // 해당 정보가 존재하지 않으면 에러를 반환한다.
+    if (!currentSignature) {
+      return res.status(404).json({
+        ok: false,
+        resultCode: 2001,
+        message: '유효하지 않은 signature 입니다.',
+        payload: null,
+      });
+    }
+
+    // 회원가입 signature 정보를 업데이트 한다.
+    await prisma.signature.update({
+      where: {
+        id: currentSignature.id,
+      },
       data: {
-        userId: user.id,
-        signature: body.signature,
+        isVerified: true,
       },
     });
 

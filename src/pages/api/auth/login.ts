@@ -19,7 +19,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
       include: {
         profile: true,
-        session: true,
       },
     });
 
@@ -43,14 +42,28 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
+    // 현재 유저의 signature 정보를 가져온다.
+    const currentSignature = await prisma.signature.findFirst({
+      where: {
+        AND: [
+          {
+            userId: exists.id,
+          },
+          {
+            isVerified: true,
+          },
+        ],
+      },
+    });
+
     // 세션이 존재하고 이미 존재하는 세션하고 새로운 세샨이 다르면 업데이트
-    if (exists.session && exists.session?.signature !== body.signature) {
+    if (currentSignature && currentSignature.signature !== body.signature) {
       await prisma.signature.update({
         data: {
           signature: body.signature,
         },
         where: {
-          id: exists.session.id,
+          id: currentSignature.id,
         },
       });
     }
