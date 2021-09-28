@@ -3,6 +3,7 @@ export const PAGE_ENDPOINTS = {
   LOGIN: '/login/',
   SIGNUP: '/signup/',
   ILLUSTRATION: '/illustration/',
+  PUBLISH: '/publish/',
 };
 
 export const API_ENDPOINTS = {

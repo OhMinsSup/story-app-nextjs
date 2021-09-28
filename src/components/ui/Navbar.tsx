@@ -90,6 +90,10 @@ const Navbar: React.FC<NavbarProps> = () => {
     router.push(PAGE_ENDPOINTS.LOGIN);
   }, [router]);
 
+  const onPublish = useCallback(() => {
+    router.push(PAGE_ENDPOINTS.PUBLISH);
+  }, [router]);
+
   const renderMobileMenu = (
     <Menu
       anchorEl={null}
@@ -191,7 +195,7 @@ const Navbar: React.FC<NavbarProps> = () => {
                     size="medium"
                     variant="outlined"
                     color="secondary"
-                    onClick={() => {}}
+                    onClick={onPublish}
                   >
                     발행하기
                   </Button>
