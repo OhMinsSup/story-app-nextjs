@@ -43,13 +43,17 @@ const NFTCard: React.FC<NFTCardProps> = ({ item }) => {
   };
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ width: 345 }}>
       <CardHeader
         avatar={
           <Avatar
             sx={{ bgcolor: red[500] }}
             src={item.profileImageUrl}
             aria-label="recipe"
+            imgProps={{
+              alt: item.nickname,
+              loading: 'lazy',
+            }}
           >
             {item.nickname}
           </Avatar>
@@ -63,10 +67,14 @@ const NFTCard: React.FC<NFTCardProps> = ({ item }) => {
         subheader={`CreateBy ${item.nickname}`}
       />
       <CardMedia
+        sx={{ backgroundColor: item.background_color }}
         component="img"
+        className="h-40 object-contain"
+        loading="lazy"
         height="194"
+        data-src={item.image}
         image={item.image}
-        alt="Paella dish"
+        alt={item.name}
       />
       <CardContent>
         <Typography variant="body2" color="text.secondary" noWrap>
