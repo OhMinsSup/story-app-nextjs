@@ -57,8 +57,6 @@ const IndexPage = () => {
 
   const items = result.data?.items ?? [];
 
-  console.log('items', items);
-
   return (
     <div>
       <Box sx={{ flexGrow: 1, bgcolor: grey[50] }}>

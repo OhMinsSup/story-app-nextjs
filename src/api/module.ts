@@ -8,8 +8,7 @@ import { STORAGE_KEY } from '@constants/constant';
 import { API_HOST } from '@constants/env';
 import { client } from './client';
 
-export interface Options<Data = any> {
-  initialData: Data | null;
+export interface Options {
   context:
     | GetStaticPropsContext
     | GetServerSidePropsContext
@@ -33,105 +32,84 @@ class APIMoudle {
     return authorization;
   }
 
-  async deleteResponse({
+  deleteResponse = async ({
     url,
     headers = {},
-    options = { context: null, initialData: null },
-  }: Params) {
-    try {
-      const authorization = this.authorized();
-      const result = await client.delete(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(authorization && {
-            Authorization: `Bearer ${authorization}`,
-          }),
-          ...headers,
-        },
-      });
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
+    options = { context: null },
+  }: Params) => {
+    const authorization = this.authorized();
+    const result = await client.delete(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authorization && {
+          Authorization: `Bearer ${authorization}`,
+        }),
+        ...headers,
+      },
+    });
+    return result;
+  };
 
-  async postResponse({
+  postResponse = async ({
     url,
     body = {},
     headers = {},
-    options = { context: null, initialData: null },
-  }: Params) {
-    try {
-      const authorization = this.authorized();
-      const result = await client.post(url, body, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(authorization && {
-            Authorization: `Bearer ${authorization}`,
-          }),
-          ...headers,
-        },
-      });
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
+    options = { context: null },
+  }: Params) => {
+    const authorization = this.authorized();
+    const result = await client.post(url, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authorization && {
+          Authorization: `Bearer ${authorization}`,
+        }),
+        ...headers,
+      },
+    });
+    return result;
+  };
 
-  async putResponse({
+  putResponse = async ({
     url,
     body = {},
     headers = {},
-    options = { context: null, initialData: null },
-  }: Params) {
-    try {
-      const authorization = this.authorized();
-      const result = await client.put(url, body, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(authorization && {
-            Authorization: `Bearer ${authorization}`,
-          }),
-          ...headers,
-        },
-      });
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
+    options = { context: null },
+  }: Params) => {
+    const authorization = this.authorized();
+    const result = await client.put(url, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authorization && {
+          Authorization: `Bearer ${authorization}`,
+        }),
+        ...headers,
+      },
+    });
+    return result;
+  };
 
-  async getResponse({
+  getResponse = async ({
     url,
     headers = {},
-    options = { context: null, initialData: null },
-  }: Params) {
-    try {
-      const authorization = this.authorized();
-      const result = await client.get(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(authorization && {
-            Authorization: `Bearer ${authorization}`,
-          }),
-          ...headers,
-        },
-      });
-      return result;
-    } catch (error) {
-      throw error;
-    }
-  }
+    options = { context: null },
+  }: Params) => {
+    const authorization = this.authorized();
+    const result = await client.get(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authorization && {
+          Authorization: `Bearer ${authorization}`,
+        }),
+        ...headers,
+      },
+    });
+    return result;
+  };
 
   async getMockResponse(url: string) {
-    try {
-      const prefixUrl = API_HOST + url;
-      const result = await axios(prefixUrl);
-      console.log('result');
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    const prefixUrl = API_HOST + url;
+    const result = await axios(prefixUrl);
+    return result;
   }
 }
 

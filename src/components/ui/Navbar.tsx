@@ -158,7 +158,10 @@ const Navbar: React.FC<NavbarProps> = () => {
             />
           </Search>
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <div className="inline-block mx-3 align-middle p-2 space-x-5">
+            <div
+              className="inline-block mx-3 align-middle p-2 space-x-5"
+              suppressHydrationWarning
+            >
               {userInfo ? (
                 <>
                   <NoSsr>
