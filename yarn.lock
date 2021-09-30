@@ -6510,6 +6510,36 @@ filenamify@^4.3.0:
     strip-outer "^1.0.1"
     trim-repeated "^1.0.0"
 
+filepond-plugin-file-validate-size@^2.2.5:
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/filepond-plugin-file-validate-size/-/filepond-plugin-file-validate-size-2.2.5.tgz#985c83f0e0a9c09918310a231c5f014fb642c92b"
+  integrity sha512-x+fYZl317R17w3dExKab1oYZa10Wl2HcXKD6dzIgRKyngEHtjBF99geGaiDPk9IfozV8Zjzx69D7urcthF2CYQ==
+
+filepond-plugin-file-validate-type@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/filepond-plugin-file-validate-type/-/filepond-plugin-file-validate-type-1.2.6.tgz#5a03e04fb8f70f0df37ff9a285d3d2343cdc55f2"
+  integrity sha512-3JFxpb4o5D4BssP/Drjn2GPpejg/QXzU4e3/Pq8IvIJuokHz95b6+RPYstQ+6ITKREYup0N8F/CO/OQfhVkUgg==
+
+filepond-plugin-get-file@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/filepond-plugin-get-file/-/filepond-plugin-get-file-1.0.7.tgz#e7386ceed14586766662b2b767aaac640075721b"
+  integrity sha512-Bnn0IXZp5CZm9yPsVUlnbB5tWQtSB99ZqHOXkJdu1qtcp07YxPBFKZ8OY/STfsZmVkNp6qusDd2H3szZglh7Fg==
+
+filepond-plugin-image-preview@^4.6.10:
+  version "4.6.10"
+  resolved "https://registry.yarnpkg.com/filepond-plugin-image-preview/-/filepond-plugin-image-preview-4.6.10.tgz#6e7ecc0997b1b6295e06d3824c37de3111a40c1f"
+  integrity sha512-C7Q5Sr/d4RQb2nMNQR93OiMt91OHxpvmIBGl+CO1dZE46lM49NUfI08dyElAOxTslDcA8pAfjFFCKo0sNYbrBg==
+
+filepond-plugin-image-validate-size@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/filepond-plugin-image-validate-size/-/filepond-plugin-image-validate-size-1.2.6.tgz#38c8fb354c4f59a1c3c004960f84d416bdf8b76a"
+  integrity sha512-yQfw46kTPj+troodsV7E3Mh83Rvc2bf8l3Un8+O5LZ0CCECwV8c31nnsxp3ObMS1HD6n1oWHicnyga1qRVVqbA==
+
+filepond@^4.30.0:
+  version "4.30.0"
+  resolved "https://registry.yarnpkg.com/filepond/-/filepond-4.30.0.tgz#0b6f20129eb39d0b1ab26539eba6cb91b47f48b4"
+  integrity sha512-HLwDygc7xl13n53BX3C3zvsdhdb8yWcsmC5FGuFWlcVZuSQ0/xcEGcVwbo8WgZo9G+LdM92oxTGwgzjuTSbgkg==
+
 filesize@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/filesize/-/filesize-7.0.0.tgz#9d4b3ce384ec7731a9e68c64ee29fb4934ad657d"

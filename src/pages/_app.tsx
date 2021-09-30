@@ -1,5 +1,9 @@
 import '@assets/main.css';
 
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+import 'filepond-plugin-get-file/dist/filepond-plugin-get-file.min.css';
+
 import React, { useRef } from 'react';
 import type { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from 'react-query';
