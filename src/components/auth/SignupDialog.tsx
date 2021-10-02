@@ -1,16 +1,16 @@
-import React, { useCallback } from "react";
-import { useRouter } from "next/router";
+import React, { useCallback } from 'react';
+import { useRouter } from 'next/router';
 
 // components
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogActions from "@mui/material/DialogActions";
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 
 // no components
-import { PAGE_ENDPOINTS } from "@constants/constant";
+import { PAGE_ENDPOINTS } from '@constants/constant';
 
 interface SignupDialogProps {
   enabled: boolean;
@@ -25,18 +25,10 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ enabled, onClose }) => {
   }, []);
 
   return (
-    <Dialog
-      open={enabled}
-      maxWidth="sm"
-      fullWidth
-    >
-      <DialogTitle>
-        회원가입
-      </DialogTitle>
+    <Dialog open={enabled} maxWidth="sm" fullWidth>
+      <DialogTitle>회원가입</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          계속하려면 회원가입을 해주세요.
-        </DialogContentText>
+        <DialogContentText>계속하려면 회원가입을 해주세요.</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button

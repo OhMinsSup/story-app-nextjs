@@ -5,12 +5,12 @@ import React, {
   useMemo,
   useRef,
   useState,
-} from "react";
-import DialogTitle from "@mui/material/DialogTitle";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Button from "@mui/material/Button";
+} from 'react';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 
 interface AlertOptions {
   key?: number;
@@ -46,7 +46,7 @@ export function useAlert() {
 
   const alertInstance = useMemo(() => {
     return (visible: boolean, options: AlertOptions) => {
-      console.log("current alert info:", alertManager);
+      console.log('current alert info:', alertManager);
 
       if (keyRef.current) {
         visible
@@ -66,10 +66,10 @@ export function useAlert() {
       options = {
         ...options,
         content: {
-          title: "",
-          text: "",
-          cancelText: "취소",
-          confirmText: "확인",
+          title: '',
+          text: '',
+          cancelText: '취소',
+          confirmText: '확인',
         },
       };
     }
@@ -138,22 +138,22 @@ export function useAlert() {
 
     return (
       <Dialog onClose={closeAlert} open={isAlertOpen}>
-        {content?.title && (
-          <DialogTitle>{content.title}</DialogTitle>
-        )}
+        {content?.title && <DialogTitle>{content.title}</DialogTitle>}
         <DialogContent>
-          {isValidElement(content?.text)
-            ? content?.text
-            : <p>{content?.text}</p>}
+          {isValidElement(content?.text) ? (
+            content?.text
+          ) : (
+            <p>{content?.text}</p>
+          )}
         </DialogContent>
         <DialogActions>
           {showCancel && (
             <Button autoFocus onClick={cancelHandler}>
-              {content?.cancelText ?? "취소"}
+              {content?.cancelText ?? '취소'}
             </Button>
           )}
           <Button autoFocus onClick={okHandler}>
-            {content?.confirmText ?? "확인"}
+            {content?.confirmText ?? '확인'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -163,11 +163,11 @@ export function useAlert() {
   // clear
   useEffect(() => {
     return () => {
-      console.log("clear start....");
+      console.log('clear start....');
       if (alertManager.size > 0) {
         alertManager.clear();
         keyRef.current = null;
-        console.log("success clear: ", alertManager);
+        console.log('success clear: ', alertManager);
       }
     };
   }, []);

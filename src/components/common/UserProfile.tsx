@@ -1,8 +1,8 @@
-import React from "react";
-import styled from "@emotion/styled";
-import Button from "@mui/material/Button";
-import Avatar from "@mui/material/Avatar";
-import { generateAvatar } from "@utils/utils";
+import React from 'react';
+import styled from '@emotion/styled';
+import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
+import { generateAvatar } from '@utils/utils';
 
 export type UserProfileProps = {
   defaultThumbnail: boolean;
@@ -22,18 +22,15 @@ const UserProfile: React.FC<UserProfileProps> = ({
   return (
     <Section>
       <div className="thumbnail-area">
-        {defaultThumbnail
-          ? <div
+        {defaultThumbnail ? (
+          <div
             dangerouslySetInnerHTML={{ __html: generateAvatar(avatarkey) }}
           />
-          : thumbnail
-          ? <img
-            src={thumbnail}
-            alt="profile"
-          />
-          : (
-            <Avatar src="/broken-image.jpg" />
-          )}
+        ) : thumbnail ? (
+          <img src={thumbnail} alt="profile" />
+        ) : (
+          <Avatar src="/broken-image.jpg" />
+        )}
         <Button
           color="info"
           size="medium"
@@ -69,7 +66,8 @@ const Section = styled.section`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    img,svg {
+    img,
+    svg {
       object-fit: cover;
       width: 8rem;
       height: 8rem;

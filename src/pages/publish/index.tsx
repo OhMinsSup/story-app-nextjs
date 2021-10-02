@@ -12,7 +12,9 @@ import FormLabel from '@mui/material/FormLabel';
 import FormGroup from '@mui/material/FormGroup';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
-
+import LoadingButton from '@mui/lab/LoadingButton';
+import SaveIcon from '@mui/icons-material/Save';
+import Stack from '@mui/material/Stack';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -45,20 +47,14 @@ const item = {
 const PublishPage = () => {
   return (
     <Grid container spacing={3} sx={{ mt: '3rem', mb: '5rem', px: '2rem' }}>
-      <Grid item xs={12}>
+      <Grid item xs={12} className=" space-y-4">
         <Grid container spacing={3}>
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12}>
             <Typography variant="h4" sx={{ fontWeight: 600 }} component="h2">
               새로운 NFT Story 발행하기
             </Typography>
             <div>
-              <Box
-                component="form"
-                className="space-y-6"
-                // onSubmit={handleSubmit(onSubmit)}
-                // ref={formRef}
-                sx={{ mt: 1 }}
-              >
+              <Box component="form" className="space-y-6" sx={{ mt: 1 }}>
                 <Box component="div" sx={{ mt: '3rem' }}>
                   <FormGroup>
                     <FormLabel sx={{ fontWeight: 600 }} component="label">
@@ -137,50 +133,19 @@ const PublishPage = () => {
               </Box>
             </div>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 600, mb: '1.5rem', mt: '1.5rem' }}
-              component="h4"
-            >
-              미리보기
-            </Typography>
-            <Card>
-              <CardHeader
-                avatar={
-                  <Avatar
-                    sx={{ bgcolor: red[500] }}
-                    src={item.profileImageUrl}
-                    aria-label="recipe"
-                    imgProps={{
-                      alt: item.nickname,
-                      loading: 'lazy',
-                    }}
-                  >
-                    {item.nickname}
-                  </Avatar>
-                }
-                title={item.name}
-                subheader={`CreateBy ${item.nickname}`}
-              />
-              <CardMedia
-                sx={{ backgroundColor: item.background_color }}
-                component="img"
-                className="h-40 object-contain"
-                loading="lazy"
-                height="194"
-                data-src={item.image}
-                image={item.image}
-                alt={item.name}
-              />
-              <CardContent>
-                <Typography variant="body2" color="text.secondary" noWrap>
-                  설명
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
         </Grid>
+        <div className="flex justify-end">
+          <LoadingButton
+            loading={false}
+            loadingPosition="start"
+            startIcon={<SaveIcon />}
+            color="info"
+            size="large"
+            variant="contained"
+          >
+            발행하기
+          </LoadingButton>
+        </div>
       </Grid>
     </Grid>
   );

@@ -1,24 +1,24 @@
-import { useMutation } from "react-query";
-import { AxiosError } from "axios";
+import { useMutation } from 'react-query';
+import { AxiosError } from 'axios';
 
 // api
-import { api } from "@api/module";
+import { api } from '@api/module';
 
 // no compoents
-import { API_ENDPOINTS } from "@constants/constant";
+import { API_ENDPOINTS } from '@constants/constant';
 
 // hooks
-import { useToken, useUserInfo } from "@hooks/useStorage";
+import { useToken, useUserInfo } from '@hooks/useStorage';
 
 // store
-import useAuth from "@store/useAuth";
-import useWalletSignature from "@store/useWalletSignature";
+import useAuth from '@store/useAuth';
+import useWalletSignature from '@store/useWalletSignature';
 
 import {
   MutationSignupInput,
   MutationSignupResponse,
   StoryApi,
-} from "types/story-api";
+} from 'types/story-api';
 
 export function useMutationSignUp() {
   const { setWalletSignature } = useWalletSignature();
@@ -40,7 +40,9 @@ export function useMutationSignUp() {
     {
       onSuccess: (data) => {
         if (data?.data.payload) {
-          const { payload: { id, email, profile, accessToken } } = data?.data;
+          const {
+            payload: { id, email, profile, accessToken },
+          } = data?.data;
 
           const user = {
             id,

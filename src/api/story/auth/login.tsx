@@ -1,19 +1,19 @@
-import { useMutation } from "react-query";
-import { AxiosError } from "axios";
+import { useMutation } from 'react-query';
+import { AxiosError } from 'axios';
 
 // api
-import { api } from "@api/module";
+import { api } from '@api/module';
 
 // no components
-import { API_ENDPOINTS } from "@constants/constant";
-import { isAxiosError } from "@utils/utils";
+import { API_ENDPOINTS } from '@constants/constant';
+import { isAxiosError } from '@utils/utils';
 
 // hooks
-import { useToken, useUserInfo } from "@hooks/useStorage";
+import { useToken, useUserInfo } from '@hooks/useStorage';
 
 // store
-import useAuth from "@store/useAuth";
-import useWalletSignature from "@store/useWalletSignature";
+import useAuth from '@store/useAuth';
+import useWalletSignature from '@store/useWalletSignature';
 
 // types
 import type {
@@ -21,7 +21,7 @@ import type {
   MutationLoginResponse,
   ResponseModel,
   StoryApi,
-} from "types/story-api";
+} from 'types/story-api';
 
 export function useMutationLogin() {
   const { setAuth } = useAuth();
@@ -43,7 +43,9 @@ export function useMutationLogin() {
     {
       onSuccess: (data) => {
         if (data?.data.payload) {
-          const { payload: { id, email, profile, accessToken } } = data?.data;
+          const {
+            payload: { id, email, profile, accessToken },
+          } = data?.data;
 
           const user = {
             id,

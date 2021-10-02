@@ -1,10 +1,10 @@
-import { QueryFunctionContext, QueryKey, useQuery } from "react-query";
-import { api } from "@api/module";
-import { API_ENDPOINTS } from "@constants/constant";
+import { QueryFunctionContext, QueryKey, useQuery } from 'react-query';
+import { api } from '@api/module';
+import { API_ENDPOINTS } from '@constants/constant';
 
-export const fetchIllustractions = async (
-  { queryKey }: QueryFunctionContext<QueryKey, any>,
-) => {
+export const fetchIllustractions = async ({
+  queryKey,
+}: QueryFunctionContext<QueryKey, any>) => {
   const [_key, _params] = queryKey;
   const response = await api.getMockResponse(API_ENDPOINTS.MOCK.ILLUSTRATION);
   return response.data;
