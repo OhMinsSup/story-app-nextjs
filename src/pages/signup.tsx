@@ -56,7 +56,6 @@ const SignupPage: React.FC<SignupProps> = () => {
 
   const {
     handleSubmit,
-    register,
     reset,
     control,
     setValue,
@@ -64,7 +63,7 @@ const SignupPage: React.FC<SignupProps> = () => {
     formState: { errors },
   } = useForm<FormFieldValues>({
     mode: 'onSubmit',
-    resolver: yupResolver(signUpSchema),
+    resolver: yupResolver(signUpSchema as any),
     criteriaMode: 'firstError',
     reValidateMode: 'onChange',
     defaultValues: {

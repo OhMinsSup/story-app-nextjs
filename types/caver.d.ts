@@ -267,7 +267,7 @@ declare module 'caver-js' {
      * @constructor
      * @param {string}  연결할 노드의 url 문자열입니다. 공급자 인스턴스를 직접 전달할 수 있습니다
      * */
-    constructor(provider: string);
+    constructor(provider: string | typeof klaytn);
 
     public klay: Klay;
 

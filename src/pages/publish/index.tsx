@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import { TwitterPicker } from 'react-color';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import AppLayout from '@components/layouts/AppLayout';
 import FileUpload from '@components/common/FileUpload';
@@ -10,41 +12,64 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import FormLabel from '@mui/material/FormLabel';
 import FormGroup from '@mui/material/FormGroup';
-import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
-import Stack from '@mui/material/Stack';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
 
-import Avatar from '@mui/material/Avatar';
-import { red } from '@mui/material/colors';
+// common
+import { publishSchema } from '@libs/yup/schema';
 
-const item = {
-  contractAddress: '0x9faccd9f9661dddec3971c1ee146516127c34fc1',
-  tokenId: '0xd99ce0f9',
-  tokenIndex: '0',
-  klaytnAddress: '0x892b2c3dfdbb7a20841f7c68ded93189bca36157',
-  updatedAt: 1629371423,
-  createdAt: 1629371423,
-  name: 'Snow XX by Artist Zem.N',
-  description: 'Snow XX by Artist Zem.N',
-  image: 'https://cdn.krafter.space/0xd99ce0f975.jpg',
-  background_color: '#7a9fc5',
-  attributes: [],
-  sendable: true,
-  send_friend_only: true,
-  external_link: '',
-  external_url: '',
-  profileImageUrl:
-    'https://cdn.krafter.space/0x558ef3e1110c8773edc131bfb1ceca1ebbc19b67dc7eb4ff73b53f498ad6f080.png',
-  nickname: 'Loco_por_el_arte',
-};
+interface FormFieldValues {
+  name: string;
+  description: string;
+  media: {
+    contentUrl: string;
+    idx: number;
+  } | null;
+  backgroundColor?: string;
+  externalUrl?: string;
+}
 
 const PublishPage = () => {
+  const {
+    handleSubmit,
+    register,
+    reset,
+    control,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<FormFieldValues>({
+    mode: 'onSubmit',
+    resolver: yupResolver(publishSchema as any),
+    criteriaMode: 'firstError',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      name: '',
+      description: '',
+      media: null,
+      backgroundColor: undefined,
+      externalUrl: undefined,
+    },
+  });
+
+  const formRef = useRef<HTMLFormElement | null>(null);
+  // 등록
+  const onSubmit: SubmitHandler<FormFieldValues> = async (input) => {
+    try {
+      console.log(input);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // 발행하기
+  const onClickSubmit = useCallback(() => {
+    formRef.current?.dispatchEvent(
+      new Event('submit', { cancelable: true, bubbles: true }),
+    );
+  }, []);
+
   return (
     <Grid container spacing={3} sx={{ mt: '3rem', mb: '5rem', px: '2rem' }}>
       <Grid item xs={12} className=" space-y-4">
@@ -54,7 +79,13 @@ const PublishPage = () => {
               새로운 NFT Story 발행하기
             </Typography>
             <div>
-              <Box component="form" className="space-y-6" sx={{ mt: 1 }}>
+              <Box
+                component="form"
+                className="space-y-6"
+                sx={{ mt: 1 }}
+                ref={formRef}
+                onSubmit={handleSubmit(onSubmit)}
+              >
                 <Box component="div" sx={{ mt: '3rem' }}>
                   <FormGroup>
                     <FormLabel sx={{ fontWeight: 600 }} component="label">
@@ -70,54 +101,115 @@ const PublishPage = () => {
                         - 이미지: PNG, JPG, JPEG, GIF, WEBP (가로 세로 사이즈
                         600px 이상)
                       </p>
-                      <p>- 영상: MP4 (가로 세로 사이즈 600px 이상)</p>
                     </FormHelperText>
                     <div className="mt-3">
-                      <FileUpload onSetUploadFile={() => {}} />
+                      <FileUpload
+                        imagePreviewHeight={600}
+                        onremovefile={() => {
+                          setValue('media', null, {
+                            shouldValidate: true,
+                          });
+                        }}
+                        onSetUploadFile={(filepond) => {
+                          if (!filepond) return;
+                          setValue(
+                            'media',
+                            {
+                              contentUrl: filepond.file.name,
+                              idx: filepond.file.size,
+                            },
+                            { shouldValidate: true },
+                          );
+                        }}
+                      />
+                      <input type="hidden" {...register('media')} />
+                      {(errors as any).media?.message && (
+                        <FormHelperText error>
+                          {(errors as any).media.message}
+                        </FormHelperText>
+                      )}
                     </div>
                   </FormGroup>
                 </Box>
-                <TextField
-                  required
-                  label="이름"
-                  placeholder="이름을 입력해주세요. (최대 50자까지)"
-                  autoComplete="off"
-                  size="medium"
-                  color="info"
-                  variant="standard"
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                <TextField
-                  required
-                  label="설명"
-                  fullWidth
-                  multiline
-                  size="medium"
-                  color="info"
-                  placeholder="설명을 입력하세요."
-                  minRows={8}
-                  variant="standard"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
+                <Controller
+                  control={control}
+                  name="name"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      required
+                      label="이름"
+                      placeholder="이름을 입력해주세요. (최대 50자까지)"
+                      autoComplete="off"
+                      size="medium"
+                      color="info"
+                      variant="standard"
+                      fullWidth
+                      error={!!errors?.name?.message}
+                      helperText={
+                        !!errors?.name?.message ? errors?.name?.message : ''
+                      }
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                  )}
                 />
 
-                <TextField
-                  label="외부 URL"
-                  fullWidth
-                  size="medium"
-                  color="info"
-                  placeholder="외부 URL을 입력하세요."
-                  variant="standard"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">https://</InputAdornment>
-                    ),
-                  }}
+                <Controller
+                  control={control}
+                  name="description"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      required
+                      label="설명"
+                      fullWidth
+                      multiline
+                      size="medium"
+                      color="info"
+                      placeholder="설명을 입력하세요."
+                      minRows={8}
+                      variant="standard"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      error={!!errors?.description?.message}
+                      helperText={
+                        !!errors?.description?.message
+                          ? errors?.description?.message
+                          : ''
+                      }
+                      {...field}
+                    />
+                  )}
                 />
+
+                <Controller
+                  control={control}
+                  name="externalUrl"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="외부 URL"
+                      fullWidth
+                      size="medium"
+                      color="info"
+                      placeholder="외부 URL (https://, http://)을 입력하세요."
+                      variant="standard"
+                      error={!!errors?.externalUrl?.message}
+                      helperText={
+                        !!errors?.externalUrl?.message
+                          ? errors?.externalUrl?.message
+                          : ''
+                      }
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                    />
+                  )}
+                />
+
                 <FormGroup>
                   <FormLabel sx={{ fontWeight: 600 }} component="label">
                     배경색
@@ -127,7 +219,25 @@ const PublishPage = () => {
                     지정하거나, 컬러 코드를 직접 입력할 수 있습니다.
                   </FormHelperText>
                   <div className="mt-3">
-                    <TwitterPicker triangle="hide" width="100%" />
+                    <Controller
+                      control={control}
+                      name="backgroundColor"
+                      render={({ field }) => (
+                        <TwitterPicker
+                          triangle="hide"
+                          width="100%"
+                          color={field.value}
+                          onChange={(color) => {
+                            field.onChange(color.hex);
+                          }}
+                        />
+                      )}
+                    />
+                    {errors.backgroundColor?.message && (
+                      <FormHelperText error>
+                        {errors.backgroundColor.message}
+                      </FormHelperText>
+                    )}
                   </div>
                 </FormGroup>
               </Box>
@@ -142,6 +252,7 @@ const PublishPage = () => {
             color="info"
             size="large"
             variant="contained"
+            onClick={onClickSubmit}
           >
             발행하기
           </LoadingButton>

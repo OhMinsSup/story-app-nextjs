@@ -152,7 +152,7 @@ export default FileUpload;
 FileUpload.defaultProps = {
   acceptMineTypes: ['image/png', 'image/jpeg'],
   acceptExtensions: ['png', 'jpg', 'jpeg'],
-  limitSize: '100MB',
+  limitSize: '10MB',
   imageMaxWidth: 65535,
   imageMaxHeight: 65535,
   imagePreviewMinHeight: 500,
