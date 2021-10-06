@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { STORAGE_KEY } from '@constants/constant';
 const multiavatar = require('@multiavatar/multiavatar');
 
@@ -36,7 +35,7 @@ export const userInfo = () => {
   return JSON.parse(stringify) ?? null;
 };
 
-export function isAxiosError(error: AxiosError) {
+export function isAxiosError(error: any) {
   return !!error.response;
 }
 

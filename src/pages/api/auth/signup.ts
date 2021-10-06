@@ -1,8 +1,19 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import Cors from 'cors';
 import omit from 'lodash-es/omit';
+
+// db
 import prisma from '@libs/prisma';
+
+// server middleware
 import { generateToken } from 'src/server/token';
 import { GenderType } from 'types/story-api';
+import { runMiddleware } from 'src/server/middlewares';
+
+// Initializing the cors middleware
+const cors = Cors({
+  methods: ['POST', 'HEAD', 'OPTIONS'],
+});
 
 type Body = {
   profileUrl: string;
@@ -16,6 +27,8 @@ type Body = {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
+    await runMiddleware(req, res, cors);
+
     const body: Body = req.body ?? {};
 
     const exists = await prisma.user.findFirst({

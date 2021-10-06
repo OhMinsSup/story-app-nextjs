@@ -195,6 +195,7 @@ const Navbar: React.FC<NavbarProps> = () => {
                     size="medium"
                     variant="outlined"
                     color="secondary"
+                    suppressHydrationWarning
                     onClick={onPublish}
                   >
                     발행하기

@@ -2,6 +2,19 @@ import jwt, { SignOptions } from 'jsonwebtoken';
 
 const SECRET_KEY = 's8h@*oqc_brsha+rc@mvp3(glhp$7ad3ep#l$w3quv!3dio&+n';
 
+type TokenData = {
+  iat: number;
+  exp: number;
+  sub: string;
+  iss: string;
+};
+
+export interface AccessTokenData extends TokenData {
+  userId: number;
+  email: string;
+  address: string;
+}
+
 export const generateToken = (
   payload: any,
   options?: SignOptions,
