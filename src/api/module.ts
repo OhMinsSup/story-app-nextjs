@@ -4,7 +4,7 @@ import {
   GetStaticPropsContext,
 } from 'next';
 import axios from 'axios';
-import { STORAGE_KEY } from '@constants/constant';
+import { API_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
 import { API_HOST } from '@constants/env';
 import { client } from './client';
 
@@ -111,6 +111,29 @@ class APIMoudle {
     const result = await axios(prefixUrl);
     return result;
   }
+
+  uploadResponse = async (body: {
+    dataUrl: string;
+    storeType: string;
+    name: string;
+  }) => {
+    // 파일 업로드
+    const authorization = this.authorized();
+    const finalize = await client.post<any>(
+      API_ENDPOINTS.LOCAL.FILE.ROOT,
+      body,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authorization && {
+            Authorization: `Bearer ${authorization}`,
+          }),
+        },
+      },
+    );
+
+    return finalize;
+  };
 }
 
 export const api = new APIMoudle();

@@ -28,10 +28,9 @@ cloudinary.v2.config({
 });
 
 type Body = {
-  name: string;
-  size: number;
+  dataUrl: string;
   storeType: string;
-  tempUrl: string;
+  name: string;
 };
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -81,10 +80,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
+    console.log(body.name, body.storeType);
     const splitFileName: string[] = body.name.split('.');
     const filename: string = splitFileName[0];
 
-    const response = await cloudinary.v2.uploader.upload(body.tempUrl, {
+    const response = await cloudinary.v2.uploader.upload(body.dataUrl, {
       public_id: `story-media/${tokenData.userId}/${body.storeType}/${filename}`,
     });
 

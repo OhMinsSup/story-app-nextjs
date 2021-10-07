@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import { TwitterPicker } from 'react-color';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -16,16 +16,18 @@ import FormHelperText from '@mui/material/FormHelperText';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 
+// api
+import { api } from '@api/module';
+
 // common
 import { publishSchema } from '@libs/yup/schema';
+
+import type { ActualFileObject } from 'filepond';
 
 interface FormFieldValues {
   name: string;
   description: string;
-  media: {
-    contentUrl: string;
-    idx: number;
-  } | null;
+  media: any | null;
   backgroundColor?: string;
   externalUrl?: string;
 }
@@ -34,10 +36,9 @@ const PublishPage = () => {
   const {
     handleSubmit,
     register,
-    reset,
     control,
-    setValue,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormFieldValues>({
     mode: 'onSubmit',
@@ -69,6 +70,34 @@ const PublishPage = () => {
       new Event('submit', { cancelable: true, bubbles: true }),
     );
   }, []);
+
+  const processNFTImage = async (file: ActualFileObject) => {
+    const getDataUrl = () => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          resolve(e.target.result);
+        };
+        reader.onerror = (e: any) => {
+          reject(e);
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+
+    const dataUrl = await getDataUrl();
+
+    const body = {
+      dataUrl,
+      name: file.name,
+      storeType: 'NFT_IMAGE',
+    };
+
+    const { data } = await api.uploadResponse(body);
+    setValue('media', data.payload, {
+      shouldValidate: true,
+    });
+  };
 
   return (
     <Grid container spacing={3} sx={{ mt: '3rem', mb: '5rem', px: '2rem' }}>
@@ -112,14 +141,7 @@ const PublishPage = () => {
                         }}
                         onSetUploadFile={(filepond) => {
                           if (!filepond) return;
-                          setValue(
-                            'media',
-                            {
-                              contentUrl: filepond.file.name,
-                              idx: filepond.file.size,
-                            },
-                            { shouldValidate: true },
-                          );
+                          processNFTImage(filepond.file);
                         }}
                       />
                       <input type="hidden" {...register('media')} />
