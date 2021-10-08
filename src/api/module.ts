@@ -1,12 +1,17 @@
-import {
+import axios from 'axios';
+import { client } from './client';
+
+// common
+import { STORAGE_KEY } from '@constants/constant';
+import { API_HOST } from '@constants/env';
+
+// types
+import type { ResponseModel } from 'types/story-api';
+import type {
   GetServerSidePropsContext,
   GetStaticPathsContext,
   GetStaticPropsContext,
 } from 'next';
-import axios from 'axios';
-import { API_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
-import { API_HOST } from '@constants/env';
-import { client } from './client';
 
 export interface Options {
   context:
@@ -32,13 +37,13 @@ class APIMoudle {
     return authorization;
   }
 
-  deleteResponse = async ({
+  deleteResponse = async <D = any>({
     url,
     headers = {},
     options = { context: null },
   }: Params) => {
     const authorization = this.authorized();
-    const result = await client.delete(url, {
+    const result = await client.delete<ResponseModel<D>>(url, {
       headers: {
         'Content-Type': 'application/json',
         ...(authorization && {
@@ -50,14 +55,14 @@ class APIMoudle {
     return result;
   };
 
-  postResponse = async ({
+  postResponse = async <D = any>({
     url,
     body = {},
     headers = {},
     options = { context: null },
   }: Params) => {
     const authorization = this.authorized();
-    const result = await client.post(url, body, {
+    const result = await client.post<ResponseModel<D>>(url, body, {
       headers: {
         'Content-Type': 'application/json',
         ...(authorization && {
@@ -69,14 +74,14 @@ class APIMoudle {
     return result;
   };
 
-  putResponse = async ({
+  putResponse = async <D = any>({
     url,
     body = {},
     headers = {},
     options = { context: null },
   }: Params) => {
     const authorization = this.authorized();
-    const result = await client.put(url, body, {
+    const result = await client.put<ResponseModel<D>>(url, body, {
       headers: {
         'Content-Type': 'application/json',
         ...(authorization && {
@@ -88,13 +93,13 @@ class APIMoudle {
     return result;
   };
 
-  getResponse = async ({
+  getResponse = async <D = any>({
     url,
     headers = {},
     options = { context: null },
   }: Params) => {
     const authorization = this.authorized();
-    const result = await client.get(url, {
+    const result = await client.get<ResponseModel<D>>(url, {
       headers: {
         'Content-Type': 'application/json',
         ...(authorization && {
@@ -111,29 +116,6 @@ class APIMoudle {
     const result = await axios(prefixUrl);
     return result;
   }
-
-  uploadResponse = async (body: {
-    dataUrl: string;
-    storeType: string;
-    name: string;
-  }) => {
-    // 파일 업로드
-    const authorization = this.authorized();
-    const finalize = await client.post<any>(
-      API_ENDPOINTS.LOCAL.FILE.ROOT,
-      body,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(authorization && {
-            Authorization: `Bearer ${authorization}`,
-          }),
-        },
-      },
-    );
-
-    return finalize;
-  };
 }
 
 export const api = new APIMoudle();

@@ -13,6 +13,14 @@ export interface StorageUserInfo {
   };
 }
 
+// ================== File ================== //
+
+interface FileModel {
+  id: number;
+  name: string;
+  path: string;
+}
+
 // ================== Common =================== //
 
 export type GenderType = 'M' | 'F';

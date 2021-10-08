@@ -1,8 +1,12 @@
 import React, { useRef, useCallback, useState } from 'react';
 import { TwitterPicker } from 'react-color';
+
+// validation
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { publishSchema } from '@libs/yup/schema';
 
+// components
 import AppLayout from '@components/layouts/AppLayout';
 import FileUpload from '@components/common/FileUpload';
 
@@ -20,14 +24,16 @@ import SaveIcon from '@mui/icons-material/Save';
 import { api } from '@api/module';
 
 // common
-import { publishSchema } from '@libs/yup/schema';
+import { API_ENDPOINTS } from '@constants/constant';
 
+// types
 import type { ActualFileObject } from 'filepond';
+import type { FileModel } from 'types/story-api';
 
 interface FormFieldValues {
   name: string;
   description: string;
-  media: any | null;
+  media: FileModel | null;
   backgroundColor?: string;
   externalUrl?: string;
 }
@@ -37,7 +43,6 @@ const PublishPage = () => {
     handleSubmit,
     register,
     control,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<FormFieldValues>({
@@ -58,7 +63,11 @@ const PublishPage = () => {
   // 등록
   const onSubmit: SubmitHandler<FormFieldValues> = async (input) => {
     try {
-      console.log(input);
+      const data = await api.postResponse({
+        url: API_ENDPOINTS.LOCAL.STORY.ROOT,
+        body: input,
+      });
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -85,18 +94,25 @@ const PublishPage = () => {
       });
     };
 
-    const dataUrl = await getDataUrl();
+    try {
+      const dataUrl = await getDataUrl();
+      const {
+        data: { payload },
+      } = await api.postResponse<FileModel>({
+        url: API_ENDPOINTS.LOCAL.FILE.ROOT,
+        body: {
+          dataUrl,
+          name: file.name,
+          storeType: 'NFT_IMAGE',
+        },
+      });
 
-    const body = {
-      dataUrl,
-      name: file.name,
-      storeType: 'NFT_IMAGE',
-    };
-
-    const { data } = await api.uploadResponse(body);
-    setValue('media', data.payload, {
-      shouldValidate: true,
-    });
+      setValue('media', payload, {
+        shouldValidate: true,
+      });
+    } catch (error) {
+      throw error;
+    }
   };
 
   return (

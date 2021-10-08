@@ -92,8 +92,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const media = await prisma.media.create({
       data: {
-        originUrl: secure_url,
-        contentUrl: public_id,
+        originUrl: public_id,
+        contentUrl: secure_url,
         type: body.storeType,
       },
     });
@@ -103,10 +103,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       resultCode: 0,
       message: null,
       payload: {
-        created: media.createdAt,
         id: media.id,
         name: body.name,
-        path: media.originUrl,
+        path: media.contentUrl,
       },
     });
   } catch (error) {

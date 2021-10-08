@@ -18,6 +18,9 @@ export const API_ENDPOINTS = {
     FILE: {
       ROOT: '/file',
     },
+    STORY: {
+      ROOT: '/story',
+    },
   },
 };
 

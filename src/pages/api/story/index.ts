@@ -74,7 +74,22 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       });
     }
 
-    // 유저 생성
+    const existsMedia = await prisma.media.findFirst({
+      where: {
+        id: body.mediaId,
+      },
+    });
+
+    if (!existsMedia) {
+      return res.status(404).json({
+        ok: false,
+        resultCode: 404,
+        message: '미디어가 존재하지 않습니다.',
+        payload: null,
+      });
+    }
+
+    // nft 생성
     const story = await prisma.story.create({
       data: {
         mediaId: body.mediaId,
