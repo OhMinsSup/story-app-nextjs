@@ -9,10 +9,10 @@
 
 
 - [ ] `API 서버 분리해서 생성하기`
-     - 서버 구성은 nest / prisma를 사용 할 계획 입니다.
+    - 서버 구성은 nest / prisma를 사용 할 계획 입니다.
 
 - [ ] `NFT Token 생성`
-     - openzeppelin을 이용해서 구현
+    - openzeppelin을 이용해서 구현
 
 - [ ] `Klaytn 연동`
 

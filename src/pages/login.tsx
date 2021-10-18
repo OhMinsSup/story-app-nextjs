@@ -46,7 +46,7 @@ const LoginPage: React.FC<LoginPageProps> = () => {
   // keystore 인증 모달
   const [isKeystoreOpen, setKeystoreOpen] = useState<boolean>(false);
   // snackbar
-  const [showSnackbar, setSnackbar] = React.useState(false);
+  const [showSnackbar, setSnackbar] = useState(false);
 
   const onSnackbarClose = useCallback(
     (event?: React.SyntheticEvent, reason?: string) => {
