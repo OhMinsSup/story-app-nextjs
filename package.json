@@ -15,9 +15,7 @@
     "lint": "next lint",
     "lint:fix": "yarn lint -- --fix",
     "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "unused": "next-unused",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate"
+    "unused": "next-unused"
   },
   "repository": {
     "type": "git",
@@ -40,12 +38,9 @@
     "@mui/lab": "^5.0.0-alpha.47",
     "@mui/material": "^5.0.0",
     "@multiavatar/multiavatar": "^1.0.6",
-    "@prisma/client": "^3.1.1",
     "autoprefixer": "^10.3.6",
     "axios": "^0.22.0",
     "caver-js": "^1.6.4",
-    "cloudinary": "^1.27.0",
-    "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "filepond": "^4.30.0",
     "filepond-plugin-file-validate-size": "^2.2.5",
@@ -53,7 +48,6 @@
     "filepond-plugin-get-file": "^1.0.7",
     "filepond-plugin-image-preview": "^4.6.10",
     "filepond-plugin-image-validate-size": "^1.2.6",
-    "jsonwebtoken": "^8.5.1",
     "lodash-es": "^4.17.21",
     "next": "^11.1.2",
     "next-compose-plugins": "^2.2.1",
@@ -70,14 +64,12 @@
     "react-spinners": "^0.11.0",
     "react-use": "^17.3.1",
     "tailwindcss": "^2.2.16",
-    "truffle-hdwallet-provider-klaytn": "^1.4.1",
     "yup": "^0.32.9",
     "zustand": "^3.5.12"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^11.0.1",
     "@types/cors": "^2.8.12",
-    "@types/jsonwebtoken": "^8.5.5",
     "@types/lodash-es": "^4.17.4",
     "@types/node": "^16.4.10",
     "@types/react": "^17.0.15",
@@ -90,7 +82,6 @@
     "lint-staged": "^11.1.1",
     "postcss": "^8.3.6",
     "prettier": "^2.3.2",
-    "prisma": "^3.1.1",
     "typescript": "^4.3.5"
   },
   "gitHooks": {
