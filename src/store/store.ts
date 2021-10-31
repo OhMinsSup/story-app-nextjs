@@ -1,55 +1,66 @@
 import { useLayoutEffect } from 'react';
-import create, { UseStore } from 'zustand';
+import create from 'zustand';
 import createContext from 'zustand/context';
 import { userInfo } from '@utils/utils';
-import { StorageUserInfo, WalletSignature } from 'types/story-api';
+
+import type { StorageUserInfo, WalletSignature } from 'types/story-api';
+import type { GetState, SetState, UseBoundStore, StoreApi } from 'zustand';
 
 export interface State {
+  actions: {
+    setNetworkVersion: (version: number | null) => void;
+    setAuth: (userInfo: StorageUserInfo | null) => void;
+    setWalletSignature: (walletSignature: WalletSignature | null) => void;
+  };
   userInfo: StorageUserInfo | null;
   networkVersion: number | null;
   walletSignature: WalletSignature | null;
 }
 
-export interface Dispatch {
-  setNetworkVersion: (version: number | null) => void;
-  setAuth: (userInfo: StorageUserInfo | null) => void;
-  setWalletSignature: (walletSignature: WalletSignature | null) => void;
-}
-
-let store: UseStore<State & Dispatch> | undefined;
+let store: UseBoundStore<State, StoreApi<State>> | null = null;
 
 const initialState: State = {
+  actions: {
+    setNetworkVersion: () => {},
+    setAuth: () => {},
+    setWalletSignature: () => {},
+  },
   userInfo: userInfo(),
   networkVersion: null, // kaikas network version
   walletSignature: null, // login signature data
 };
 
-const zustandContext = createContext<State & Dispatch>();
+const zustandContext = createContext<State>();
 
 export const ZustandProvider = zustandContext.Provider;
 
 export const useStore = zustandContext.useStore;
 
 export const initializeStore = (preloadedState = {} as State) => {
-  return create<State & Dispatch>((set, get) => ({
-    ...initialState,
-    ...preloadedState,
-    setNetworkVersion: (version: number | null) => {
-      set({
-        networkVersion: version,
-      });
-    },
-    setAuth: (userInfo: StorageUserInfo | null) => {
-      set({
-        userInfo,
-      });
-    },
-    setWalletSignature: (walletSignature: WalletSignature | null) => {
-      set({
-        walletSignature,
-      });
-    },
-  }));
+  return create<State>((set: SetState<State>, get: SetState<State>) => {
+    const actions = {
+      setNetworkVersion: (version: number | null) => {
+        set({
+          networkVersion: version,
+        });
+      },
+      setAuth: (userInfo: StorageUserInfo | null) => {
+        set({
+          userInfo,
+        });
+      },
+      setWalletSignature: (walletSignature: WalletSignature | null) => {
+        set({
+          walletSignature,
+        });
+      },
+    };
+    return {
+      ...initialState,
+      ...preloadedState,
+      actions,
+    };
+  });
 };
 
 export function useCreateStore(initialState: State) {
@@ -74,5 +85,5 @@ export function useCreateStore(initialState: State) {
     }
   }, [initialState]);
 
-  return () => store as UseStore<State & Dispatch>;
+  return () => store;
 }

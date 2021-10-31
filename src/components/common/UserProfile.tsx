@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from '@emotion/styled';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import { generateAvatar } from '@utils/utils';
@@ -20,7 +19,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
   onClearThumbnail,
 }) => {
   return (
-    <Section>
+    <div className="user-profle">
       <div className="thumbnail-area">
         {defaultThumbnail ? (
           <div
@@ -50,35 +49,8 @@ const UserProfile: React.FC<UserProfileProps> = ({
           이미지 제거
         </Button>
       </div>
-    </Section>
+    </div>
   );
 };
-
-const Section = styled.section`
-  display: flex;
-  justify-content: center;
-  height: 13.75rem;
-  margin-bottom: 1rem;
-
-  .thumbnail-area {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    img,
-    svg {
-      object-fit: cover;
-      width: 8rem;
-      height: 8rem;
-      border-radius: 50%;
-      display: block;
-      margin-bottom: 1.25rem;
-    }
-    button + button {
-      margin-top: 0.5rem;
-    }
-  }
-`;
 
 export default UserProfile;

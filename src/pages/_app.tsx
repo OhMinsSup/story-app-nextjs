@@ -4,21 +4,23 @@ import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 import 'filepond-plugin-get-file/dist/filepond-plugin-get-file.min.css';
 
-import React, { useRef } from 'react';
-import type { AppProps } from 'next/app';
+import React, { useRef, useEffect } from 'react';
+import NProgress from 'nprogress';
+import { Router } from 'next/router';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Hydrate } from 'react-query/hydration';
+
+// components
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { blueGrey, grey, red } from '@mui/material/colors';
+import Core from '@components/common/Core';
+
+// type
+import type { AppProps } from 'next/app';
 
 // store
 import { useCreateStore, ZustandProvider } from '@store/store';
-
-// components
-import Core from '@components/common/Core';
-import { useEffect } from 'react';
-import Progress from '@components/common/Progress';
 
 const theme = createTheme({
   palette: {
@@ -44,12 +46,31 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
     queryClientRef.current = new QueryClient();
   }
 
+  const start = (url: string) => {
+    NProgress.start();
+  };
+
+  const done = () => {
+    NProgress.done();
+  };
+
+  useEffect(() => {
+    Router.events.on('routeChangeStart', start);
+    Router.events.on('routeChangeComplete', done);
+    Router.events.on('routeChangeError', done);
+
+    return () => {
+      Router.events.off('routeChangeStart', start);
+      Router.events.off('routeChangeComplete', done);
+      Router.events.off('routeChangeError', done);
+    };
+  }, []);
+
   const createStore = useCreateStore(pageProps.initialZustandState);
 
   return (
     <>
       <meta name="viewport" content="initial-scale=1, width=device-width" />
-      <Progress />
       <QueryClientProvider client={queryClientRef.current}>
         <Hydrate state={pageProps.dehydratedState}>
           <ZustandProvider createStore={createStore}>
