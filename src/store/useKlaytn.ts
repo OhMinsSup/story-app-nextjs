@@ -5,7 +5,7 @@ const useKlaytn = () => {
   return useStore(
     (store) => ({
       network: store.networkVersion,
-      setNetwork: store.setNetworkVersion,
+      setNetwork: store.actions.setNetworkVersion,
     }),
     shallow,
   );

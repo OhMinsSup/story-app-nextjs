@@ -5,7 +5,7 @@ const useAuth = () => {
   return useStore(
     (store) => ({
       userInfo: store.userInfo,
-      setAuth: store.setAuth,
+      setAuth: store.actions.setAuth,
     }),
     shallow,
   );

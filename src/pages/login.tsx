@@ -1,78 +1,59 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import shallow from 'zustand/shallow';
 
 // components
 import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 
 // icons
 import LoadingButton from '@mui/lab/LoadingButton';
 import VpnKey from '@mui/icons-material/VpnKey';
-import ArrowBack from '@mui/icons-material/ArrowBack';
 
 // components
-import SignatureLoadingDialog from '@components/auth/SignatureLoadingDialog';
 import KaytonIcon from '@components/icon/klaytnIcon';
-import InstalledKaikasModal from '@components/auth/InstalledKaikasModal';
-import SignupDialog from '@components/auth/SignupDialog';
-import KeystoreAuthModal from '@components/auth/KeystoreAuthModal';
+import KeystoreAuthModal from '@components/auth/login/KeystoreLogin';
+import AuthLayout from '@components/auth/login/AuthLayout';
 
 // no components
-import caver from '@klaytn/caver';
+import caver from '@libs/klaytn/caver';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 import { existsKlaytn, isAxiosError, signatureMessage } from '@utils/utils';
 
 // api
 import { useMutationLogin } from '@api/story/auth';
 
-interface LoginPageProps {}
-const LoginPage: React.FC<LoginPageProps> = () => {
+// store
+import { useStore } from '@store/store';
+
+const LoginPage: React.FC = () => {
   const router = useRouter();
   // 로그인
   const { mutateAsync } = useMutationLogin();
-
-  // 서명 인증 중 로딩 화면
-  const [isSignatureLoading, setSignatureLoading] = useState<boolean>(false);
-  // 회원가입 이동 모달
-  const [isReigsterOpen, setRegisterOpen] = useState<boolean>(false);
-  // kaikas 설치 모달
-  const [isInstallOpen, setInstallOpen] = useState<boolean>(false);
-  // keystore 인증 모달
-  const [isKeystoreOpen, setKeystoreOpen] = useState<boolean>(false);
-  // snackbar
-  const [showSnackbar, setSnackbar] = useState(false);
-
-  const onSnackbarClose = useCallback(
-    (event?: React.SyntheticEvent, reason?: string) => {
-      if (reason === 'clickaway') {
-        return;
-      }
-
-      setSnackbar(false);
-    },
-    [],
+  const { isSignatureLoading, actions } = useStore(
+    (store) => ({
+      actions: store.actions,
+      isSignatureLoading: store.kaikasSignature,
+    }),
+    shallow,
   );
 
+  // keystore 인증 모달
+  const [isKeystoreOpen, setKeystoreOpen] = useState<boolean>(false);
+
   // handle Kaikas login auth
-  const onKaikasLogin = useCallback(async () => {
+  const onKaikasLogin = async () => {
     try {
       // Kaikas가 설치가 안된 경우
       if (existsKlaytn) {
-        setSnackbar(true);
-        setInstallOpen(true);
+        actions.setInstallKaiKas(true);
         return;
       }
 
-      const accounts = await klaytn.enable();
-
       // 로딩 시작
-      setSignatureLoading(true);
+      actions.setSignatureLogin(true);
+
+      const accounts = await klaytn.enable();
 
       const walletAddress = accounts[0];
       const timestamp = Date.now();
@@ -97,14 +78,14 @@ const LoginPage: React.FC<LoginPageProps> = () => {
         data: { ok },
       } = await mutateAsync(input);
 
-      setSignatureLoading(false);
+      actions.setSignatureLogin(false);
 
       if (ok) {
         router.replace(PAGE_ENDPOINTS.INDEX);
       }
     } catch (error) {
       // 로딩 종료
-      setSignatureLoading(false);
+      actions.setSignatureLogin(false);
 
       console.error(error);
       // 서버 에러
@@ -112,28 +93,14 @@ const LoginPage: React.FC<LoginPageProps> = () => {
         const {
           response: { data },
         } = error;
-        if (!data.ok) setRegisterOpen(true);
+        if (!data.ok) actions.setSignup(true);
       }
     }
-  }, []);
+  };
 
   return (
     <>
-      <AppBar position="static" className="shadow-none" color="transparent">
-        <Toolbar>
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="back press button"
-            aria-haspopup="false"
-            color="inherit"
-            onClick={() => router.replace(PAGE_ENDPOINTS.INDEX)}
-          >
-            <ArrowBack />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Container component="main" maxWidth="xs">
+      <AuthLayout>
         <Box
           sx={{
             marginTop: 8,
@@ -197,33 +164,11 @@ const LoginPage: React.FC<LoginPageProps> = () => {
             </a>
           </p>
         </Box>
-      </Container>
+      </AuthLayout>
       <KeystoreAuthModal
         isOpen={isKeystoreOpen}
         onClose={() => setKeystoreOpen(false)}
       />
-      <InstalledKaikasModal
-        isOpen={isInstallOpen}
-        onClose={() => setInstallOpen(false)}
-      />
-      <SignatureLoadingDialog loading={isSignatureLoading} />
-      <SignupDialog
-        enabled={isReigsterOpen}
-        onClose={() => setRegisterOpen(false)}
-      />
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={6000}
-        onClose={onSnackbarClose}
-      >
-        <Alert
-          onClose={onSnackbarClose}
-          severity="error"
-          sx={{ width: '100%' }}
-        >
-          Story는 kaikas로 동작하고 있습니다. 크롬 PC 버전을 이용해주세요.
-        </Alert>
-      </Snackbar>
     </>
   );
 };

@@ -5,7 +5,7 @@ const useWalletSignature = () => {
   return useStore(
     (store) => ({
       walletSignature: store.walletSignature,
-      setWalletSignature: store.setWalletSignature,
+      setWalletSignature: store.actions.setWalletSignature,
     }),
     shallow,
   );

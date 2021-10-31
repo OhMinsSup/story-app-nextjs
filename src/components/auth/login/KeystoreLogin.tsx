@@ -13,7 +13,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 
 // no component
-import caver from '@klaytn/caver';
+import caver from '@libs/klaytn/caver';
 import { validKeystore } from '@utils/utils';
 import useUpload from '@hooks/useUpload';
 
@@ -22,11 +22,11 @@ interface FormFieldValus {
   password: string;
 }
 
-interface KeystoreAuthModalProps {
+interface KeystoreAuthLoginProps {
   isOpen: boolean;
   onClose: () => void;
 }
-const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = ({
+const KeystoreLogin: React.FC<KeystoreAuthLoginProps> = ({
   isOpen,
   onClose,
 }) => {
@@ -212,4 +212,4 @@ const KeystoreAuthModal: React.FC<KeystoreAuthModalProps> = ({
   );
 };
 
-export default KeystoreAuthModal;
+export default KeystoreLogin;

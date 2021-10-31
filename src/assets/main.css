@@ -31,7 +31,7 @@
   height: 4px;
 }
 
-.user-profile {
+/* .user-profile {
   display: flex;
   justify-content: center;
   height: 13.75rem;
@@ -46,7 +46,7 @@
   align-items: center;
 }
 
-.user-profile .thumbnail-area img,
+.user-profile .thumbnail-area > img,
 svg {
   object-fit: cover;
   width: 8rem;
@@ -54,8 +54,8 @@ svg {
   border-radius: 50%;
   display: block;
   margin-bottom: 1.25rem;
-}
+} */
 
-.user-profile button + .user-profile button {
+/* .user-profile button + .user-profile button {
   margin-top: 0.5rem;
-}
+} */

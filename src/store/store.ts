@@ -4,17 +4,25 @@ import createContext from 'zustand/context';
 import { userInfo } from '@utils/utils';
 
 import type { StorageUserInfo, WalletSignature } from 'types/story-api';
-import type { GetState, SetState, UseBoundStore, StoreApi } from 'zustand';
+import type { SetState, UseBoundStore, StoreApi } from 'zustand';
 
 export interface State {
   actions: {
     setNetworkVersion: (version: number | null) => void;
     setAuth: (userInfo: StorageUserInfo | null) => void;
     setWalletSignature: (walletSignature: WalletSignature | null) => void;
+    setInstallKaiKas: (show: boolean) => void;
+    setSignatureLogin: (show: boolean) => void;
+    setSignup: (show: boolean) => void;
   };
   userInfo: StorageUserInfo | null;
   networkVersion: number | null;
   walletSignature: WalletSignature | null;
+
+  // login
+  kaikasSignature: boolean;
+  installedKaikas: boolean;
+  isSignup: boolean;
 }
 
 let store: UseBoundStore<State, StoreApi<State>> | null = null;
@@ -24,10 +32,18 @@ const initialState: State = {
     setNetworkVersion: () => {},
     setAuth: () => {},
     setWalletSignature: () => {},
+    setInstallKaiKas: () => {},
+    setSignatureLogin: () => {},
+    setSignup: () => {},
   },
   userInfo: userInfo(),
   networkVersion: null, // kaikas network version
   walletSignature: null, // login signature data
+
+  // login
+  kaikasSignature: false, // kaikas signature 서명을 받을 때까지 로딩
+  installedKaikas: false, // kaikas가 설치되었는지
+  isSignup: false, // 회원가입 시도 중
 };
 
 const zustandContext = createContext<State>();
@@ -52,6 +68,24 @@ export const initializeStore = (preloadedState = {} as State) => {
       setWalletSignature: (walletSignature: WalletSignature | null) => {
         set({
           walletSignature,
+        });
+      },
+      // 설치 kaikas 설치 이동
+      setInstallKaiKas: (show: boolean) => {
+        set({
+          installedKaikas: show,
+        });
+      },
+      // 서명 정보 받기
+      setSignatureLogin: (show: boolean) => {
+        set({
+          kaikasSignature: show,
+        });
+      },
+      // 회원가입 시도 중
+      setSignup: (show: boolean) => {
+        set({
+          isSignup: show,
         });
       },
     };
@@ -85,5 +119,5 @@ export function useCreateStore(initialState: State) {
     }
   }, [initialState]);
 
-  return () => store;
+  return () => store as UseBoundStore<State, StoreApi<State>>;
 }

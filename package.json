@@ -14,8 +14,7 @@
     "lint:types": "tsc --noEmit",
     "lint": "next lint",
     "lint:fix": "yarn lint -- --fix",
-    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "unused": "next-unused"
+    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx,js,jsx,json,md}\""
   },
   "repository": {
     "type": "git",
@@ -65,6 +64,7 @@
     "react-spinners": "^0.11.0",
     "react-use": "^17.3.1",
     "tailwindcss": "^2.2.19",
+    "ua-parser-js": "^1.0.2",
     "yup": "^0.32.9",
     "zustand": "^3.6.2"
   },
@@ -76,6 +76,7 @@
     "@types/nprogress": "^0.2.0",
     "@types/react": "^17.0.15",
     "@types/react-color": "^3.0.5",
+    "@types/ua-parser-js": "^0.7.36",
     "@types/yup": "^0.29.13",
     "dotenv-cli": "^4.0.0",
     "eslint": "7.32.0",
@@ -98,58 +99,6 @@
     ],
     "*.{md,json,yml}": [
       "prettier --write"
-    ]
-  },
-  "next-unused": {
-    "alias": {
-      "@store/*": [
-        "src/store/*"
-      ],
-      "@klaytn/*": [
-        "src/klaytn/*"
-      ],
-      "@assets/*": [
-        "src/assets/*"
-      ],
-      "@libs/*": [
-        "src/libs/*"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
-      "@config/*": [
-        "src/config/*"
-      ],
-      "@constants/*": [
-        "src/constants/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@hooks/*": [
-        "src/hooks/*"
-      ],
-      "@api/*": [
-        "src/api/*"
-      ]
-    },
-    "debug": true,
-    "include": [
-      "src/store",
-      "src/klaytn",
-      "src/assets",
-      "src/libs",
-      "src/utils",
-      "src/config",
-      "src/constants",
-      "src/components",
-      "src/hooks",
-      "src/api",
-      "src/pages"
-    ],
-    "exclude": [],
-    "entrypoints": [
-      "src/pages"
     ]
   }
 }

@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import caver from '@klaytn/caver';
+import caver from '@libs/klaytn/caver';
 
 export const signUpSchema = yup.object().shape({
   nickname: yup.string().required('닉네임을 입력해주세요.'),

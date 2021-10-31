@@ -25,7 +25,8 @@ const nextConfig = {
   trailingSlash: true,
 
   images: {
-    domains: [], // 외부 웹사이트 이미지인경우, 이미지 src 의 도메인을 옵션에 명시
+    // domains: [], // 외부 웹사이트 이미지인경우, 이미지 src 의 도메인을 옵션에 명시
+    formats: ['image/avif', 'image/webp'],
   },
 
   // * CDN 을 설정하려면 자산 접두사를 설정하고 Next.js가 호스팅되는 도메인으로 확인되도록 CDN의 출처를 구성이 가능합니다.
