@@ -32,6 +32,13 @@ const SignupDialog = dynamic(() => import('@components/auth/login/Signup'), {
   ssr: false,
 });
 
+const KeystoreLoginDialog = dynamic(
+  () => import('@components/auth/login/KeystoreLogin'),
+  {
+    ssr: false,
+  },
+);
+
 const AuthLayout: React.FC = ({ children }) => {
   const router = useRouter();
 
@@ -61,6 +68,7 @@ const AuthLayout: React.FC = ({ children }) => {
       <InstallKaikasDialog />
       <SignatureDialog />
       <SignupDialog />
+      <KeystoreLoginDialog />
     </>
   );
 };

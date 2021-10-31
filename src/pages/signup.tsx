@@ -28,11 +28,11 @@ import { generateKey } from '@utils/utils';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 import type { GenderType } from 'types/story-api';
 
-// store
-import useWalletSignature from '@store/useWalletSignature';
-
 // api
 import { useMutationSignUp } from '@api/story/auth';
+import { useStore } from '@store/store';
+import shallow from 'zustand/shallow';
+import { GenderEnum } from 'types/enum';
 
 interface FormFieldValues {
   profileUrl?: string | null;
@@ -40,10 +40,19 @@ interface FormFieldValues {
   email: string;
   walletAddress: string;
   gender: GenderType;
-  signature: string;
+  signatureToken: string;
 }
 
 const key = generateKey();
+
+const initState = {
+  profileUrl: null,
+  nickname: '',
+  email: '',
+  walletAddress: '',
+  signatureToken: '',
+  gender: GenderEnum.M,
+};
 
 interface SignupProps {}
 const SignupPage: React.FC<SignupProps> = () => {
@@ -52,7 +61,14 @@ const SignupPage: React.FC<SignupProps> = () => {
   const [file, setFile] = useState<any | null>(null);
 
   const { mutateAsync, isLoading } = useMutationSignUp();
-  const { walletSignature } = useWalletSignature();
+  const { signatureToken, walletAddress, setTokenNAddress } = useStore(
+    (store) => ({
+      signatureToken: store.signatureToken,
+      walletAddress: store.walletAddress,
+      setTokenNAddress: store.actions?.setTokenNAddress,
+    }),
+    shallow,
+  );
 
   const {
     handleSubmit,
@@ -67,31 +83,32 @@ const SignupPage: React.FC<SignupProps> = () => {
     criteriaMode: 'firstError',
     reValidateMode: 'onChange',
     defaultValues: {
-      profileUrl: null,
-      nickname: '',
-      email: '',
-      walletAddress: '',
-      signature: '',
-      gender: 'M',
+      ...initState,
     },
   });
 
   const watchProfuleUrl = watch('profileUrl');
-
+  console.log(errors);
   // 회원가입
   const onSubmit: SubmitHandler<FormFieldValues> = async (input) => {
     try {
       const body = {
         ...input,
-        profileUrl: input.profileUrl || generateKey(),
-        defaultProfile: !input.profileUrl,
-        signature: input.signature,
+        avatarSvg: generateKey(),
+        profileUrl: '',
+        defaultProfile: true,
       };
       const {
         data: { ok },
       } = await mutateAsync(body);
       if (ok) {
-        router.replace(PAGE_ENDPOINTS.INDEX);
+        // set token & address
+        setTokenNAddress?.({
+          signatureToken: '',
+          walletAddress: '',
+        });
+        await router.replace(PAGE_ENDPOINTS.INDEX);
+        return;
       }
     } catch (error) {
       console.log(error);
@@ -101,25 +118,25 @@ const SignupPage: React.FC<SignupProps> = () => {
   console.log(watch());
   // set init form validation
   useEffect(() => {
-    if (!walletSignature) return;
+    if (!signatureToken || !walletAddress) return;
     reset({
-      gender: 'M',
-      walletAddress: walletSignature.walletAddress,
-      signature: walletSignature.signature,
+      ...initState,
+      walletAddress,
+      signatureToken,
     });
-  }, [reset, walletSignature]);
+  }, [reset, signatureToken, walletAddress]);
 
   // set preview image
   useEffect(() => {
     if (!file) return;
     const url = window.URL.createObjectURL(file);
-    setValue('profileUrl', url);
+    setValue('profileUrl', url, { shouldValidate: true });
     return () => window.URL.revokeObjectURL(url);
   }, [file]);
 
   // 프리뷰 삭제
   const onRemovePreview = useCallback(() => {
-    setValue('profileUrl', null);
+    setValue('profileUrl', null, { shouldValidate: true });
     setFile(null);
   }, []);
 
@@ -266,12 +283,12 @@ const SignupPage: React.FC<SignupProps> = () => {
                     name="row-radio-buttons-group"
                   >
                     <FormControlLabel
-                      value="M"
+                      value={GenderEnum.M}
                       control={<Radio color="info" />}
                       label="남성"
                     />
                     <FormControlLabel
-                      value="F"
+                      value={GenderEnum.F}
                       control={<Radio color="info" />}
                       label="여성"
                     />

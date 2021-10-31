@@ -5,7 +5,12 @@ import shallow from 'zustand/shallow';
 import { api } from '@api/module';
 
 // no components
-import { API_ENDPOINTS, STATUS_CODE, STORAGE_KEY } from '@constants/constant';
+import {
+  API_ENDPOINTS,
+  RESULT_CODE,
+  STATUS_CODE,
+  STORAGE_KEY,
+} from '@constants/constant';
 import { isAxiosError } from '@utils/utils';
 
 // store
@@ -20,16 +25,16 @@ import type {
 } from 'types/story-api';
 
 export function useMutationLogin() {
-  const { setAuth, setSignatureToken } = useStore(
+  const { setAuth, setTokenNAddress } = useStore(
     (store) => ({
       setAuth: store.actions?.setAuth,
-      setSignatureToken: store.actions?.setSignatureToken,
+      setTokenNAddress: store.actions?.setTokenNAddress,
     }),
     shallow,
   );
 
   return useMutation<
-    StoryApi<LoginSchema>,
+    StoryApi<LoginSchema | string>,
     StoryErrorApi<string>,
     MutationLoginInput
   >(
@@ -40,28 +45,46 @@ export function useMutationLogin() {
       }),
     {
       mutationKey: 'login',
-      onSuccess: (data) => {
-        if (data.data.result) {
-          const {
-            ok,
-            result: { accessToken, ...user },
-          } = data.data;
+      onSuccess: (data, variable) => {
+        const {
+          data: { result, resultCode, ok },
+        } = data;
 
+        if (
+          resultCode === RESULT_CODE.NOT_EXIST &&
+          typeof result === 'string'
+        ) {
+          setTokenNAddress?.({
+            signatureToken: result,
+            walletAddress: variable.walletAddress,
+          });
+          return;
+        }
+
+        if (RESULT_CODE.OK === resultCode && typeof result === 'boolean') {
+          // 회원 가입 성공
+          return;
+        }
+
+        if (RESULT_CODE.OK === resultCode && typeof result === 'object') {
+          const { accessToken, ...user } = result;
           // 로그인 성공
-          if (ok) {
-            localStorage.setItem(STORAGE_KEY.USER_KEY, JSON.stringify(user));
-            setAuth?.(user);
-          }
+          localStorage.setItem(STORAGE_KEY.USER_KEY, JSON.stringify(user));
+          setAuth?.(user);
+          return;
         }
       },
-      onError: (error) => {
+      onError: (error, variable) => {
         if (!isAxiosError(error)) return;
         const { response } = error;
         switch (response?.status) {
           // 회원이 존재하지 않는 경우 회원가입 페이지 이동
           case STATUS_CODE.BAD_REQUEST: {
             const { result } = response.data;
-            setSignatureToken?.(result);
+            setTokenNAddress?.({
+              signatureToken: result,
+              walletAddress: variable.walletAddress,
+            });
             break;
           }
           default:

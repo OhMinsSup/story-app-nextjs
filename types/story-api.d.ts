@@ -4,6 +4,7 @@ import type {
   GetStaticPathsContext,
   GetStaticPropsContext,
 } from 'next';
+import { GenderEnum } from './enum';
 
 // ================== Storage ================== //
 
@@ -58,8 +59,7 @@ export type StoryErrorApi<Result = any> = AxiosError<Schema<Result>>;
 
 export interface MutationLoginInput {
   walletAddress: string;
-  signature: string[] | string;
-  timestamp: number;
+  signature: string;
 }
 
 export type LoginSchema = {
@@ -76,15 +76,15 @@ export type LoginSchema = {
 
 // ================== Signup ================== //
 
-export type GenderType = 'M' | 'F';
+export type GenderType = keyof typeof GenderEnum;
 
 export interface MutationSignupInput {
   profileUrl?: string;
   nickname: string;
   email: string;
-  walletAddress: string;
   gender: GenderType;
-  signature: string[] | string;
+  walletAddress: string;
+  signatureToken: string;
 }
 
 export interface MutationSignupResponse {

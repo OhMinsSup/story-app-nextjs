@@ -3,7 +3,7 @@ import { client } from './client';
 
 // common
 import { STORAGE_KEY } from '@constants/constant';
-import { API_HOST } from '@constants/env';
+import { API_HOST, SITE_URL } from '@constants/env';
 
 // types
 import type { Schema, Options, Params } from 'types/story-api';
@@ -100,7 +100,7 @@ class APIMoudle {
 
   async getMockResponse(url: string) {
     const result = await axios(url, {
-      baseURL: API_HOST,
+      baseURL: SITE_URL + '/api',
     });
     return result;
   }

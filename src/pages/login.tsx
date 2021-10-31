@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import shallow from 'zustand/shallow';
 
@@ -12,12 +12,11 @@ import VpnKey from '@mui/icons-material/VpnKey';
 
 // components
 import KaytonIcon from '@components/icon/klaytnIcon';
-import KeystoreAuthModal from '@components/auth/login/KeystoreLogin';
 import AuthLayout from '@components/auth/login/AuthLayout';
 
 // no components
 import caver from '@libs/klaytn/caver';
-import { PAGE_ENDPOINTS } from '@constants/constant';
+import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 import { existsKlaytn, isAxiosError, signatureMessage } from '@utils/utils';
 
 // api
@@ -38,22 +37,23 @@ const LoginPage: React.FC = () => {
     shallow,
   );
 
-  // keystore 인증 모달
-  const [isKeystoreOpen, setKeystoreOpen] = useState<boolean>(false);
+  const onKeystoreLogin = () => {
+    actions?.setIsKeystoreLogin(true);
+  };
 
   // handle Kaikas login auth
   const onKaikasLogin = async () => {
     try {
       // Kaikas가 설치가 안된 경우
       if (existsKlaytn) {
-        actions.setInstallKaiKas(true);
+        actions?.setInstallKaiKas?.(true);
         return;
       }
 
-      // 로딩 시작
-      actions.setSignatureLogin(true);
-
       const accounts = await klaytn.enable();
+
+      // 로딩 시작
+      actions?.setSignatureLogin?.(true);
 
       const walletAddress = accounts[0];
       const timestamp = Date.now();
@@ -70,31 +70,40 @@ const LoginPage: React.FC = () => {
 
       const input = {
         walletAddress,
-        timestamp,
         signature: signedMessage,
       };
 
       const {
-        data: { ok },
+        data: { ok, resultCode, result },
       } = await mutateAsync(input);
 
-      actions.setSignatureLogin(false);
+      actions?.setSignatureLogin?.(false);
 
-      if (ok) {
-        router.replace(PAGE_ENDPOINTS.INDEX);
+      switch (resultCode) {
+        case RESULT_CODE.OK:
+          router.replace(PAGE_ENDPOINTS.INDEX);
+          break;
+        case RESULT_CODE.NOT_EXIST:
+          actions?.setSignup?.(true);
+          actions?.setTokenNAddress?.({
+            walletAddress,
+            signatureToken: result as string,
+          });
+          break;
+        default:
+          break;
       }
     } catch (error) {
       // 로딩 종료
-      actions.setSignatureLogin(false);
+      actions?.setSignatureLogin?.(false);
 
       console.error(error);
       // 서버 에러
-      if (isAxiosError(error)) {
-        const {
-          response: { data },
-        } = error;
-        if (!data.ok) actions.setSignup(true);
-      }
+      if (!isAxiosError(error)) return;
+      const {
+        response: { data },
+      } = error;
+      if (!data.ok) actions?.setSignup?.(true);
     }
   };
 
@@ -142,7 +151,7 @@ const LoginPage: React.FC = () => {
             <LoadingButton
               color="primary"
               size="large"
-              onClick={() => setKeystoreOpen(true)}
+              onClick={onKeystoreLogin}
               loadingPosition="start"
               startIcon={<VpnKey />}
               variant="contained"
@@ -165,10 +174,6 @@ const LoginPage: React.FC = () => {
           </p>
         </Box>
       </AuthLayout>
-      <KeystoreAuthModal
-        isOpen={isKeystoreOpen}
-        onClose={() => setKeystoreOpen(false)}
-      />
     </>
   );
 };

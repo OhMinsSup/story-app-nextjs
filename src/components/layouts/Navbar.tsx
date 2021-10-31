@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import shallow from 'zustand/shallow';
 
 import { alpha, styled } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -21,7 +22,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 
 // store
-import useAuth from '@store/useAuth';
+import { useStore } from '@store/store';
 
 // utils
 import { blueGrey } from '@mui/material/colors';
@@ -84,7 +85,7 @@ const menuId = 'primary-search-account-menu';
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
   const router = useRouter();
-  const { userInfo } = useAuth();
+  const userInfo = useStore((store) => store.userInfo, shallow);
 
   const onAuthPage = useCallback(() => {
     router.push(PAGE_ENDPOINTS.LOGIN);

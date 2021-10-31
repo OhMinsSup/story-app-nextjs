@@ -1,6 +1,19 @@
 /// <reference types="klaytn.d.ts" />
 
 declare module 'caver-js' {
+  interface AccountDescrypt {
+    sign: (data: any) => Promise<{
+      message: string;
+      messageHash: string;
+      r: string;
+      s: string;
+      signature: string;
+      v: string;
+    }>;
+    address: string;
+    privateKey: string;
+  }
+
   class Account {
     /**
      * @constructor
@@ -51,7 +64,7 @@ declare module 'caver-js' {
       accountKey: string | string[] | AccountKey,
     ): AccountInstance;
 
-    public decrypt(...args: any[]): any;
+    public decrypt(...args: any[]): AccountDescrypt;
   }
 
   class Klay {
