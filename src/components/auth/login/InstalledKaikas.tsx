@@ -19,7 +19,7 @@ const InstalledKaikas: React.FC = () => {
   const { open, setInstallKaiKas } = useStore(
     (store) => ({
       open: store.installedKaikas,
-      setInstallKaiKas: store.actions.setInstallKaiKas,
+      setInstallKaiKas: store.actions?.setInstallKaiKas,
     }),
     shallow,
   );
@@ -35,7 +35,7 @@ const InstalledKaikas: React.FC = () => {
   }, []);
 
   const onClose = useCallback(() => {
-    setInstallKaiKas(false);
+    setInstallKaiKas?.(false);
   }, [setInstallKaiKas]);
 
   const isChrome = ua.getBrowser().name === 'Chrome';

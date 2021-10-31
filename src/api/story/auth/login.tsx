@@ -1,75 +1,67 @@
 import { useMutation } from 'react-query';
-import { AxiosError } from 'axios';
+import shallow from 'zustand/shallow';
 
 // api
 import { api } from '@api/module';
 
 // no components
-import { API_ENDPOINTS } from '@constants/constant';
+import { API_ENDPOINTS, STATUS_CODE, STORAGE_KEY } from '@constants/constant';
 import { isAxiosError } from '@utils/utils';
 
-// hooks
-import { useToken, useUserInfo } from '@hooks/useStorage';
-
 // store
-import useAuth from '@store/useAuth';
-import useWalletSignature from '@store/useWalletSignature';
+import { useStore } from '@store/store';
 
 // types
 import type {
   MutationLoginInput,
-  MutationLoginResponse,
-  ResponseModel,
+  LoginSchema,
+  StoryErrorApi,
   StoryApi,
 } from 'types/story-api';
 
 export function useMutationLogin() {
-  const { setAuth } = useAuth();
-  const { setWalletSignature } = useWalletSignature();
-  const [, setUserInfo] = useUserInfo();
-  const [, setToken] = useToken();
+  const { setAuth, setSignatureToken } = useStore(
+    (store) => ({
+      setAuth: store.actions?.setAuth,
+      setSignatureToken: store.actions?.setSignatureToken,
+    }),
+    shallow,
+  );
 
   return useMutation<
-    StoryApi<MutationLoginResponse>,
-    AxiosError<ResponseModel<{ signatureId: number; signature: string }>>,
+    StoryApi<LoginSchema>,
+    StoryErrorApi<string>,
     MutationLoginInput
   >(
-    (input) => {
-      return api.postResponse({
+    (input) =>
+      api.postResponse({
         url: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
         body: input,
-      });
-    },
+      }),
     {
+      mutationKey: 'login',
       onSuccess: (data) => {
-        if (data?.data.payload) {
+        if (data.data.result) {
           const {
-            payload: { id, email, profile, accessToken },
-          } = data?.data;
+            ok,
+            result: { accessToken, ...user },
+          } = data.data;
 
-          const user = {
-            id,
-            email,
-            profile,
-          };
-
-          setToken(accessToken);
-          setUserInfo(user);
-          setAuth(user);
+          // 로그인 성공
+          if (ok) {
+            localStorage.setItem(STORAGE_KEY.USER_KEY, JSON.stringify(user));
+            setAuth?.(user);
+          }
         }
       },
-      onError: (error, variables) => {
+      onError: (error) => {
         if (!isAxiosError(error)) return;
         const { response } = error;
         switch (response?.status) {
           // 회원이 존재하지 않는 경우 회원가입 페이지 이동
-          case 404: {
-            const { payload } = response.data;
-            setWalletSignature({
-              walletAddress: variables.walletAddress,
-              signature: payload.signature,
-              signatureId: payload.signatureId,
-            });
+          case STATUS_CODE.BAD_REQUEST: {
+            const { result } = response.data;
+            setSignatureToken?.(result);
             break;
           }
           default:

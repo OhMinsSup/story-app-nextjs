@@ -1,4 +1,9 @@
-import { AxiosResponse } from 'axios';
+import type { AxiosResponse, AxiosError } from 'axios';
+import type {
+  GetServerSidePropsContext,
+  GetStaticPathsContext,
+  GetStaticPropsContext,
+} from 'next';
 
 // ================== Storage ================== //
 
@@ -23,18 +28,31 @@ interface FileModel {
 
 // ================== Common =================== //
 
-export type GenderType = 'M' | 'F';
+export interface Options {
+  context:
+    | GetStaticPropsContext
+    | GetServerSidePropsContext
+    | GetStaticPathsContext
+    | null;
+}
 
-export interface ResponseModel<Payload = any> {
+export interface Params<Body = any> {
+  url: string;
+  body?: Body;
+  headers?: Record<string, string>;
+  options?: Options;
+}
+
+export interface Schema<Result = any> {
   ok: boolean;
   resultCode: number;
   message: string | null;
-  payload: Payload;
+  result: Result;
 }
 
-export type StoryApi<StoryReturnPayload = any> = AxiosResponse<
-  ResponseModel<StoryReturnPayload>
->;
+export type StoryApi<Result = any> = AxiosResponse<Schema<Result>>;
+
+export type StoryErrorApi<Result = any> = AxiosError<Schema<Result>>;
 
 // ================== Login ================== //
 
@@ -44,7 +62,7 @@ export interface MutationLoginInput {
   timestamp: number;
 }
 
-export interface MutationLoginResponse {
+export type LoginSchema = {
   id: number;
   email: string;
   accessToken: string;
@@ -54,15 +72,11 @@ export interface MutationLoginResponse {
     avatarSvg: string | null;
     defaultProfile: boolean;
   };
-}
-
-export interface WalletSignature {
-  walletAddress: string;
-  signatureId: number;
-  signature: string;
-}
+};
 
 // ================== Signup ================== //
+
+export type GenderType = 'M' | 'F';
 
 export interface MutationSignupInput {
   profileUrl?: string;

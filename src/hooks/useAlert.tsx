@@ -1,5 +1,4 @@
 import React, {
-  isValidElement,
   useCallback,
   useEffect,
   useMemo,
@@ -139,13 +138,7 @@ export function useAlert() {
     return (
       <Dialog onClose={closeAlert} open={isAlertOpen}>
         {content?.title && <DialogTitle>{content.title}</DialogTitle>}
-        <DialogContent>
-          {isValidElement(content?.text) ? (
-            content?.text
-          ) : (
-            <p>{content?.text}</p>
-          )}
-        </DialogContent>
+        <DialogContent>{content?.text}</DialogContent>
         <DialogActions>
           {showCancel && (
             <Button autoFocus onClick={cancelHandler}>

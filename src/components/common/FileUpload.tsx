@@ -72,13 +72,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
       return;
     }
 
-    fetch(
-      file /*'https://asset.i-manual.co.kr/banner/file_1629788298320.png'*/,
-      {
-        cache: 'no-cache',
-        mode: 'cors',
-      },
-    )
+    fetch(file, {
+      cache: 'no-cache',
+      mode: 'cors',
+    })
       .then((res) => res.blob()) // Gets the response and returns it as a blob
       .then((blob) => {
         const profilePicture = new File([blob], 'symbol', {
@@ -87,7 +84,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         uploadRef.current?.addFile(profilePicture, { type: 'local' });
       })
       .catch(console.error);
-  }, [uploadRef.current, file]);
+  }, [uploadRef, file]);
 
   const onInit = useCallback(() => {
     if (!uploadRef.current) return;
@@ -98,7 +95,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     // powered by FilePond remove
     if (creditsEle) creditsEle.remove();
     if (getPond && typeof getPond === 'function') getPond(uploadRef.current);
-  }, [uploadRef.current, getPond]);
+  }, [uploadRef, getPond]);
 
   return (
     <>

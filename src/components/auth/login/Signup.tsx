@@ -21,7 +21,7 @@ const Signup: React.FC = () => {
   const { isOpen, setSignup } = useStore(
     (store) => ({
       isOpen: store.isSignup,
-      setSignup: store.actions.setSignup,
+      setSignup: store.actions?.setSignup,
     }),
     shallow,
   );
@@ -32,7 +32,7 @@ const Signup: React.FC = () => {
   }, [router]);
 
   const onClose = useCallback(() => {
-    setSignup(false);
+    setSignup?.(false);
   }, [setSignup]);
 
   return (

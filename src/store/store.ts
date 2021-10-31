@@ -3,23 +3,25 @@ import create from 'zustand';
 import createContext from 'zustand/context';
 import { userInfo } from '@utils/utils';
 
-import type { StorageUserInfo, WalletSignature } from 'types/story-api';
+import type { StorageUserInfo } from 'types/story-api';
 import type { SetState, UseBoundStore, StoreApi } from 'zustand';
 
+export interface Actions {
+  setNetworkVersion: (version: number | null) => void;
+  setAuth: (userInfo: StorageUserInfo | null) => void;
+  setSignatureToken: (signatureToken: string) => void;
+  setInstallKaiKas: (show: boolean) => void;
+  setSignatureLogin: (show: boolean) => void;
+  setSignup: (show: boolean) => void;
+}
+
 export interface State {
-  actions: {
-    setNetworkVersion: (version: number | null) => void;
-    setAuth: (userInfo: StorageUserInfo | null) => void;
-    setWalletSignature: (walletSignature: WalletSignature | null) => void;
-    setInstallKaiKas: (show: boolean) => void;
-    setSignatureLogin: (show: boolean) => void;
-    setSignup: (show: boolean) => void;
-  };
+  actions?: Actions;
   userInfo: StorageUserInfo | null;
   networkVersion: number | null;
-  walletSignature: WalletSignature | null;
 
   // login
+  signatureToken: string;
   kaikasSignature: boolean;
   installedKaikas: boolean;
   isSignup: boolean;
@@ -28,19 +30,12 @@ export interface State {
 let store: UseBoundStore<State, StoreApi<State>> | null = null;
 
 const initialState: State = {
-  actions: {
-    setNetworkVersion: () => {},
-    setAuth: () => {},
-    setWalletSignature: () => {},
-    setInstallKaiKas: () => {},
-    setSignatureLogin: () => {},
-    setSignup: () => {},
-  },
+  actions: undefined,
   userInfo: userInfo(),
   networkVersion: null, // kaikas network version
-  walletSignature: null, // login signature data
 
   // login
+  signatureToken: '', // login signature data
   kaikasSignature: false, // kaikas signature 서명을 받을 때까지 로딩
   installedKaikas: false, // kaikas가 설치되었는지
   isSignup: false, // 회원가입 시도 중
@@ -54,40 +49,34 @@ export const useStore = zustandContext.useStore;
 
 export const initializeStore = (preloadedState = {} as State) => {
   return create<State>((set: SetState<State>, get: SetState<State>) => {
-    const actions = {
-      setNetworkVersion: (version: number | null) => {
+    const actions: Actions = {
+      setNetworkVersion: (version: number | null) =>
         set({
           networkVersion: version,
-        });
-      },
-      setAuth: (userInfo: StorageUserInfo | null) => {
+        }),
+      setAuth: (userInfo: StorageUserInfo | null) =>
         set({
           userInfo,
-        });
-      },
-      setWalletSignature: (walletSignature: WalletSignature | null) => {
+        }),
+      setSignatureToken: (token: string) =>
         set({
-          walletSignature,
-        });
-      },
+          signatureToken: token,
+        }),
       // 설치 kaikas 설치 이동
-      setInstallKaiKas: (show: boolean) => {
+      setInstallKaiKas: (show: boolean) =>
         set({
           installedKaikas: show,
-        });
-      },
+        }),
       // 서명 정보 받기
-      setSignatureLogin: (show: boolean) => {
+      setSignatureLogin: (show: boolean) =>
         set({
           kaikasSignature: show,
-        });
-      },
+        }),
       // 회원가입 시도 중
-      setSignup: (show: boolean) => {
+      setSignup: (show: boolean) =>
         set({
           isSignup: show,
-        });
-      },
+        }),
     };
     return {
       ...initialState,

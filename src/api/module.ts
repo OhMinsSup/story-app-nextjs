@@ -6,36 +6,23 @@ import { STORAGE_KEY } from '@constants/constant';
 import { API_HOST } from '@constants/env';
 
 // types
-import type { ResponseModel } from 'types/story-api';
-import type {
-  GetServerSidePropsContext,
-  GetStaticPathsContext,
-  GetStaticPropsContext,
-} from 'next';
-
-export interface Options {
-  context:
-    | GetStaticPropsContext
-    | GetServerSidePropsContext
-    | GetStaticPathsContext
-    | null;
-}
-
-export type Header = { [key: string]: string };
-
-export interface Params<Body = any> {
-  url: string;
-  body?: Body;
-  headers?: Header;
-  options?: Options;
-}
+import type { Schema, Options, Params } from 'types/story-api';
 
 class APIMoudle {
-  authorized(options?: Partial<Options>) {
+  withCredentials: boolean;
+  constructor() {
+    this.withCredentials = true;
+  }
+
+  setWithCredentials(withCredentials: boolean) {
+    this.withCredentials = withCredentials;
+  }
+
+  authorized = (options?: Partial<Options>) => {
     const authorization = localStorage.getItem(STORAGE_KEY.TOKEN_KEY);
     if (!authorization) return null;
     return authorization;
-  }
+  };
 
   deleteResponse = async <D = any>({
     url,
@@ -43,10 +30,10 @@ class APIMoudle {
     options = { context: null },
   }: Params) => {
     const authorization = this.authorized();
-    const result = await client.delete<ResponseModel<D>>(url, {
+    const result = await client.delete<Schema<D>>(url, {
       headers: {
         'Content-Type': 'application/json',
-        ...(authorization && {
+        ...([authorization, !this.withCredentials] && {
           Authorization: `Bearer ${authorization}`,
         }),
         ...headers,
@@ -62,10 +49,10 @@ class APIMoudle {
     options = { context: null },
   }: Params) => {
     const authorization = this.authorized();
-    const result = await client.post<ResponseModel<D>>(url, body, {
+    const result = await client.post<Schema<D>>(url, body, {
       headers: {
         'Content-Type': 'application/json',
-        ...(authorization && {
+        ...([authorization, !this.withCredentials] && {
           Authorization: `Bearer ${authorization}`,
         }),
         ...headers,
@@ -81,10 +68,10 @@ class APIMoudle {
     options = { context: null },
   }: Params) => {
     const authorization = this.authorized();
-    const result = await client.put<ResponseModel<D>>(url, body, {
+    const result = await client.put<Schema<D>>(url, body, {
       headers: {
         'Content-Type': 'application/json',
-        ...(authorization && {
+        ...([authorization, !this.withCredentials] && {
           Authorization: `Bearer ${authorization}`,
         }),
         ...headers,
@@ -99,10 +86,10 @@ class APIMoudle {
     options = { context: null },
   }: Params) => {
     const authorization = this.authorized();
-    const result = await client.get<ResponseModel<D>>(url, {
+    const result = await client.get<Schema<D>>(url, {
       headers: {
         'Content-Type': 'application/json',
-        ...(authorization && {
+        ...([authorization, !this.withCredentials] && {
           Authorization: `Bearer ${authorization}`,
         }),
         ...headers,
@@ -112,8 +99,9 @@ class APIMoudle {
   };
 
   async getMockResponse(url: string) {
-    const prefixUrl = API_HOST + url;
-    const result = await axios(prefixUrl);
+    const result = await axios(url, {
+      baseURL: API_HOST,
+    });
     return result;
   }
 }

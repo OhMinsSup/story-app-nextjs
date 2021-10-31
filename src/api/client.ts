@@ -4,6 +4,7 @@ import { API_HOST, IS_PROD } from '@constants/env';
 
 export const client = axios.create({
   baseURL: API_HOST,
+  withCredentials: true,
 });
 
 // * 요청이 발생하기 전에 작동합니다.
@@ -51,9 +52,9 @@ client.interceptors.response.use(
 
       if (response.status === STATUS_CODE.UNAUTHORIZED) {
         if (typeof window !== 'undefined') {
-          localStorage.removeItem(STORAGE_KEY.TOKEN_KEY);
-          // localStorage.removeItem(STORAGE_KEY.USER_KEY);
-          sessionStorage.removeItem(STORAGE_KEY.USER_KEY);
+          [STORAGE_KEY.TOKEN_KEY, STORAGE_KEY.USER_KEY].forEach((key) => {
+            localStorage.removeItem(key);
+          });
           location.href = PAGE_ENDPOINTS.INDEX;
         }
       } else {
