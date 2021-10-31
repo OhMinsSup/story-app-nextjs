@@ -6,7 +6,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 // const fs = require('fs')
 const IS_PROD = process.env.NODE_ENV === 'production';
-const IS_PROD_DEPLOY_GROUP = process.env.DEPLOY_GROUP === 'production';
 
 // const DEPLOYED_ADDRESS = JSON.stringify(fs.readFileSync('deployedAddress', 'utf8').replace(/\n|\r/g, "")),
 // const DEPLOYED_ABI = fs.existsSync('deployedABI') && fs.readFileSync('deployedABI', 'utf8'),

@@ -17,6 +17,8 @@ import { useCreateStore, ZustandProvider } from '@store/store';
 
 // components
 import Core from '@components/common/Core';
+import { useEffect } from 'react';
+import Progress from '@components/common/Progress';
 
 const theme = createTheme({
   palette: {
@@ -47,6 +49,7 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
   return (
     <>
       <meta name="viewport" content="initial-scale=1, width=device-width" />
+      <Progress />
       <QueryClientProvider client={queryClientRef.current}>
         <Hydrate state={pageProps.dehydratedState}>
           <ZustandProvider createStore={createStore}>
