@@ -29,6 +29,7 @@ import { API_ENDPOINTS } from '@constants/constant';
 // types
 import type { ActualFileObject } from 'filepond';
 import type { FileModel } from 'types/story-api';
+import { getColorHex } from '@libs/colors';
 
 interface FormFieldValues {
   name: string;
@@ -97,7 +98,7 @@ const PublishPage = () => {
     try {
       const dataUrl = await getDataUrl();
       const {
-        data: { payload },
+        data: { result },
       } = await api.postResponse<FileModel>({
         url: API_ENDPOINTS.LOCAL.FILE.ROOT,
         body: {
@@ -107,7 +108,7 @@ const PublishPage = () => {
         },
       });
 
-      setValue('media', payload, {
+      setValue('media', result, {
         shouldValidate: true,
       });
     } catch (error) {
@@ -263,6 +264,7 @@ const PublishPage = () => {
                       render={({ field }) => (
                         <TwitterPicker
                           triangle="hide"
+                          colors={getColorHex().map((color) => color.value)}
                           width="100%"
                           color={field.value}
                           onChange={(color) => {
