@@ -36,7 +36,7 @@ const initState = {
   password: '',
 };
 
-const KeystoreLogin: React.FC = () => {
+const KeystoreLoginDialog: React.FC = () => {
   const accept = 'application/json';
   const formRef = useRef<HTMLFormElement | null>(null);
 
@@ -269,4 +269,4 @@ const KeystoreLogin: React.FC = () => {
   );
 };
 
-export default KeystoreLogin;
+export default KeystoreLoginDialog;

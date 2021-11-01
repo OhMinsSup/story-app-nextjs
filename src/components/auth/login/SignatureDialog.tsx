@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 // store
 import { useStore } from '@store/store';
 
-const Signature: React.FC = () => {
+const SignatureDialog: React.FC = () => {
   const { open } = useStore(
     (store) => ({
       open: store.kaikasSignature,
@@ -51,4 +51,4 @@ const Signature: React.FC = () => {
   );
 };
 
-export default Signature;
+export default SignatureDialog;

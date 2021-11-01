@@ -1,4 +1,8 @@
 import { STORAGE_KEY } from '@constants/constant';
+
+import type { AxiosError } from 'axios';
+import type { Schema } from 'types/story-api';
+
 const multiavatar = require('@multiavatar/multiavatar');
 
 // valid check key store file
@@ -35,8 +39,10 @@ export const userInfo = () => {
   return JSON.parse(stringify) ?? null;
 };
 
-export function isAxiosError(error: any) {
-  return !!error.response;
+export function isAxiosError<R = any>(
+  error: AxiosError | any,
+): error is AxiosError<Schema<R>> {
+  return error && error.isAxiosError && error.response;
 }
 
 export const generateKey = () => {

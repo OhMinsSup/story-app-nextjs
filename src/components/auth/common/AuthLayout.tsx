@@ -15,25 +15,28 @@ import { PAGE_ENDPOINTS } from '@constants/constant';
 import ArrowBack from '@mui/icons-material/ArrowBack';
 
 const InstallKaikasDialog = dynamic(
-  () => import('@components/auth/login/InstalledKaikas'),
+  () => import('@components/auth/login/InstalledKaikasDialog'),
   {
     ssr: false,
   },
 );
 
 const SignatureDialog = dynamic(
-  () => import('@components/auth/login/Signature'),
+  () => import('@components/auth/login/SignatureDialog'),
   {
     ssr: false,
   },
 );
 
-const SignupDialog = dynamic(() => import('@components/auth/login/Signup'), {
-  ssr: false,
-});
+const SignupDialog = dynamic(
+  () => import('@components/auth/signup/SignupDialog'),
+  {
+    ssr: false,
+  },
+);
 
 const KeystoreLoginDialog = dynamic(
-  () => import('@components/auth/login/KeystoreLogin'),
+  () => import('@components/auth/login/KeystoreLoginDialog'),
   {
     ssr: false,
   },

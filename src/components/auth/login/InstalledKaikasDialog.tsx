@@ -15,7 +15,7 @@ import { useStore } from '@store/store';
 // hooks
 import useUAParser from '@hooks/useParser';
 
-const InstalledKaikas: React.FC = () => {
+const InstalledKaikasDialog: React.FC = () => {
   const { open, setInstallKaiKas } = useStore(
     (store) => ({
       open: store.installedKaikas,
@@ -79,4 +79,4 @@ const InstalledKaikas: React.FC = () => {
   );
 };
 
-export default InstalledKaikas;
+export default InstalledKaikasDialog;

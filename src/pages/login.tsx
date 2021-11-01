@@ -12,7 +12,7 @@ import VpnKey from '@mui/icons-material/VpnKey';
 
 // components
 import KaytonIcon from '@components/icon/klaytnIcon';
-import AuthLayout from '@components/auth/login/AuthLayout';
+import AuthLayout from '@components/auth/common/AuthLayout';
 
 // no components
 import caver from '@libs/klaytn/caver';
@@ -96,14 +96,9 @@ const LoginPage: React.FC = () => {
     } catch (error) {
       // 로딩 종료
       actions?.setSignatureLogin?.(false);
-
-      console.error(error);
-      // 서버 에러
       if (!isAxiosError(error)) return;
-      const {
-        response: { data },
-      } = error;
-      if (!data.ok) actions?.setSignup?.(true);
+      const { response } = error;
+      if (!response?.data.ok) actions?.setSignup?.(true);
     }
   };
 

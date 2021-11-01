@@ -16,7 +16,7 @@ import { PAGE_ENDPOINTS } from '@constants/constant';
 // store
 import { useStore } from '@store/store';
 
-const Signup: React.FC = () => {
+const SignupDialog: React.FC = () => {
   const router = useRouter();
   const { isOpen, setSignup } = useStore(
     (store) => ({
@@ -64,4 +64,4 @@ const Signup: React.FC = () => {
   );
 };
 
-export default Signup;
+export default SignupDialog;

@@ -7,8 +7,9 @@ export type UserProfileProps = {
   defaultThumbnail: boolean;
   thumbnail: string | null;
   avatarkey: string;
-  onUpload: () => void;
-  onClearThumbnail: () => void;
+  onUpload?: () => void;
+  onClearThumbnail?: () => void;
+  disabledActions?: boolean;
 };
 
 const UserProfile: React.FC<UserProfileProps> = ({
@@ -17,6 +18,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
   avatarkey,
   onUpload,
   onClearThumbnail,
+  disabledActions,
 }) => {
   return (
     <div className="user-profile">
@@ -36,26 +38,28 @@ const UserProfile: React.FC<UserProfileProps> = ({
             }}
           />
         )}
-        <div className="space-y-2">
-          <Button
-            color="info"
-            size="medium"
-            fullWidth
-            variant="outlined"
-            onClick={onUpload}
-          >
-            이미지 업로드
-          </Button>
-          <Button
-            color="secondary"
-            size="medium"
-            fullWidth
-            variant="outlined"
-            onClick={onClearThumbnail}
-          >
-            이미지 제거
-          </Button>
-        </div>
+        {disabledActions ? null : (
+          <div className="space-y-2">
+            <Button
+              color="info"
+              size="medium"
+              fullWidth
+              variant="outlined"
+              onClick={onUpload}
+            >
+              이미지 업로드
+            </Button>
+            <Button
+              color="secondary"
+              size="medium"
+              fullWidth
+              variant="outlined"
+              onClick={onClearThumbnail}
+            >
+              이미지 제거
+            </Button>
+          </div>
+        )}
       </div>
       <style jsx>{`
         .user-profile {
