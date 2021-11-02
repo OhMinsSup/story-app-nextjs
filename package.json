@@ -14,7 +14,8 @@
     "lint:types": "tsc --noEmit",
     "lint": "next lint",
     "lint:fix": "yarn lint -- --fix",
-    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
