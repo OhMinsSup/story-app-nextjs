@@ -28,6 +28,7 @@ export const signUpSchema = yup.object().shape({
 
 export const mediaSchema = yup.object().shape({
   contentUrl: yup.string().required('미디어 주소를 입력해주세요.'),
+  name: yup.string(),
   idx: yup.number().required('미디어 주소를 입력해주세요.'),
 });
 
@@ -46,4 +47,5 @@ export const publishSchema = yup.object().shape({
       '외부 URL형식으로 입력해주세요.',
     )
     .notRequired(),
+  tags: yup.array().of(yup.mixed()).notRequired(),
 });

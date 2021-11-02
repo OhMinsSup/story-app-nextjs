@@ -3,7 +3,12 @@ import { TwitterPicker } from 'react-color';
 
 // validation
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import {
+  Controller,
+  SubmitHandler,
+  useForm,
+  useFieldArray,
+} from 'react-hook-form';
 import { publishSchema } from '@libs/yup/schema';
 
 // components
@@ -19,17 +24,23 @@ import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 
 // api
 import { api } from '@api/module';
 
 // common
 import { API_ENDPOINTS } from '@constants/constant';
+import { getColorHex } from '@libs/colors';
 
 // types
-import type { ActualFileObject } from 'filepond';
 import type { FileModel } from 'types/story-api';
-import { getColorHex } from '@libs/colors';
+import type { FieldArrayWithId } from 'react-hook-form';
+import { StoryUploadTypeEnum } from 'types/enum';
+
+interface Tag {
+  name: string;
+}
 
 interface FormFieldValues {
   name: string;
@@ -37,18 +48,23 @@ interface FormFieldValues {
   media: FileModel | null;
   backgroundColor?: string;
   externalUrl?: string;
+  tags: Tag[];
 }
+
+const filter = createFilterOptions<FieldArrayWithId<FormFieldValues, 'tags'>>();
 
 const PublishPage = () => {
   const {
     handleSubmit,
     register,
     control,
+    watch,
     setValue,
     formState: { errors },
   } = useForm<FormFieldValues>({
     mode: 'onSubmit',
-    resolver: yupResolver(publishSchema as any),
+    // @ts-ignore
+    resolver: yupResolver(publishSchema),
     criteriaMode: 'firstError',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -57,18 +73,26 @@ const PublishPage = () => {
       media: null,
       backgroundColor: undefined,
       externalUrl: undefined,
+      tags: [],
     },
   });
+
+  const { fields, replace } = useFieldArray({
+    control,
+    name: 'tags',
+  });
+
+  console.log(errors);
 
   const formRef = useRef<HTMLFormElement | null>(null);
   // 등록
   const onSubmit: SubmitHandler<FormFieldValues> = async (input) => {
     try {
-      const data = await api.postResponse({
-        url: API_ENDPOINTS.LOCAL.STORY.ROOT,
-        body: input,
-      });
-      console.log(data);
+      console.log('input ===>', input);
+      // const data = await api.postResponse({
+      //   url: API_ENDPOINTS.LOCAL.STORY.ROOT,
+      //   body: input,
+      // });
     } catch (error) {
       console.log(error);
     }
@@ -81,36 +105,27 @@ const PublishPage = () => {
     );
   }, []);
 
-  const processNFTImage = async (file: ActualFileObject) => {
-    const getDataUrl = () => {
-      return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          resolve(e.target.result);
-        };
-        reader.onerror = (e: any) => {
-          reject(e);
-        };
-        reader.readAsDataURL(file);
-      });
-    };
-
+  const processNFTImage = async (file: File) => {
     try {
-      const dataUrl = await getDataUrl();
-      const {
-        data: { result },
-      } = await api.postResponse<FileModel>({
-        url: API_ENDPOINTS.LOCAL.FILE.ROOT,
-        body: {
-          dataUrl,
-          name: file.name,
-          storeType: 'NFT_IMAGE',
-        },
+      const response = await api.uploadResponse({
+        file,
+        storyType: StoryUploadTypeEnum.STORY,
       });
 
-      setValue('media', result, {
-        shouldValidate: true,
-      });
+      const {
+        data: { ok, result },
+      } = response;
+
+      if (ok) {
+        const media = {
+          idx: result.id,
+          name: result.name,
+          contentUrl: result.path,
+        };
+        setValue('media', media, {
+          shouldValidate: true,
+        });
+      }
     } catch (error) {
       throw error;
     }
@@ -144,8 +159,8 @@ const PublishPage = () => {
                         같습니다.{' '}
                       </p>
                       <p>
-                        - 이미지: PNG, JPG, JPEG, GIF, WEBP (가로 세로 사이즈
-                        600px 이상)
+                        - 이미지: PNG, JPG, JPEG, GIF (가로 세로 사이즈 600px
+                        이상)
                       </p>
                     </FormHelperText>
                     <div className="mt-3">
@@ -158,7 +173,7 @@ const PublishPage = () => {
                         }}
                         onSetUploadFile={(filepond) => {
                           if (!filepond) return;
-                          processNFTImage(filepond.file);
+                          processNFTImage(filepond.file as File);
                         }}
                       />
                       <input type="hidden" {...register('media')} />
@@ -220,6 +235,56 @@ const PublishPage = () => {
                           : ''
                       }
                       {...field}
+                    />
+                  )}
+                />
+
+                <Autocomplete
+                  multiple
+                  onChange={(_, value) => {
+                    const filterWithoutId = value.map((v) => {
+                      return {
+                        name: v.name,
+                      };
+                    });
+                    replace(filterWithoutId);
+                  }}
+                  filterOptions={(options, params) => {
+                    const filtered = filter(options, params);
+                    const { inputValue } = params;
+                    // Suggest the creation of a new value
+                    const isExisting = options.some(
+                      (option) => inputValue === option.name,
+                    );
+                    if (inputValue !== '' && !isExisting) {
+                      filtered.push({
+                        name: inputValue,
+                        id: `create:${inputValue}`,
+                      });
+                    }
+                    return filtered;
+                  }}
+                  selectOnFocus
+                  clearOnBlur
+                  handleHomeEndKeys
+                  filterSelectedOptions
+                  id="tags-outlined"
+                  getOptionLabel={(option) => {
+                    // Value selected with enter, right from the input
+                    if (typeof option === 'object') {
+                      // Add "xxx" option created dynamically
+                      return option.name;
+                    }
+                    // Regular option
+                    return option;
+                  }}
+                  options={fields}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      color="info"
+                      label="태그"
                     />
                   )}
                 />

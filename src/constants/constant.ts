@@ -16,7 +16,7 @@ export const API_ENDPOINTS = {
       SIGNUP: '/users/signup',
     },
     FILE: {
-      ROOT: '/file',
+      ROOT: '/files/upload',
     },
     STORY: {
       ROOT: '/story',

@@ -4,7 +4,7 @@ import type {
   GetStaticPathsContext,
   GetStaticPropsContext,
 } from 'next';
-import { GenderEnum } from './enum';
+import { GenderEnum, StoryUploadTypeEnum } from './enum';
 
 // ================== Storage ================== //
 
@@ -22,10 +22,28 @@ export interface StorageUserInfo {
 // ================== File ================== //
 
 interface FileModel {
-  id: number;
-  name: string;
-  path: string;
+  idx: number;
+  name?: string;
+  contentUrl: string;
 }
+
+export interface FileUploadParams {
+  storyType:
+    | StoryUploadTypeEnum.STORY
+    | StoryUploadTypeEnum.ETC
+    | StoryUploadTypeEnum.PROFILE;
+  file: File;
+}
+
+export type StoryUploadApi = AxiosResponse<
+  Schema<{
+    id: number;
+    name: string;
+    fileType: string;
+    storyType: string;
+    path: string;
+  }>
+>;
 
 // ================== Common =================== //
 

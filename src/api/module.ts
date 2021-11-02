@@ -2,11 +2,17 @@ import axios from 'axios';
 import { client } from './client';
 
 // common
-import { STORAGE_KEY } from '@constants/constant';
-import { API_HOST, SITE_URL } from '@constants/env';
+import { API_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
+import { SITE_URL } from '@constants/env';
 
 // types
-import type { Schema, Options, Params } from 'types/story-api';
+import type {
+  Schema,
+  Options,
+  Params,
+  FileUploadParams,
+  StoryUploadApi,
+} from 'types/story-api';
 
 class APIMoudle {
   withCredentials: boolean;
@@ -95,6 +101,32 @@ class APIMoudle {
         ...headers,
       },
     });
+    return result;
+  };
+
+  uploadResponse = async ({ file, storyType }: FileUploadParams) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('storyType', storyType);
+    const authorization = this.authorized();
+
+    const result: StoryUploadApi = await client.post(
+      API_ENDPOINTS.LOCAL.FILE.ROOT,
+      form,
+      {
+        headers: {
+          ...([authorization, !this.withCredentials] && {
+            Authorization: `Bearer ${authorization}`,
+          }),
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (progressEvent) => {
+          const { loaded, total } = progressEvent;
+          const percent = Math.floor((loaded * 100) / total);
+          console.log(percent);
+        },
+      },
+    );
     return result;
   };
 
