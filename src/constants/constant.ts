@@ -3,7 +3,10 @@ export const PAGE_ENDPOINTS = {
   LOGIN: '/login/',
   SIGNUP: '/signup/',
   ILLUSTRATION: '/illustration/',
-  PUBLISH: '/publish/',
+  PUBLISH: {
+    ROOT: '/publish/',
+    DETAIL: (id: string | number) => `/publish/${id}/`,
+  },
 };
 
 export const API_ENDPOINTS = {
@@ -19,7 +22,8 @@ export const API_ENDPOINTS = {
       ROOT: '/files/upload',
     },
     STORY: {
-      ROOT: '/story',
+      ROOT: '/stories',
+      DETAIL: (id: string | number) => `/stories/${id}`,
     },
   },
 };

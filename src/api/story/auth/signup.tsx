@@ -13,18 +13,19 @@ import type {
 } from 'types/story-api';
 
 export function useMutationSignUp() {
-  return useMutation<
+  const fetcher = (input: MutationSignupInput) =>
+    api.postResponse({
+      url: API_ENDPOINTS.LOCAL.AUTH.SIGNUP,
+      body: input,
+    });
+
+  const mutation = useMutation<
     StoryApi<string | boolean>,
     StoryErrorApi<string | null>,
     MutationSignupInput
-  >(
-    (input) =>
-      api.postResponse({
-        url: API_ENDPOINTS.LOCAL.AUTH.SIGNUP,
-        body: input,
-      }),
-    {
-      mutationKey: 'signup',
-    },
-  );
+  >(fetcher, {
+    mutationKey: API_ENDPOINTS.LOCAL.AUTH.SIGNUP,
+  });
+
+  return mutation;
 }

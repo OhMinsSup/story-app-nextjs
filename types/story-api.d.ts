@@ -6,6 +6,15 @@ import type {
 } from 'next';
 import { GenderEnum, StoryUploadTypeEnum } from './enum';
 
+// ================= Enum Type Declarations ================= //
+
+export type GenderType = keyof typeof GenderEnum;
+
+export type StoryUploadType =
+  | StoryUploadTypeEnum.STORY
+  | StoryUploadTypeEnum.ETC
+  | StoryUploadTypeEnum.PROFILE;
+
 // ================== Storage ================== //
 
 export interface StorageUserInfo {
@@ -27,23 +36,20 @@ interface FileModel {
   contentUrl: string;
 }
 
+interface FileSchema {
+  id: number;
+  name: string;
+  fileType: string;
+  storyType: string;
+  path: string;
+}
+
 export interface FileUploadParams {
-  storyType:
-    | StoryUploadTypeEnum.STORY
-    | StoryUploadTypeEnum.ETC
-    | StoryUploadTypeEnum.PROFILE;
+  storyType: StoryUploadType;
   file: File;
 }
 
-export type StoryUploadApi = AxiosResponse<
-  Schema<{
-    id: number;
-    name: string;
-    fileType: string;
-    storyType: string;
-    path: string;
-  }>
->;
+export type StoryUploadApi = AxiosResponse<Schema<FileSchema>>;
 
 // ================== Common =================== //
 
@@ -69,9 +75,15 @@ export interface Schema<Result = any> {
   result: Result;
 }
 
+export interface DataIdSchema {
+  dataId: number;
+}
+
 export type StoryApi<Result = any> = AxiosResponse<Schema<Result>>;
 
 export type StoryErrorApi<Result = any> = AxiosError<Schema<Result>>;
+
+export type StoryDataIdApi = AxiosResponse<Schema<DataIdSchema>>;
 
 // ================== Login ================== //
 
@@ -94,8 +106,6 @@ export type LoginSchema = {
 
 // ================== Signup ================== //
 
-export type GenderType = keyof typeof GenderEnum;
-
 export interface MutationSignupInput {
   profileUrl?: string;
   nickname: string;
@@ -105,14 +115,14 @@ export interface MutationSignupInput {
   signatureToken: string;
 }
 
-export interface MutationSignupResponse {
-  id: number;
-  email: string;
-  accessToken: string;
-  profile: {
-    nickname: string;
-    profileUrl: string | null;
-    avatarSvg: string | null;
-    defaultProfile: boolean;
-  };
+// =================== Story =================== //
+
+export interface MutationStoriesInput {
+  name: string;
+  tags: string[];
+  description: string;
+  mediaId: number;
+  isPrivate?: boolean;
+  backgroundColor?: string | null;
+  externalUrl?: string | null;
 }

@@ -41,7 +41,7 @@ export const userInfo = () => {
 
 export function isAxiosError<R = any>(
   error: AxiosError | any,
-): error is AxiosError<Schema<R>> {
+): error is Required<AxiosError<Schema<R>>> {
   return error && error.isAxiosError && error.response;
 }
 

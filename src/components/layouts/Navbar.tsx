@@ -92,7 +92,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   }, [router]);
 
   const onPublish = useCallback(() => {
-    router.push(PAGE_ENDPOINTS.PUBLISH);
+    router.push(PAGE_ENDPOINTS.PUBLISH.ROOT);
   }, [router]);
 
   const renderMobileMenu = (

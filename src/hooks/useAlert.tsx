@@ -157,8 +157,8 @@ export function useAlert() {
   useEffect(() => {
     return () => {
       console.log('clear start....');
-      if (alertManager.size > 0) {
-        alertManager.clear();
+      if (keyRef.current && alertManager.size > 0) {
+        alertManager.delete(keyRef.current);
         keyRef.current = null;
         console.log('success clear: ', alertManager);
       }
