@@ -21,6 +21,7 @@ import type { AppProps } from 'next/app';
 
 // store
 import { useCreateStore, ZustandProvider } from '@store/store';
+import SeoHead from '@components/common/SEO';
 
 const theme = createTheme({
   palette: {
@@ -38,6 +39,18 @@ const theme = createTheme({
 
 const Noop: React.FC = ({ children }) => <>{children}</>;
 
+const start = (url: string) => {
+  NProgress.start();
+};
+
+const done = () => {
+  NProgress.done();
+};
+
+Router.events.on('routeChangeStart', start);
+Router.events.on('routeChangeComplete', done);
+Router.events.on('routeChangeError', done);
+
 const AppPage = ({ Component, pageProps }: AppProps) => {
   const Layout = (Component as any).Layout || Noop;
   const queryClientRef = useRef<QueryClient | null>();
@@ -46,31 +59,11 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
     queryClientRef.current = new QueryClient();
   }
 
-  const start = (url: string) => {
-    NProgress.start();
-  };
-
-  const done = () => {
-    NProgress.done();
-  };
-
-  useEffect(() => {
-    Router.events.on('routeChangeStart', start);
-    Router.events.on('routeChangeComplete', done);
-    Router.events.on('routeChangeError', done);
-
-    return () => {
-      Router.events.off('routeChangeStart', start);
-      Router.events.off('routeChangeComplete', done);
-      Router.events.off('routeChangeError', done);
-    };
-  }, []);
-
   const createStore = useCreateStore(pageProps.initialZustandState);
 
   return (
     <>
-      <meta name="viewport" content="initial-scale=1, width=device-width" />
+      <SeoHead />
       <QueryClientProvider client={queryClientRef.current}>
         <Hydrate state={pageProps.dehydratedState}>
           <ZustandProvider createStore={createStore}>

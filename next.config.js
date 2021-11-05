@@ -10,7 +10,15 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 // const DEPLOYED_ADDRESS = JSON.stringify(fs.readFileSync('deployedAddress', 'utf8').replace(/\n|\r/g, "")),
 // const DEPLOYED_ABI = fs.existsSync('deployedABI') && fs.readFileSync('deployedABI', 'utf8'),
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
+  swcMinify: true,
+  // experimental: {
+  // 서버 측 suspense 및 ssr 스트리밍 지원에 대한 기본 제공, http 스트리밍을 통해서 서버 렌더링 가능
+  // concurrentFeatures: true,
+  // 컴포넌트 레벨에서 동작하는 모든 것을 서버 단에서 처리할 수 있게 된다.
+  // serverComponents: true,
+  // },
   // * 리액트 개발 중 사용할 환경변수들을 설정
   env: {
     // * 여기에 웹팩에 주입될 환경변수들을 입력
@@ -43,10 +51,6 @@ const nextConfig = {
       // * HMR 시 CPU 사용량을 줄이는 빌드 최적화 코드
       config.watchOptions.poll = 1000;
       config.watchOptions.aggregateTimeout = 300;
-    }
-
-    if (!isServer) {
-      config.resolve.fallback.fs = false;
     }
 
     return {

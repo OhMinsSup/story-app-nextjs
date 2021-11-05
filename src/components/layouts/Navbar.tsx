@@ -151,7 +151,7 @@ const Navbar: React.FC<NavbarProps> = () => {
     <>
       <AppBar position="static" className="shadow-sm" color="transparent">
         <Toolbar>
-          <Div>Story</Div>
+          <Div className="font-sans text-base">Story</Div>
           <Box sx={{ flexGrow: 1 }} />
           <Search sx={{ display: { xs: 'none', md: 'flex' } }}>
             <SearchIconWrapper>
