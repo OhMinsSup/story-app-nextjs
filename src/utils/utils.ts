@@ -1,9 +1,39 @@
 import { STORAGE_KEY } from '@constants/constant';
 
+import type { MutableRefObject } from 'react';
 import type { AxiosError } from 'axios';
 import type { Schema } from 'types/story-api';
 
 const multiavatar = require('@multiavatar/multiavatar');
+
+export type BasicTarget<T = HTMLElement> =
+  | (() => T | null)
+  | T
+  | null
+  | MutableRefObject<T | null | undefined>;
+
+type TargetElement = HTMLElement | Element | Document | Window;
+
+export function getTargetElement(
+  target?: BasicTarget<TargetElement>,
+  defaultElement?: TargetElement,
+): TargetElement | undefined | null {
+  if (!target) {
+    return defaultElement;
+  }
+
+  let targetElement: TargetElement | undefined | null;
+
+  if (typeof target === 'function') {
+    targetElement = target();
+  } else if ('current' in target) {
+    targetElement = target.current;
+  } else {
+    targetElement = target;
+  }
+
+  return targetElement;
+}
 
 // valid check key store file
 export const validKeystore = (keystore?: string | ArrayBuffer | null) => {
@@ -47,6 +77,29 @@ export function isAxiosError<R = any>(
 
 export const generateKey = () => {
   return Math.random().toString(36).substr(2, 11);
+};
+
+export const blurDataUrl = (w: string | number, h: string | number) => {
+  const shimmer = (w: string | number, h: string | number) => `
+<svg width="${w}" height="${h}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="g">
+      <stop stop-color="#333" offset="20%" />
+      <stop stop-color="#222" offset="50%" />
+      <stop stop-color="#333" offset="70%" />
+    </linearGradient>
+  </defs>
+  <rect width="${w}" height="${h}" fill="#333" />
+  <rect id="r" width="${w}" height="${h}" fill="url(#g)" />
+  <animate xlink:href="#r" attributeName="x" from="-${w}" to="${w}" dur="1s" repeatCount="indefinite"  />
+</svg>`;
+
+  const toBase64 = (str: string) =>
+    typeof window === 'undefined'
+      ? Buffer.from(str).toString('base64')
+      : window.btoa(str);
+
+  return `data:image/svg+xml;base64,${toBase64(shimmer(w, h))}`;
 };
 
 export const generateAvatar = (key: string) => {

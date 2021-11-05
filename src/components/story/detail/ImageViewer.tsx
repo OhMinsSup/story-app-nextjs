@@ -1,7 +1,8 @@
 import React from 'react';
 import Image from 'next/image';
 import Box from '@mui/system/Box';
-import Skeleton from '@mui/material/Skeleton';
+
+import { blurDataUrl } from '@utils/utils';
 
 interface ImageViewerProps {}
 const ImageViewer: React.FC<ImageViewerProps> = () => {
@@ -16,6 +17,8 @@ const ImageViewer: React.FC<ImageViewerProps> = () => {
           width={600}
           height={500}
           loading="lazy"
+          placeholder="blur"
+          blurDataURL={blurDataUrl(600, 500)}
           alt="image viewer"
         />
       </div>
