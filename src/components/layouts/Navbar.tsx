@@ -162,7 +162,7 @@ const Navbar: React.FC<NavbarProps> = () => {
               inputProps={{ 'aria-label': 'search' }}
             />
           </Search>
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ display: { md: 'flex' } }}>
             <div
               className="inline-block mx-3 align-middle p-2 space-x-5"
               suppressHydrationWarning
@@ -213,18 +213,6 @@ const Navbar: React.FC<NavbarProps> = () => {
                 </Button>
               )}
             </div>
-          </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
-              aria-haspopup="true"
-              onClick={() => {}}
-              color="inherit"
-            >
-              <MoreIcon />
-            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
