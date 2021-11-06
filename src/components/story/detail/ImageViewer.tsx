@@ -10,7 +10,7 @@ const ImageViewer: React.FC<ImageViewerProps> = () => {
     <Box component="div">
       <div
         className="flex p-16 justify-center"
-        style={{ backgroundColor: 'ButtonFace' }}
+        style={{ backgroundColor: '#0ca678' }}
       >
         <Image
           src="/images/card.jpg"

@@ -1,4 +1,10 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+
+// common
+import { blurDataUrl } from '@utils/utils';
+
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -36,14 +42,19 @@ interface NFTCardProps {
 }
 
 const NFTCard: React.FC<NFTCardProps> = ({ item }) => {
+  const router = useRouter();
   const [expanded, setExpanded] = React.useState(false);
 
-  const handleExpandClick = () => {
+  const handleExpandClick = useCallback(() => {
     setExpanded(!expanded);
-  };
+  }, [expanded]);
+
+  const onMoveToPage = useCallback(() => {
+    router.push(`/publish/3`);
+  }, [router, item]);
 
   return (
-    <Card sx={{ width: 345 }}>
+    <Card sx={{ width: 345 }} onClick={onMoveToPage}>
       <CardHeader
         avatar={
           <Avatar
@@ -68,14 +79,19 @@ const NFTCard: React.FC<NFTCardProps> = ({ item }) => {
       />
       <CardMedia
         sx={{ backgroundColor: item.background_color }}
-        component="img"
-        className="h-40 object-contain"
-        loading="lazy"
-        height="194"
-        data-src={item.image}
-        image={item.image}
-        alt={item.name}
-      />
+        className="h-40 object-contain justify-center flex"
+        component="div"
+      >
+        <Image
+          src={item.image}
+          loading="lazy"
+          placeholder="blur"
+          width={200}
+          height={200}
+          blurDataURL={blurDataUrl(200, 200)}
+          alt={item.name}
+        />
+      </CardMedia>
       <CardContent>
         <Typography variant="body2" color="text.secondary" noWrap>
           {item.description}

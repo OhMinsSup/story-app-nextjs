@@ -33,7 +33,7 @@ const nextConfig = {
   trailingSlash: true,
 
   images: {
-    // domains: [], // 외부 웹사이트 이미지인경우, 이미지 src 의 도메인을 옵션에 명시
+    domains: ['cdn.krafter.space'], // 외부 웹사이트 이미지인경우, 이미지 src 의 도메인을 옵션에 명시
     formats: ['image/avif', 'image/webp'],
   },
 
