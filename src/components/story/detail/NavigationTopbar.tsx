@@ -30,7 +30,11 @@ const NavigationTopbar: React.FC<NavigationTopbarProps> = () => {
           </IconButton>
         </div>
         <div>
-          <ButtonGroup variant="outlined" aria-label="outlined button group">
+          <ButtonGroup
+            variant="outlined"
+            fullWidth
+            aria-label="outlined button group"
+          >
             <IconButton aria-label="share" color="secondary">
               <ShareOutlinedIcon />
             </IconButton>

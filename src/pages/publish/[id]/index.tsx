@@ -9,6 +9,7 @@ import ImageViewer from '@components/story/detail/ImageViewer';
 import PostHead from '@components/story/detail/PostHead';
 import StickyHistoryTable from '@components/story/detail/StickyHistoryTable';
 import AnotherPosts from '@components/story/detail/AnotherPosts';
+import OwnerUser from '@components/story/detail/OwnerUser';
 
 const PublishDetailPage = () => {
   return (
@@ -18,6 +19,7 @@ const PublishDetailPage = () => {
         <PostHead />
         <Stack spacing={3} sx={{ paddingBottom: 10 }}>
           <ImageViewer />
+          <OwnerUser />
           <Typography variant="h5" gutterBottom component="div">
             설명
           </Typography>

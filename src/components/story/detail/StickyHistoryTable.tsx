@@ -99,7 +99,7 @@ const StickyHistoryTable = () => {
     <>
       <Stack spacing={1}>
         <Typography variant="h5" gutterBottom>
-          History
+          거래내역
         </Typography>
 
         <TableContainer sx={{ maxHeight: 440 }}>
