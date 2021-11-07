@@ -19,28 +19,21 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
+  { id: 'name', label: '구분', minWidth: 170 },
+  { id: 'code', label: '시간', minWidth: 100 },
   {
     id: 'population',
-    label: 'Population',
+    label: '보낸사람',
     minWidth: 170,
     align: 'right',
     format: (value: number) => value.toLocaleString('en-US'),
   },
   {
     id: 'size',
-    label: 'Size\u00a0(km\u00b2)',
+    label: '받는사람',
     minWidth: 170,
     align: 'right',
     format: (value: number) => value.toLocaleString('en-US'),
-  },
-  {
-    id: 'density',
-    label: 'Density',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
   },
 ];
 
@@ -80,7 +73,10 @@ const rows = [
   createData('Brazil', 'BR', 210147125, 8515767),
 ];
 
-const StickyHistoryTable = () => {
+interface StickyHistoryTableProps {
+  loading: boolean;
+}
+const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({ loading }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -98,8 +94,8 @@ const StickyHistoryTable = () => {
   return (
     <>
       <Stack spacing={1}>
-        <Typography variant="h5" gutterBottom>
-          거래내역
+        <Typography variant="h5" gutterBottom className="font-bold">
+          히스토리
         </Typography>
 
         <TableContainer sx={{ maxHeight: 440 }}>
@@ -145,9 +141,9 @@ const StickyHistoryTable = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
           component="div"
           count={rows.length}
+          rowsPerPageOptions={[]}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

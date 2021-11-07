@@ -25,6 +25,7 @@ class APIMoudle {
   }
 
   authorized = (options?: Partial<Options>) => {
+    if (typeof window === 'undefined') return null;
     const authorization = localStorage.getItem(STORAGE_KEY.TOKEN_KEY);
     if (!authorization) return null;
     return authorization;

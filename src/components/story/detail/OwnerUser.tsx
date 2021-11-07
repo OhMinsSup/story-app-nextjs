@@ -1,23 +1,24 @@
 import React from 'react';
+
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-
 import Divider from '@mui/material/Divider';
+import Skeleton from '@mui/material/Skeleton';
+
+// utils
 import { getUserThumbnail } from '@utils/utils';
-import { useStoryQuery } from '@api/story/story';
-import { useRouter } from 'next/router';
 
-const OwnerUser = () => {
-  const router = useRouter();
-  const id = router.query.id?.toString();
-  const { data } = useStoryQuery(id);
+// types
+import type { ProfileModel } from 'types/story-api';
 
-  const creator = data?.result.user;
-  const owner = data?.result.user;
-
+interface OwnerUserProps {
+  ownerProfile: ProfileModel;
+  creatorProfile: ProfileModel;
+}
+function OwnerUser({ ownerProfile, creatorProfile }: Partial<OwnerUserProps>) {
   return (
     <List
       className="flex flex-wrap md:flex-nowrap"
@@ -29,38 +30,72 @@ const OwnerUser = () => {
       <ListItem>
         <ListItemAvatar>
           <Avatar
-            src={getUserThumbnail({
-              defaultProfile: !!creator?.profile.defaultProfile,
-              avatarSvg: creator?.profile.avatarSvg,
-              profileUrl: creator?.profile.profileUrl,
-              nickname: creator?.profile.nickname,
-            })}
-            alt={creator?.profile.nickname}
+            src={getUserThumbnail(creatorProfile)}
+            alt={creatorProfile?.nickname}
           />
         </ListItemAvatar>
         <ListItemText
           primary="Created By"
-          secondary={creator?.profile.nickname}
+          secondary={creatorProfile?.nickname}
         />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
         <ListItemAvatar>
           <Avatar
-            src={getUserThumbnail({
-              defaultProfile: !!owner?.profile.defaultProfile,
-              avatarSvg: owner?.profile.avatarSvg,
-              profileUrl: owner?.profile.profileUrl,
-              nickname: owner?.profile.nickname,
-            })}
-            alt={owner?.profile.nickname}
+            src={getUserThumbnail(ownerProfile)}
+            alt={ownerProfile?.nickname}
           />
         </ListItemAvatar>
-        <ListItemText primary="Owned By" secondary={owner?.profile.nickname} />
+        <ListItemText primary="Owned By" secondary={ownerProfile?.nickname} />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+    </List>
+  );
+}
+
+export default OwnerUser;
+
+// eslint-disable-next-line react/display-name
+OwnerUser.Skeleton = () => {
+  return (
+    <List
+      className="flex flex-wrap md:flex-nowrap"
+      sx={{
+        width: '100%',
+        bgcolor: 'background.paper',
+      }}
+    >
+      <ListItem>
+        <ListItemAvatar>
+          <Skeleton
+            animation="wave"
+            variant="circular"
+            width={40}
+            height={40}
+          />
+        </ListItemAvatar>
+        <ListItemText
+          primary={<Skeleton animation="wave" width={'100px'} />}
+          secondary={<Skeleton animation="wave" width={'200px'} />}
+        />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+      <ListItem>
+        <ListItemAvatar>
+          <Skeleton
+            animation="wave"
+            variant="circular"
+            width={40}
+            height={40}
+          />
+        </ListItemAvatar>
+        <ListItemText
+          primary={<Skeleton animation="wave" width={'100px'} />}
+          secondary={<Skeleton animation="wave" width={'200px'} />}
+        />
       </ListItem>
       <Divider variant="inset" component="li" />
     </List>
   );
 };
-
-export default OwnerUser;

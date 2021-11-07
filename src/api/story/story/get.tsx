@@ -17,12 +17,16 @@ export const fetcherOne = async ({
 };
 
 export const useStoryQuery = (id: DataIdParams) => {
-  const query = useQuery<Schema<StorySchema>, Schema<any>>(
+  const { data, ...fields } = useQuery<Schema<StorySchema>, Schema<any>>(
     [API_ENDPOINTS.LOCAL.STORY.ROOT, id],
     fetcherOne,
     {
       enabled: !!id,
     },
   );
-  return query;
+  return {
+    data: data?.result,
+    originData: data,
+    ...fields,
+  };
 };

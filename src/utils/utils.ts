@@ -107,19 +107,21 @@ export const generateAvatar = (key: string) => {
   return svgCode;
 };
 
-export const getUserThumbnail = ({
-  defaultProfile,
-  avatarSvg,
-  profileUrl,
-  nickname,
-}: {
+type UserProfileImage = {
   defaultProfile: boolean;
   avatarSvg?: string | null;
   profileUrl?: string | null;
   nickname?: string;
-}) => {
+};
+
+export const getUserThumbnail = (data?: UserProfileImage) => {
+  if (!data) return '';
+  const { defaultProfile, avatarSvg, profileUrl, nickname } = data;
   const svgCode = `data:image/svg+xml;utf8,${encodeURIComponent(
     generateAvatar(avatarSvg ?? nickname ?? 'default'),
   )}`;
   return defaultProfile ? svgCode : profileUrl ?? svgCode;
 };
+
+export const delay = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));

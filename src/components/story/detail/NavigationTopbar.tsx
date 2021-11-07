@@ -8,10 +8,20 @@ import IconButton from '@mui/material/IconButton';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-interface NavigationTopbarProps {}
-const NavigationTopbar: React.FC<NavigationTopbarProps> = () => {
+// store
+import { useStore } from '@store/store';
+
+// types
+import type { UserModel } from 'types/story-api';
+
+interface NavigationTopbarProps {
+  creatorUser?: UserModel;
+}
+const NavigationTopbar: React.FC<NavigationTopbarProps> = ({ creatorUser }) => {
   const router = useRouter();
+  const { userInfo } = useStore();
 
   const onBackHandler = useCallback(() => {
     router.back();
@@ -33,15 +43,21 @@ const NavigationTopbar: React.FC<NavigationTopbarProps> = () => {
           <ButtonGroup
             variant="outlined"
             fullWidth={true}
-            disableElevation={true}
+            disableElevation={false}
             aria-label="outlined button group"
           >
             <IconButton aria-label="share" color="secondary">
               <ShareOutlinedIcon />
             </IconButton>
-            <IconButton aria-label="declaration" color="secondary">
-              <ErrorOutlineOutlinedIcon />
-            </IconButton>
+            {creatorUser?.id === userInfo?.id ? (
+              <IconButton aria-label="more" color="secondary">
+                <MoreVertIcon />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="declaration" color="secondary">
+                <ErrorOutlineOutlinedIcon />
+              </IconButton>
+            )}
           </ButtonGroup>
         </div>
       </div>

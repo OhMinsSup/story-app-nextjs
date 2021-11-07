@@ -1,50 +1,54 @@
 import React from 'react';
-import { useRouter } from 'next/router';
 
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import Avatar from '@mui/material/Avatar';
+import Skeleton from '@mui/material/Skeleton';
 
 // utils
 import { formatDiffText } from '@libs/date/date';
 
-// api
-import { useStoryQuery } from '@api/story/story';
+import type { TagModel } from 'types/story-api';
 
-interface PostHeadProps {}
-const PostHead: React.FC<PostHeadProps> = () => {
-  const router = useRouter();
-  const id = router.query.id?.toString();
-  const { data } = useStoryQuery(id);
-
+interface PostHeadProps {
+  title: string;
+  backgroundColor: string;
+  createdAt: string | number;
+  tags: TagModel[];
+}
+function PostHead({
+  title,
+  backgroundColor,
+  createdAt,
+  tags,
+}: Partial<PostHeadProps>) {
   return (
     <div className="mt-2 mb-12">
       <Typography variant="h3" gutterBottom component="div">
-        {data?.result.name}
+        {title}
       </Typography>
       <Stack direction="row" spacing={1} className="text-gray-700 mb-3">
         <Stack direction="row" spacing={1} className="">
           <Avatar
             sx={{
-              bgcolor: data?.result.backgroundColor,
+              bgcolor: backgroundColor,
               height: 25,
+              lineHeight: '1px',
               width: 25,
             }}
           >
-            -
+            #
           </Avatar>
-          <span className="text-gray-800 text-base">
-            {data?.result.backgroundColor}
-          </span>
+          <span className="text-gray-800 text-base">{backgroundColor}</span>
         </Stack>
         <span className="separator">&middot;</span>
         <span className="text-gray-800 text-base">
-          {formatDiffText(data?.result.createdAt)}
+          {formatDiffText(createdAt)}
         </span>
       </Stack>
       <Stack direction="row" spacing={1}>
-        {data?.result.tags.map((tag) => (
+        {tags?.map((tag) => (
           <Chip
             key={tag.id}
             label={tag.name}
@@ -57,6 +61,30 @@ const PostHead: React.FC<PostHeadProps> = () => {
       </Stack>
     </div>
   );
-};
+}
 
 export default PostHead;
+
+// eslint-disable-next-line react/display-name
+PostHead.Skeleton = () => (
+  <div className="mt-2 mb-12">
+    <Typography variant="h2" gutterBottom component="div">
+      <Skeleton />
+    </Typography>
+    <Stack direction="row" spacing={1} className="text-gray-700 mb-3">
+      <Stack direction="row" spacing={1} className="">
+        <Skeleton animation="wave" variant="circular" width={25} height={25} />
+        <Skeleton animation="wave" width={'50px'} />
+      </Stack>
+      <span className="separator">&middot;</span>
+      <span className="text-gray-500 text-base">
+        <Skeleton animation="wave" width={'50px'} />
+      </span>
+    </Stack>
+    <Stack direction="row" spacing={1}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Skeleton key={i} animation="wave" width={'50px'} height={'40px'} />
+      ))}
+    </Stack>
+  </div>
+);

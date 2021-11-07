@@ -1,41 +1,52 @@
 import React from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 
 import Box from '@mui/system/Box';
+import Skeleton from '@mui/material/Skeleton';
 
 // utils
 import { blurDataUrl } from '@utils/utils';
 
-// api
-import { useStoryQuery } from '@api/story/story';
-
-interface ImageViewerProps {}
-const ImageViewer: React.FC<ImageViewerProps> = () => {
-  const router = useRouter();
-  const id = router.query.id?.toString();
-  const { data } = useStoryQuery(id);
-
+interface ImageViewerProps {
+  backgroundColor: string;
+  imageUrl: string;
+  name: string;
+}
+function ImageViewer({
+  backgroundColor,
+  imageUrl,
+  name,
+}: Partial<ImageViewerProps>) {
   return (
     <Box component="div">
-      <div
-        className="flex p-16 justify-center"
-        style={{ backgroundColor: data?.result.backgroundColor }}
-      >
-        {data?.result.media.contentUrl && (
+      <div className="flex p-16 justify-center" style={{ backgroundColor }}>
+        {imageUrl && (
           <Image
-            src={data.result.media.contentUrl}
+            src={imageUrl}
             width={600}
             height={500}
             loading="lazy"
             placeholder="blur"
             blurDataURL={blurDataUrl(600, 500)}
-            alt={`${data?.result.name} image`}
+            alt={`${name} image`}
           />
         )}
       </div>
     </Box>
   );
-};
+}
 
 export default ImageViewer;
+
+// eslint-disable-next-line react/display-name
+ImageViewer.Skeleton = () => (
+  <Box component="div">
+    <div className="flex p-16 justify-center">
+      <Skeleton
+        sx={{ height: '500px', width: '600px' }}
+        animation="wave"
+        variant="rectangular"
+      />
+    </div>
+  </Box>
+);

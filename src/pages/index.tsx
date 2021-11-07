@@ -47,7 +47,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const IndexPage = () => {
-  const result = useIllustractionsQuery();
+  const { data, isLoading } = useIllustractionsQuery();
 
   const [value, setValue] = React.useState(0);
 
@@ -55,7 +55,7 @@ const IndexPage = () => {
     setValue(newValue);
   };
 
-  const items = result.data?.items ?? [];
+  const items = data?.items ?? [];
 
   return (
     <div>
@@ -77,15 +77,29 @@ const IndexPage = () => {
           </Box>
           <TabPanel value={value} index={0}>
             <Grid container spacing={3} direction="row" justifyContent="center">
-              {items.map((item) => (
-                <Grid
-                  item
-                  columns={{ xl: 4, xs: 4, lg: 3, md: 3, sm: 5 }}
-                  key={`nft-${item.tokenId}`}
-                >
-                  <NFTCard item={item} />
-                </Grid>
-              ))}
+              {isLoading ? (
+                <>
+                  {Array.from({ length: 30 }).map((_, index) => (
+                    <Grid
+                      item
+                      columns={{ xl: 4, xs: 4, lg: 3, md: 3, sm: 5 }}
+                      key={`nft-loading-${index}`}
+                    >
+                      <NFTCard.Skeleton />
+                    </Grid>
+                  ))}
+                </>
+              ) : (
+                items.map((item) => (
+                  <Grid
+                    item
+                    columns={{ xl: 4, xs: 4, lg: 3, md: 3, sm: 5 }}
+                    key={`nft-${item.tokenId}`}
+                  >
+                    <NFTCard item={item} />
+                  </Grid>
+                ))
+              )}
             </Grid>
           </TabPanel>
           <TabPanel value={value} index={1}>
