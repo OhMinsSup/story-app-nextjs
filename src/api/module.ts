@@ -39,7 +39,7 @@ class APIMoudle {
     const result = await client.delete<Schema<D>>(url, {
       headers: {
         'Content-Type': 'application/json',
-        ...([authorization, !this.withCredentials] && {
+        ...([authorization, !this.withCredentials].every(Boolean) && {
           Authorization: `Bearer ${authorization}`,
         }),
         ...headers,
@@ -58,7 +58,7 @@ class APIMoudle {
     const result = await client.post<Schema<D>>(url, body, {
       headers: {
         'Content-Type': 'application/json',
-        ...([authorization, !this.withCredentials] && {
+        ...([authorization, !this.withCredentials].every(Boolean) && {
           Authorization: `Bearer ${authorization}`,
         }),
         ...headers,
@@ -77,7 +77,7 @@ class APIMoudle {
     const result = await client.put<Schema<D>>(url, body, {
       headers: {
         'Content-Type': 'application/json',
-        ...([authorization, !this.withCredentials] && {
+        ...([authorization, !this.withCredentials].every(Boolean) && {
           Authorization: `Bearer ${authorization}`,
         }),
         ...headers,
@@ -95,7 +95,7 @@ class APIMoudle {
     const result = await client.get<Schema<D>>(url, {
       headers: {
         'Content-Type': 'application/json',
-        ...([authorization, !this.withCredentials] && {
+        ...([authorization, !this.withCredentials].every(Boolean) && {
           Authorization: `Bearer ${authorization}`,
         }),
         ...headers,
@@ -115,7 +115,7 @@ class APIMoudle {
       form,
       {
         headers: {
-          ...([authorization, !this.withCredentials] && {
+          ...([authorization, !this.withCredentials].every(Boolean) && {
             Authorization: `Bearer ${authorization}`,
           }),
           'Content-Type': 'multipart/form-data',
