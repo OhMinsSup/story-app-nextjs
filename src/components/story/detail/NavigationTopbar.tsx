@@ -32,7 +32,8 @@ const NavigationTopbar: React.FC<NavigationTopbarProps> = () => {
         <div>
           <ButtonGroup
             variant="outlined"
-            fullWidth
+            fullWidth={true}
+            disableElevation={true}
             aria-label="outlined button group"
           >
             <IconButton aria-label="share" color="secondary">

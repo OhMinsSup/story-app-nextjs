@@ -27,14 +27,15 @@ export function useMutationStoryModifiy(dataId: number) {
     StoryErrorApi,
     MutationStoriesInput
   >(fetcher, {
-    mutationKey: [API_ENDPOINTS.LOCAL.STORY.DETAIL(dataId), 'PUT'],
+    mutationKey: [API_ENDPOINTS.LOCAL.STORY.ROOT, dataId, 'PUT'],
     onSuccess: async (data) => {
       const {
         data: { resultCode },
       } = data;
       if (resultCode === RESULT_CODE.OK) {
         await queryClient.prefetchQuery([
-          API_ENDPOINTS.LOCAL.STORY.DETAIL(dataId),
+          API_ENDPOINTS.LOCAL.STORY.ROOT,
+          dataId,
         ]);
       }
     },

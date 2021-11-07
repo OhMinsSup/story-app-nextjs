@@ -79,11 +79,42 @@ export interface DataIdSchema {
   dataId: number;
 }
 
+export type DataIdParams = number | string | null | undefined;
+
 export type StoryApi<Result = any> = AxiosResponse<Schema<Result>>;
 
 export type StoryErrorApi<Result = any> = AxiosError<Schema<Result>>;
 
 export type StoryDataIdApi = AxiosResponse<Schema<DataIdSchema>>;
+
+// ================== Model =================== //
+
+export interface MediaModel {
+  id: number;
+  contentUrl: string;
+  originUrl: string;
+  type: StoryUploadType;
+}
+
+export interface UserModel {
+  id: number;
+  email: string;
+  address: string;
+  profile: ProfileModel;
+}
+
+export interface ProfileModel {
+  nickname: string;
+  profileUrl?: string | null;
+  avatarSvg: string;
+  defaultProfile: boolean;
+  gender: GenderType;
+}
+
+export interface TagModel {
+  id: number;
+  name: string;
+}
 
 // ================== Login ================== //
 
@@ -125,4 +156,16 @@ export interface MutationStoriesInput {
   isPrivate?: boolean;
   backgroundColor?: string | null;
   externalUrl?: string | null;
+}
+
+export interface StorySchema {
+  name: string;
+  description: string;
+  backgroundColor?: string;
+  externalUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+  media: MediaModel;
+  user: UserModel;
+  tags: TagModel[];
 }

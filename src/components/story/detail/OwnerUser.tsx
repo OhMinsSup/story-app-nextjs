@@ -4,12 +4,20 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
-import ImageIcon from '@mui/icons-material/Image';
-import WorkIcon from '@mui/icons-material/Work';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
+
 import Divider from '@mui/material/Divider';
+import { getUserThumbnail } from '@utils/utils';
+import { useStoryQuery } from '@api/story/story';
+import { useRouter } from 'next/router';
 
 const OwnerUser = () => {
+  const router = useRouter();
+  const id = router.query.id?.toString();
+  const { data } = useStoryQuery(id);
+
+  const creator = data?.result.user;
+  const owner = data?.result.user;
+
   return (
     <List
       className="flex flex-wrap md:flex-nowrap"
@@ -20,20 +28,35 @@ const OwnerUser = () => {
     >
       <ListItem>
         <ListItemAvatar>
-          <Avatar>
-            <ImageIcon />
-          </Avatar>
+          <Avatar
+            src={getUserThumbnail({
+              defaultProfile: !!creator?.profile.defaultProfile,
+              avatarSvg: creator?.profile.avatarSvg,
+              profileUrl: creator?.profile.profileUrl,
+              nickname: creator?.profile.nickname,
+            })}
+            alt={creator?.profile.nickname}
+          />
         </ListItemAvatar>
-        <ListItemText primary="Photos" secondary="Jan 9, 2014" />
+        <ListItemText
+          primary="Created By"
+          secondary={creator?.profile.nickname}
+        />
       </ListItem>
       <Divider variant="inset" component="li" />
       <ListItem>
         <ListItemAvatar>
-          <Avatar>
-            <WorkIcon />
-          </Avatar>
+          <Avatar
+            src={getUserThumbnail({
+              defaultProfile: !!owner?.profile.defaultProfile,
+              avatarSvg: owner?.profile.avatarSvg,
+              profileUrl: owner?.profile.profileUrl,
+              nickname: owner?.profile.nickname,
+            })}
+            alt={owner?.profile.nickname}
+          />
         </ListItemAvatar>
-        <ListItemText primary="Work" secondary="Jan 7, 2014" />
+        <ListItemText primary="Owned By" secondary={owner?.profile.nickname} />
       </ListItem>
       <Divider variant="inset" component="li" />
     </List>

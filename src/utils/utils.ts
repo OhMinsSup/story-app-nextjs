@@ -114,12 +114,12 @@ export const getUserThumbnail = ({
   nickname,
 }: {
   defaultProfile: boolean;
-  avatarSvg: string | null;
-  profileUrl: string | null;
-  nickname: string;
+  avatarSvg?: string | null;
+  profileUrl?: string | null;
+  nickname?: string;
 }) => {
   const svgCode = `data:image/svg+xml;utf8,${encodeURIComponent(
-    generateAvatar(avatarSvg ?? nickname),
+    generateAvatar(avatarSvg ?? nickname ?? 'default'),
   )}`;
   return defaultProfile ? svgCode : profileUrl ?? svgCode;
 };

@@ -1,4 +1,9 @@
 import React from 'react';
+import { useRouter } from 'next/router';
+
+// api
+import { useStoryQuery } from '@api/story/story';
+
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
@@ -12,6 +17,10 @@ import AnotherPosts from '@components/story/detail/AnotherPosts';
 import OwnerUser from '@components/story/detail/OwnerUser';
 
 const PublishDetailPage = () => {
+  const router = useRouter();
+  const id = router.query.id?.toString();
+  const { data, isLoading, isError } = useStoryQuery(id);
+
   return (
     <>
       <Container maxWidth="md">
@@ -24,10 +33,7 @@ const PublishDetailPage = () => {
             설명
           </Typography>
           <Typography variant="body1" gutterBottom>
-            body1. Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-            Quos blanditiis tenetur unde suscipit, quam beatae rerum inventore
-            consectetur, neque doloribus, cupiditate numquam dignissimos laborum
-            fugiat deleniti? Eum quasi quidem quibusdam.
+            {data?.result.description}
           </Typography>
           <StickyHistoryTable />
           <AnotherPosts />

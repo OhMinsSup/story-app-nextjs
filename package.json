@@ -43,6 +43,7 @@
     "axios": "^0.22.0",
     "caver-js": "^1.6.4",
     "cross-env": "^7.0.3",
+    "dayjs": "^1.10.7",
     "filepond": "^4.30.0",
     "filepond-plugin-file-validate-size": "^2.2.5",
     "filepond-plugin-file-validate-type": "^1.2.6",
