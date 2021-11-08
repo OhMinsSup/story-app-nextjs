@@ -30,6 +30,7 @@ import type {
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.query.id?.toString();
 
+  console.log('id', ctx);
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery(
@@ -82,12 +83,12 @@ function PublishDetailPage({}: InferGetServerSidePropsType<
               />
               <OwnerUser
                 creatorProfile={data?.user.profile}
-                ownerProfile={data?.user.profile}
+                ownerProfile={data?.owner.profile}
               />
               <Description description={data?.description ?? ''} />
             </>
           )}
-          <StickyHistoryTable loading={isLoading} />
+          <StickyHistoryTable />
         </Stack>
       </Container>
       <Alert />

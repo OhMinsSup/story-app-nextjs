@@ -1,4 +1,6 @@
+/* eslint-disable react/display-name */
 import React from 'react';
+import { useRouter } from 'next/router';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,57 +12,64 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 
+import { useHistoriesQuery } from '@api/story/story';
+
+import type { UserModel } from 'types/story-api';
+import { getUserThumbnail } from '@utils/utils';
+import { Avatar } from '@mui/material';
+
 interface Column {
-  id: 'name' | 'code' | 'population' | 'size' | 'density';
+  id: 'status' | 'to' | 'from';
   label: string;
   minWidth?: number;
-  align?: 'right';
-  format?: (value: number) => string;
+  align?: 'left';
+  format?: (value: any) => any;
 }
 
 const columns: readonly Column[] = [
-  { id: 'name', label: '구분', minWidth: 170 },
-  { id: 'code', label: '시간', minWidth: 100 },
+  { id: 'status', label: '구분' },
   {
-    id: 'population',
+    id: 'to',
     label: '보낸사람',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    align: 'left',
+    format: (value: any) => {
+      return (
+        <div className="flex items-center">
+          <Avatar
+            src={getUserThumbnail(value.profile)}
+            alt={value.profile.nickname}
+          />
+          <p className="p-2">{value.profile.nickname}</p>
+        </div>
+      );
+    },
   },
   {
-    id: 'size',
+    id: 'from',
     label: '받는사람',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    align: 'left',
+    format: (value: any) => {
+      return (
+        <div className="flex items-center">
+          <Avatar
+            src={getUserThumbnail(value.profile)}
+            alt={value.profile.nickname}
+          />
+          <p className="p-2">{value.profile.nickname}</p>
+        </div>
+      );
+    },
   },
 ];
 
-interface Data {
-  name: string;
-  code: string;
-  population: number;
-  size: number;
-  density: number;
-}
+interface StickyHistoryTableProps {}
+const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({}) => {
+  const router = useRouter();
+  const id = router.query.id?.toString();
+  const { data } = useHistoriesQuery(id);
+  console.log(data);
+  const rows = data?.list ?? [];
 
-function createData(
-  name: string,
-  code: string,
-  population: number,
-  size: number,
-): Data {
-  const density = population / size;
-  return { name, code, population, size, density };
-}
-
-const rows = [createData('India', 'IN', 1324171354, 3287263)];
-
-interface StickyHistoryTableProps {
-  loading: boolean;
-}
-const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({ loading }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -106,15 +115,13 @@ const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({ loading }) => {
                       hover
                       role="checkbox"
                       tabIndex={-1}
-                      key={row.code}
+                      key={`histories-${row.id}`}
                     >
                       {columns.map((column) => {
                         const value = row[column.id];
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {column.format && typeof value === 'number'
-                              ? column.format(value)
-                              : value}
+                            {column.format ? column.format(value) : value}
                           </TableCell>
                         );
                       })}

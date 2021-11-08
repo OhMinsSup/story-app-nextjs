@@ -167,5 +167,15 @@ export interface StorySchema {
   updatedAt: string;
   media: MediaModel;
   user: UserModel;
+  owner: UserModel;
   tags: TagModel[];
+}
+
+export interface History {
+  id: number;
+  status: string;
+  to: UserModel;
+  from: UserModel;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
     STORY: {
       ROOT: '/stories',
       DETAIL: (id: string | number) => `/stories/${id}`,
+      HISTORIES: (id: string | number) => `/stories/${id}/histories`,
     },
   },
 };
