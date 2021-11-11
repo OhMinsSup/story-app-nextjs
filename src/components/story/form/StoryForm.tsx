@@ -20,7 +20,6 @@ import FormHelperText from '@mui/material/FormHelperText';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
-import StoryLayout from '../common/StoryLayout';
 
 // api & hooks
 import { api } from '@api/module';

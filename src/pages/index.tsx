@@ -1,82 +1,41 @@
 import React, { useRef } from 'react';
-import { List, AutoSizer } from 'react-virtualized';
+import { QueryClient, dehydrate } from 'react-query';
+
+// common
+import { API_ENDPOINTS } from '@constants/constant';
 
 // components
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import { grey } from '@mui/material/colors';
 
 import AppLayout from '@components/layouts/AppLayout';
 import NFTCard from '@components/common/NFTCard';
 
-import { useIllustractionsQuery } from '@api/local/get-mock-illustractions';
-import { useInfiniteQuery } from 'react-query';
-import { api } from '@api/module';
-import { API_ENDPOINTS } from '@constants/constant';
-import { ListSchema } from 'types/story-api';
-import { useStoriesQuery } from '@api/story/story';
+import { fetcherStories, useStoriesQuery } from '@api/story/story';
 import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
 
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
+import type {
+  GetServerSidePropsContext,
+  InferGetServerSidePropsType,
+} from 'next';
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const queryClient = new QueryClient();
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
+  await queryClient.prefetchInfiniteQuery(
+    [API_ENDPOINTS.LOCAL.STORY.ROOT],
+    fetcherStories,
   );
-}
 
-const IndexPage = () => {
-  // const { data, isLoading } = useIllustractionsQuery();
-
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  return {
+    props: {
+      dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
+    },
   };
+};
 
-  // const items = data?.items ?? [];
-
-  const {
-    status,
-    data,
-    error,
-    isLoading,
-    isFetching,
-    isFetchingNextPage,
-    isFetchingPreviousPage,
-    fetchNextPage,
-    fetchPreviousPage,
-    hasNextPage,
-    hasPreviousPage,
-  } = useStoriesQuery();
+function IndexPage({}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const { data, fetchNextPage, hasNextPage } = useStoriesQuery();
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -121,7 +80,7 @@ const IndexPage = () => {
       </Box>
     </div>
   );
-};
+}
 
 export default IndexPage;
 

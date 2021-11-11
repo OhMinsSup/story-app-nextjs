@@ -11,12 +11,11 @@ const SIZE = 10;
 
 export const fetcherStories = async ({
   queryKey,
-  pageParam = 1,
-  meta,
+  pageParam,
 }: QueryFunctionContext<QueryKey, any>) => {
   const [_key, _params] = queryKey;
   const query = makeQueryString({
-    pageNo: pageParam,
+    pageNo: pageParam ?? 1,
     pageSize: SIZE,
   });
   const response = await api.getResponse<ListSchema<StorySchema>>({
