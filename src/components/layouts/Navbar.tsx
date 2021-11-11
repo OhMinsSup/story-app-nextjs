@@ -151,7 +151,11 @@ const Navbar: React.FC<NavbarProps> = () => {
     <>
       <AppBar position="static" className="shadow-sm" color="transparent">
         <Toolbar>
-          <Div className="font-sans text-base">Story</Div>
+          <Link href={PAGE_ENDPOINTS.INDEX}>
+            <a>
+              <Div className="font-sans text-base">Story</Div>
+            </a>
+          </Link>
           <Box sx={{ flexGrow: 1 }} />
           <Search sx={{ display: { xs: 'none', md: 'flex' } }}>
             <SearchIconWrapper>

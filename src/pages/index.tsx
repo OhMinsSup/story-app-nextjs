@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { List, AutoSizer } from 'react-virtualized';
 
 // components
 import Box from '@mui/material/Box';
@@ -12,6 +13,12 @@ import AppLayout from '@components/layouts/AppLayout';
 import NFTCard from '@components/common/NFTCard';
 
 import { useIllustractionsQuery } from '@api/local/get-mock-illustractions';
+import { useInfiniteQuery } from 'react-query';
+import { api } from '@api/module';
+import { API_ENDPOINTS } from '@constants/constant';
+import { ListSchema } from 'types/story-api';
+import { useStoriesQuery } from '@api/story/story';
+import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
 
 function a11yProps(index: number) {
   return {
@@ -47,7 +54,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const IndexPage = () => {
-  const { data, isLoading } = useIllustractionsQuery();
+  // const { data, isLoading } = useIllustractionsQuery();
 
   const [value, setValue] = React.useState(0);
 
@@ -55,79 +62,61 @@ const IndexPage = () => {
     setValue(newValue);
   };
 
-  const items = data?.items ?? [];
+  // const items = data?.items ?? [];
+
+  const {
+    status,
+    data,
+    error,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    isFetchingPreviousPage,
+    fetchNextPage,
+    fetchPreviousPage,
+    hasNextPage,
+    hasPreviousPage,
+  } = useStoriesQuery();
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useIntersectionObserver({
+    target: loadMoreRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage,
+  });
 
   return (
     <div>
-      <Box sx={{ flexGrow: 1, bgcolor: grey[50] }}>
+      <Box sx={{ flexGrow: 1 }}>
         <Box sx={{ width: '100%' }} className="space-y-5 pt-8">
-          <Box sx={{ borderBottom: 1, borderColor: 'transparent' }}>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              textColor="inherit"
-              indicatorColor="secondary"
-              centered
-              aria-label="basic tabs example"
-            >
-              <Tab label="최신순" {...a11yProps(0)} />
-              <Tab label="트렌딩" {...a11yProps(1)} />
-              <Tab label="아무개" {...a11yProps(2)} />
-            </Tabs>
-          </Box>
-          <TabPanel value={value} index={0}>
-            <Grid container spacing={3} direction="row" justifyContent="center">
-              {isLoading ? (
-                <>
-                  {Array.from({ length: 30 }).map((_, index) => (
-                    <Grid
-                      item
-                      columns={{ xl: 4, xs: 4, lg: 3, md: 3, sm: 5 }}
-                      key={`nft-loading-${index}`}
-                    >
-                      <NFTCard.Skeleton />
-                    </Grid>
-                  ))}
-                </>
-              ) : (
-                items.map((item) => (
+          <Grid container spacing={3} direction="row" justifyContent="center">
+            {data?.pages.map((item, i) => (
+              <React.Fragment key={i}>
+                {item.list.map((store) => (
                   <Grid
                     item
                     columns={{ xl: 4, xs: 4, lg: 3, md: 3, sm: 5 }}
-                    key={`nft-${item.tokenId}`}
+                    key={`nft-${store.id}`}
                   >
-                    <NFTCard item={item} />
+                    <NFTCard item={store} />
                   </Grid>
-                ))
-              )}
-            </Grid>
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            <Grid container spacing={3} direction="row" justifyContent="center">
-              {items.map((item) => (
+                ))}
+              </React.Fragment>
+            ))}
+
+            {hasNextPage &&
+              Array.from({ length: 10 }).map((_, index) => (
                 <Grid
                   item
+                  ref={index === 0 ? loadMoreRef : undefined}
                   columns={{ xl: 4, xs: 4, lg: 3, md: 3, sm: 5 }}
-                  key={`nft-${item.tokenId}`}
+                  key={`nft-next-loading-${index}`}
                 >
-                  <NFTCard item={item} />
+                  <NFTCard.Skeleton />
                 </Grid>
               ))}
-            </Grid>
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            <Grid container spacing={3} direction="row" justifyContent="center">
-              {items.map((item) => (
-                <Grid
-                  item
-                  columns={{ xl: 4, xs: 4, lg: 3, md: 3, sm: 5 }}
-                  key={`nft-${item.tokenId}`}
-                >
-                  <NFTCard item={item} />
-                </Grid>
-              ))}
-            </Grid>
-          </TabPanel>
+          </Grid>
         </Box>
       </Box>
     </div>

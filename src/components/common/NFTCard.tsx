@@ -3,27 +3,24 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 // common
-import { blurDataUrl } from '@utils/utils';
+import { blurDataUrl, getUserThumbnail } from '@utils/utils';
 
-import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Skeleton from '@mui/material/Skeleton';
 
-import { MockIllustrationItem } from '@api/local/get-mock-illustractions';
+import { StorySchema } from 'types/story-api';
 
 interface NFTCardProps {
-  item: MockIllustrationItem;
+  item: StorySchema;
 }
 
 function NFTCard({ item }: NFTCardProps) {
@@ -38,32 +35,27 @@ function NFTCard({ item }: NFTCardProps) {
       <CardHeader
         avatar={
           <Avatar
-            sx={{ bgcolor: red[500] }}
-            src={item.profileImageUrl}
+            sx={{ bgcolor: item.backgroundColor }}
+            src={getUserThumbnail(item.user.profile)}
             aria-label="recipe"
             imgProps={{
-              alt: item.nickname,
+              alt: item.user.profile.nickname,
               loading: 'lazy',
             }}
           >
-            {item.nickname}
+            {item.user.profile.nickname}
           </Avatar>
         }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
         title={item.name}
-        subheader={`CreateBy ${item.nickname}`}
+        subheader={`CreateBy ${item.user.profile.nickname}`}
       />
       <CardMedia
-        sx={{ backgroundColor: item.background_color }}
+        sx={{ backgroundColor: item.backgroundColor }}
         className="h-40 object-contain justify-center flex"
         component="div"
       >
         <Image
-          src={item.image}
+          src={item.media.contentUrl}
           loading="lazy"
           placeholder="blur"
           width={200}
@@ -77,14 +69,6 @@ function NFTCard({ item }: NFTCardProps) {
           {item.description}
         </Typography>
       </CardContent>
-      <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-      </CardActions>
     </Card>
   );
 }

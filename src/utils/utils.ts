@@ -1,4 +1,5 @@
 import { STORAGE_KEY } from '@constants/constant';
+import qs from 'qs';
 
 import type { MutableRefObject } from 'react';
 import type { AxiosError } from 'axios';
@@ -13,6 +14,15 @@ export type BasicTarget<T = HTMLElement> =
   | MutableRefObject<T | null | undefined>;
 
 type TargetElement = HTMLElement | Element | Document | Window;
+
+export const makeQueryString = (params: any) => {
+  const stringify = qs.stringify(params, {
+    arrayFormat: 'comma',
+    skipNulls: true,
+    addQueryPrefix: true,
+  });
+  return stringify;
+};
 
 export function getTargetElement(
   target?: BasicTarget<TargetElement>,
