@@ -1,7 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
+
+// validation
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { Controller, useForm } from 'react-hook-form';
+import { schema } from '@libs/yup/schema';
 
 // components
 import UserProfile from '@components/common/UserProfile';
@@ -15,40 +19,45 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import LoadingButton from '@mui/lab/LoadingButton';
 import AuthLayout from '@components/auth/common/AuthLayout';
-
-// no components
-import { signUpSchema } from '@libs/yup/schema';
-import { generateKey, isAxiosError } from '@utils/utils';
-import { PAGE_ENDPOINTS, RESULT_CODE, STATUS_CODE } from '@constants/constant';
-
-import { GenderEnum } from 'types/enum';
-import type { GenderType } from 'types/story-api';
+import VpnKey from '@mui/icons-material/VpnKey';
 
 // hooks
 import { useAlert } from '@hooks/useAlert';
 
 // api
 import { useMutationSignUp } from '@api/story/auth';
-import { useStore } from '@store/store';
-import shallow from 'zustand/shallow';
+
+// no components
+import { generateKey, isAxiosError } from '@utils/utils';
+import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
+
+import { GenderEnum } from 'types/enum';
+
+import type { SubmitHandler } from 'react-hook-form';
+import type { GenderType } from 'types/story-api';
+
+const KeystoreLoginDialog = dynamic(
+  () => import('@components/auth/login/KeystoreLoginDialog'),
+  {
+    ssr: false,
+  },
+);
 
 interface FormFieldValues {
-  profileUrl?: string | null;
   nickname: string;
   email: string;
-  walletAddress: string;
+  password: string;
+  confirmPassword: string;
   gender: GenderType;
-  signatureToken: string;
 }
 
 const key = generateKey();
 
-const initState = {
-  profileUrl: null,
+const initialState = {
   nickname: '',
   email: '',
-  walletAddress: '',
-  signatureToken: '',
+  password: '',
+  confirmPassword: '',
   gender: GenderEnum.M,
 };
 
@@ -56,70 +65,58 @@ const SignupPage: React.FC = () => {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
   const { showAlert, Alert } = useAlert();
+  const [isOpen, setIsOpen] = useState(false);
 
   const { mutateAsync, isLoading } = useMutationSignUp();
-  const { signatureToken, walletAddress, setTokenNAddress } = useStore(
-    (store) => ({
-      signatureToken: store.signatureToken,
-      walletAddress: store.walletAddress,
-      setTokenNAddress: store.actions?.setTokenNAddress,
-    }),
-    shallow,
-  );
 
   const {
     handleSubmit,
-    reset,
     control,
     watch,
-    formState: { errors },
+    formState: { errors, isValid, isDirty },
   } = useForm<FormFieldValues>({
     mode: 'onSubmit',
-    resolver: yupResolver(signUpSchema as any),
+    resolver: yupResolver(schema.signup as any),
     criteriaMode: 'firstError',
     reValidateMode: 'onChange',
     defaultValues: {
-      ...initState,
+      ...initialState,
     },
   });
 
-  const watchProfuleUrl = watch('profileUrl');
-  console.log(errors);
   // 회원가입
-  const onSubmit: SubmitHandler<FormFieldValues> = async (input) => {
+  const onSubmit: SubmitHandler<FormFieldValues> = async ({
+    confirmPassword,
+    ...input
+  }) => {
     try {
       const body = {
         ...input,
-        avatarSvg: generateKey(),
-        profileUrl: '',
+        avatarSvg: key,
         defaultProfile: true,
       };
+
       const {
         data: { resultCode, message },
       } = await mutateAsync(body);
 
-      switch (resultCode) {
-        case RESULT_CODE.OK: {
-          // set token & address
-          setTokenNAddress?.({
-            signatureToken: '',
-            walletAddress: '',
-          });
-
-          router.replace(PAGE_ENDPOINTS.INDEX);
-          return;
-        }
-        // 이메일, 닉네임, 지갑주소가 이미 존재하는 경우
-        case RESULT_CODE.INVALID:
-          showAlert({
-            content: {
-              text: message,
-            },
-          });
-          break;
-        default:
-          break;
+      if (resultCode === RESULT_CODE.OK) {
+        showAlert({
+          content: {
+            text: '가입에 성공하였습니다.',
+          },
+          okHandler: () => {
+            router.replace(PAGE_ENDPOINTS.LOGIN);
+          },
+        });
+        return;
       }
+
+      showAlert({
+        content: {
+          text: message ?? '에러가 발생했습니다.\n다시 시도해주세요.',
+        },
+      });
     } catch (exception) {
       if (isAxiosError(exception)) {
         const { response } = exception;
@@ -132,29 +129,12 @@ const SignupPage: React.FC = () => {
     }
   };
 
-  // set init form validation
-  useEffect(() => {
-    if (!signatureToken || !walletAddress) return;
-    reset({
-      ...initState,
-      walletAddress,
-      signatureToken,
-    });
-  }, [reset, signatureToken, walletAddress]);
-
-  // 회원가입
-  const onClickSubmit = useCallback(() => {
-    formRef.current?.dispatchEvent(
-      new Event('submit', { cancelable: true, bubbles: true }),
-    );
-  }, []);
-
   return (
     <>
       <AuthLayout>
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 6,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -169,7 +149,7 @@ const SignupPage: React.FC = () => {
           </Typography>
           <Box
             component="form"
-            className="space-y-3"
+            className="space-y-4"
             onSubmit={handleSubmit(onSubmit)}
             ref={formRef}
             sx={{ mt: 1 }}
@@ -177,9 +157,22 @@ const SignupPage: React.FC = () => {
             <UserProfile
               avatarkey={key}
               defaultThumbnail={true}
-              thumbnail={watchProfuleUrl ?? null}
+              thumbnail={null}
               disabledActions={true}
             />
+            <LoadingButton
+              color="secondary"
+              size="large"
+              type="button"
+              onClick={() => setIsOpen(true)}
+              loadingPosition="start"
+              startIcon={<VpnKey />}
+              variant="outlined"
+              fullWidth
+              loading={isLoading}
+            >
+              키스토어로 가입하기
+            </LoadingButton>
             <Controller
               control={control}
               name="nickname"
@@ -195,40 +188,9 @@ const SignupPage: React.FC = () => {
                   InputLabelProps={{
                     shrink: true,
                   }}
+                  inputRef={field.ref}
                   error={!!errors?.nickname?.message}
-                  helperText={
-                    !!errors?.nickname?.message ? errors?.nickname?.message : ''
-                  }
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="walletAddress"
-              render={({ field }) => (
-                <TextField
-                  required
-                  aria-readonly
-                  label="지갑 주소"
-                  placeholder="지갑 주소"
-                  autoComplete="off"
-                  color="info"
-                  variant="standard"
-                  fullWidth
-                  className="cursor-none"
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  error={!!errors?.walletAddress?.message}
-                  helperText={
-                    !!errors?.walletAddress?.message
-                      ? errors.walletAddress.message
-                      : ''
-                  }
+                  helperText={errors?.nickname?.message}
                   {...field}
                 />
               )}
@@ -249,9 +211,54 @@ const SignupPage: React.FC = () => {
                     shrink: true,
                   }}
                   error={!!errors?.email?.message}
-                  helperText={
-                    !!errors?.email?.message ? errors?.email?.message : ''
-                  }
+                  helperText={errors?.email?.message}
+                  inputRef={field.ref}
+                  {...field}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password"
+              render={({ field }) => (
+                <TextField
+                  required
+                  label="비밀번호"
+                  placeholder="비밀번호"
+                  autoComplete="off"
+                  color="info"
+                  variant="standard"
+                  fullWidth
+                  type="password"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  error={!!errors?.password?.message}
+                  helperText={errors?.password?.message}
+                  inputRef={field.ref}
+                  {...field}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <TextField
+                  required
+                  label="비밀번호 확인"
+                  placeholder="비밀번호 확인"
+                  autoComplete="off"
+                  color="info"
+                  variant="standard"
+                  fullWidth
+                  type="password"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  error={!!errors?.confirmPassword?.message}
+                  helperText={errors?.confirmPassword?.message}
+                  inputRef={field.ref}
                   {...field}
                 />
               )}
@@ -286,8 +293,13 @@ const SignupPage: React.FC = () => {
             <LoadingButton
               color="info"
               size="large"
-              onClick={onClickSubmit}
+              onClick={() => {
+                formRef.current?.dispatchEvent(
+                  new Event('submit', { cancelable: true, bubbles: true }),
+                );
+              }}
               loading={isLoading}
+              disabled={!isValid || !isDirty}
               variant="contained"
               className="w-full"
               fullWidth
@@ -298,6 +310,7 @@ const SignupPage: React.FC = () => {
         </Box>
       </AuthLayout>
       <Alert />
+      <KeystoreLoginDialog visible={isOpen} close={() => setIsOpen(false)} />
     </>
   );
 };

@@ -5,6 +5,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
+
+import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
@@ -138,14 +140,28 @@ export function useAlert() {
     return (
       <Dialog onClose={closeAlert} open={isAlertOpen}>
         {content?.title && <DialogTitle>{content.title}</DialogTitle>}
-        <DialogContent>{content?.text}</DialogContent>
+        <DialogContent className="font-bold text-sm">
+          {content?.text}
+        </DialogContent>
         <DialogActions>
           {showCancel && (
-            <Button autoFocus onClick={cancelHandler}>
+            <Button
+              autoFocus
+              size="small"
+              onClick={cancelHandler}
+              variant="contained"
+              color="primary"
+            >
               {content?.cancelText ?? '취소'}
             </Button>
           )}
-          <Button autoFocus onClick={okHandler}>
+          <Button
+            autoFocus
+            size="small"
+            onClick={okHandler}
+            variant="contained"
+            color="info"
+          >
             {content?.confirmText ?? '확인'}
           </Button>
         </DialogActions>

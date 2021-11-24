@@ -1,6 +1,5 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
-import dynamic from 'next/dynamic';
 
 // components
 import Container from '@mui/material/Container';
@@ -8,46 +7,15 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 
-// constants
-import { PAGE_ENDPOINTS } from '@constants/constant';
-
 // icons
 import ArrowBack from '@mui/icons-material/ArrowBack';
-
-const InstallKaikasDialog = dynamic(
-  () => import('@components/auth/login/InstalledKaikasDialog'),
-  {
-    ssr: false,
-  },
-);
-
-const SignatureDialog = dynamic(
-  () => import('@components/auth/login/SignatureDialog'),
-  {
-    ssr: false,
-  },
-);
-
-const SignupDialog = dynamic(
-  () => import('@components/auth/signup/SignupDialog'),
-  {
-    ssr: false,
-  },
-);
-
-const KeystoreLoginDialog = dynamic(
-  () => import('@components/auth/login/KeystoreLoginDialog'),
-  {
-    ssr: false,
-  },
-);
 
 const AuthLayout: React.FC = ({ children }) => {
   const router = useRouter();
 
-  const onMoveBack = useCallback(() => {
-    router.replace(PAGE_ENDPOINTS.INDEX);
-  }, [router]);
+  const onMoveBack = () => {
+    router.back();
+  };
 
   return (
     <>
@@ -68,10 +36,6 @@ const AuthLayout: React.FC = ({ children }) => {
       <Container component="main" maxWidth="xs">
         {children}
       </Container>
-      <InstallKaikasDialog />
-      <SignatureDialog />
-      <SignupDialog />
-      <KeystoreLoginDialog />
     </>
   );
 };

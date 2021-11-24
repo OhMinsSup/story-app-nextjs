@@ -57,21 +57,6 @@ export const validKeystore = (keystore?: string | ArrayBuffer | null) => {
   return keys.every((key) => parsedKeystore[key]);
 };
 
-// valid klaytn and kaikas
-export const existsKlaytn =
-  typeof window === 'undefined' ||
-  typeof window.klaytn === 'undefined' ||
-  !window.klaytn.isKaikas;
-
-// make signature from message
-export const signatureMessage = (
-  walletAddress: string,
-  timestamp: number,
-  requestType: string,
-) => {
-  return `address:${walletAddress}\n timestamp:${timestamp} ${requestType}`;
-};
-
 export const userInfo = () => {
   if (typeof window === 'undefined') return null;
   const stringify = localStorage.getItem(STORAGE_KEY.USER_KEY);

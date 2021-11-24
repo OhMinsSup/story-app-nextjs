@@ -9,32 +9,12 @@ import type { SetState, UseBoundStore, StoreApi } from 'zustand';
 export interface Actions {
   setNetworkVersion: (version: number | null) => void;
   setAuth: (userInfo: StorageUserInfo | null) => void;
-  setTokenNAddress: ({
-    signatureToken,
-    walletAddress,
-  }: {
-    signatureToken: string;
-    walletAddress: string;
-  }) => void;
-  setInstallKaiKas: (show: boolean) => void;
-  setSignatureLogin: (show: boolean) => void;
-  setSignup: (show: boolean) => void;
-  setIsKeystoreLogin: (isKeystoreLogin: boolean) => void;
 }
 
 export interface State {
   actions?: Actions;
   userInfo: StorageUserInfo | null;
   networkVersion: number | null;
-
-  // auth
-  signatureToken: string;
-  walletAddress: string;
-
-  kaikasSignature: boolean;
-  installedKaikas: boolean;
-  isSignup: boolean;
-  isKeystoreLogin: boolean;
 }
 
 let store: UseBoundStore<State, StoreApi<State>> | null = null;
@@ -43,15 +23,6 @@ const initialState: State = {
   actions: undefined,
   userInfo: userInfo(),
   networkVersion: null, // kaikas network version
-
-  // login
-  walletAddress: '',
-  signatureToken: '', // login signature data
-
-  kaikasSignature: false, // kaikas signature 서명을 받을 때까지 로딩
-  installedKaikas: false, // kaikas가 설치되었는지
-  isSignup: false, // 회원가입 시도 중
-  isKeystoreLogin: false, // keystore 로그인 중
 };
 
 const zustandContext = createContext<State>();
@@ -70,31 +41,6 @@ export const initializeStore = (preloadedState = {} as State) => {
       setAuth: (userInfo: StorageUserInfo | null) =>
         set({
           userInfo,
-        }),
-      setTokenNAddress: ({ signatureToken, walletAddress }) =>
-        set({
-          walletAddress,
-          signatureToken,
-        }),
-      // 설치 kaikas 설치 이동
-      setInstallKaiKas: (show: boolean) =>
-        set({
-          installedKaikas: show,
-        }),
-      // 서명 정보 받기
-      setSignatureLogin: (show: boolean) =>
-        set({
-          kaikasSignature: show,
-        }),
-      // 회원가입 시도 중
-      setSignup: (show: boolean) =>
-        set({
-          isSignup: show,
-        }),
-      // keystore 로그인 중
-      setIsKeystoreLogin: (isKeystoreLogin: boolean) =>
-        set({
-          isKeystoreLogin,
         }),
     };
     return {

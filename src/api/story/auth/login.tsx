@@ -18,74 +18,43 @@ import { useStore } from '@store/store';
 
 // types
 import type {
-  MutationLoginInput,
+  LoginInput,
   LoginSchema,
   StoryErrorApi,
   StoryApi,
 } from 'types/story-api';
 
 export function useMutationLogin() {
-  const { setAuth, setTokenNAddress } = useStore(
-    (store) => ({
-      setAuth: store.actions?.setAuth,
-      setTokenNAddress: store.actions?.setTokenNAddress,
+  const { setAuth } = useStore(
+    ({ actions }) => ({
+      setAuth: actions?.setAuth,
     }),
     shallow,
   );
 
-  const fetcher = (input: MutationLoginInput) =>
+  const fetcher = (input: LoginInput) =>
     api.postResponse({
       url: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
       body: input,
     });
 
   const mutation = useMutation<
-    StoryApi<LoginSchema | string>,
-    StoryErrorApi<string>,
-    MutationLoginInput
+    StoryApi<LoginSchema>,
+    StoryErrorApi<null>,
+    LoginInput
   >(fetcher, {
     mutationKey: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
     onSuccess: (data, variable) => {
       const {
-        data: { result, resultCode, ok },
+        data: { result, resultCode },
       } = data;
-
-      if (resultCode === RESULT_CODE.NOT_EXIST && typeof result === 'string') {
-        setTokenNAddress?.({
-          signatureToken: result,
-          walletAddress: variable.walletAddress,
-        });
-        return;
-      }
-
-      if (RESULT_CODE.OK === resultCode && typeof result === 'boolean') {
-        // 회원 가입 성공
-        return;
-      }
 
       if (RESULT_CODE.OK === resultCode && typeof result === 'object') {
         const { accessToken, ...user } = result;
         // 로그인 성공
         localStorage.setItem(STORAGE_KEY.USER_KEY, JSON.stringify(user));
+        localStorage.setItem(STORAGE_KEY.TOKEN_KEY, accessToken);
         setAuth?.(user);
-        return;
-      }
-    },
-    onError: (error, variable) => {
-      if (!isAxiosError(error)) return;
-      const { response } = error;
-      switch (response?.status) {
-        // 회원이 존재하지 않는 경우 회원가입 페이지 이동
-        case STATUS_CODE.BAD_REQUEST: {
-          const { result } = response.data;
-          setTokenNAddress?.({
-            signatureToken: result,
-            walletAddress: variable.walletAddress,
-          });
-          break;
-        }
-        default:
-          break;
       }
     },
   });

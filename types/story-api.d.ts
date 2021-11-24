@@ -128,9 +128,9 @@ export interface TagModel {
 
 // ================== Login ================== //
 
-export interface MutationLoginInput {
-  walletAddress: string;
-  signature: string;
+export interface LoginInput {
+  email: string;
+  password: string;
 }
 
 export type LoginSchema = {
@@ -147,13 +147,13 @@ export type LoginSchema = {
 
 // ================== Signup ================== //
 
-export interface MutationSignupInput {
-  profileUrl?: string;
+export interface SignupInput {
   nickname: string;
   email: string;
+  password: string;
   gender: GenderType;
-  walletAddress: string;
-  signatureToken: string;
+  avatarSvg: string;
+  profileUrl?: string | null;
 }
 
 // =================== Story =================== //

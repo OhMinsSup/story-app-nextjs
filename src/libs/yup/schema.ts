@@ -1,30 +1,54 @@
 import * as yup from 'yup';
-import caver from '@libs/klaytn/caver';
 
-export const signUpSchema = yup.object().shape({
-  nickname: yup.string().required('닉네임을 입력해주세요.'),
+export const common = {
   email: yup
     .string()
     .email('이메일 형식으로 입력해주세요.')
     .required('이메일을 입력해주세요.'),
-  walletAddress: yup
+  password: yup
     .string()
-    .test('wallet address testing', '지갑 유형으로 입력해주세요', (value) => {
-      if (!value) return false;
-      if (caver?.utils.isAddress(value)) {
-        return true;
-      }
-      return false;
-    })
-    .required('지갑 주소를 입력해주세요.'),
-  gender: yup.string().oneOf(['M', 'F']),
-  profileUrl: yup.string().nullable(true).notRequired(),
-  signatureToken: yup
+    .test(
+      'password',
+      '영문/숫자/특수문자를 조합한 8~20자로 입력해주세요.',
+      (password) => {
+        if (!password) return false;
+        const regex = /^(?=.*[a-zA-Z])(?=.*[!@#$%&^*+=-\d])(?=.*[0-9]).{8,20}$/;
+        if (password.match(regex)) {
+          return true;
+        }
+
+        return false;
+      },
+    )
+    .required('비밀번호를 입력해 주세요.'),
+  nickname: yup
     .string()
-    .required(
-      'signature를 입력해주세요. 계속된 오류가 있으면 다시 로그인부터 시도해주세요.',
-    ),
-});
+    .min(2, '2자 이상 입력해주세요.')
+    .max(20, '20자 이하로 입력해주세요.')
+    .required('닉네임을 입력해주세요.'),
+  gender: yup.string().oneOf(['M', 'F']).required('성별을 선택해 주세요.'),
+};
+
+export const schema = {
+  login: yup.object().shape({
+    email: common.email,
+    password: common.password,
+  }),
+  signup: yup.object().shape({
+    nickname: common.nickname,
+    email: common.email,
+    password: common.password,
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password')], '비밀번호가 일치하지 않습니다.')
+      .required('비밀번호 확인을 입력해주세요.'),
+    gender: common.gender,
+  }),
+  keystore: yup.object().shape({
+    file: yup.mixed().required('keystore 파일을 입력해 주세요.'),
+    password: yup.string().required('비밀번호를 입력해 주세요.'),
+  }),
+};
 
 export const mediaSchema = yup.object().shape({
   contentUrl: yup.string().required('미디어 주소를 입력해주세요.'),

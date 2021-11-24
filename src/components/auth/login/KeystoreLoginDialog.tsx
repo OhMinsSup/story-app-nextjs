@@ -1,8 +1,4 @@
-import React, { useCallback, useRef, useEffect } from 'react';
-import shallow from 'zustand/shallow';
-
-// validation
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import React, { useState } from 'react';
 
 // components
 import TextField from '@mui/material/TextField';
@@ -14,84 +10,69 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 
 // utils
-import caver from '@libs/klaytn/caver';
-import { isAxiosError, signatureMessage, validKeystore } from '@utils/utils';
-import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
+import { validKeystore } from '@utils/utils';
 
 // hooks
 import useUpload from '@hooks/useUpload';
-import { useRouter } from 'next/router';
-import { useMutationLogin } from '@api/story/auth';
+import { schema } from '@libs/yup/schema';
 
-// store
-import { useStore } from '@store/store';
-
-interface FormFieldValus {
-  keystore?: File;
-  password: string;
+interface KeystoreLoginDialogProps {
+  visible: boolean;
+  close: () => void;
 }
 
-const initState = {
-  keystore: undefined,
+const initialState = {
+  file: null,
   password: '',
 };
 
-const KeystoreLoginDialog: React.FC = () => {
+const KeystoreLoginDialog: React.FC<KeystoreLoginDialogProps> = ({
+  visible,
+  close,
+}) => {
   const accept = 'application/json';
-  const formRef = useRef<HTMLFormElement | null>(null);
-
-  const router = useRouter();
   const [_, upload, clear] = useUpload(accept);
+  const [form, setForm] = useState<Record<string, any>>(initialState);
 
-  const { isKeystoreLogin, setIsKeystoreLogin, setSignup } = useStore(
-    (store) => ({
-      isKeystoreLogin: store.isKeystoreLogin,
-      setIsKeystoreLogin: store.actions?.setIsKeystoreLogin,
-      setSignup: store.actions?.setSignup,
-    }),
-    shallow,
-  );
-
-  const {
-    watch,
-    reset,
-    handleSubmit,
-    setValue,
-    control,
-    formState: { errors },
-  } = useForm<FormFieldValus>({
-    mode: 'onSubmit',
-    criteriaMode: 'firstError',
-    defaultValues: {
-      ...initState,
-    },
-  });
-
-  const { mutateAsync } = useMutationLogin();
-
-  const onClose = useCallback(() => {
-    reset(initState);
-    setIsKeystoreLogin?.(false);
+  const onClose = () => {
     clear();
-  }, [reset, setIsKeystoreLogin, clear]);
+    setForm(initialState);
+    close();
+  };
 
   // keystore file upload
-  const onClick = useCallback(async () => {
+  const onClick = async () => {
     const file = await upload();
     if (!file) return;
-    setValue('keystore', file, { shouldValidate: true });
-  }, [setValue, upload]);
+    setForm({
+      ...form,
+      file,
+    });
+  };
 
-  // Keystore file login
-  const onLogin = useCallback(() => {
-    formRef.current?.dispatchEvent(
-      new Event('submit', { cancelable: true, bubbles: true }),
-    );
-  }, []);
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm({
+      ...form,
+      [name]: value,
+    });
+  };
+
+  const onSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    try {
+      const input = await schema.keystore.validate(form);
+      console.log(input);
+      if (!input) return;
+      const keystore = await readKeystoreFile(input.file);
+      console.log(keystore);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   // read keystore file
   const readKeystoreFile = (keystore?: File) => {
-    return new Promise<string | ArrayBuffer | null>((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       if (!(keystore instanceof File)) {
         const error = new Error();
         error.name = 'FileError';
@@ -109,6 +90,7 @@ const KeystoreLoginDialog: React.FC = () => {
       const reader = new FileReader();
       reader.onload = () => {
         if (validKeystore(reader.result)) {
+          // @ts-ignore
           resolve(reader.result);
         } else {
           const error = new Error();
@@ -122,125 +104,43 @@ const KeystoreLoginDialog: React.FC = () => {
     });
   };
 
-  // onsubmit handler
-  const onSubmit: SubmitHandler<FormFieldValus> = async (input) => {
-    try {
-      const keystore = await readKeystoreFile(input.keystore);
-      const accountKey = caver?.klay.accounts.decrypt(keystore, input.password);
-      if (!accountKey) {
-        throw new Error('Invalid AccountKey');
-      }
-
-      const { privateKey, address, sign } = accountKey;
-
-      const timestamp = Date.now();
-      const requestType = 'LoginRequest';
-      const signedMessage = await sign(
-        signatureMessage(address, timestamp, requestType),
-      );
-
-      if (!signedMessage) {
-        throw new Error('signature error');
-      }
-
-      const body = {
-        walletAddress: address,
-        signature: signedMessage.signature,
-      };
-
-      const {
-        data: { ok, result, resultCode },
-      } = await mutateAsync(body);
-
-      switch (resultCode) {
-        case RESULT_CODE.OK:
-          router.replace(PAGE_ENDPOINTS.INDEX);
-          break;
-        case RESULT_CODE.NOT_EXIST:
-          setSignup?.(true);
-          setIsKeystoreLogin?.(false);
-          break;
-        default:
-          break;
-      }
-    } catch (error) {
-      console.error(error);
-      // 서버 에러
-      if (isAxiosError(error)) {
-        const {
-          response: { data },
-        } = error;
-        if (!data.ok) setSignup?.(true);
-      }
-    }
-  };
-
   return (
-    <Dialog open={isKeystoreLogin} maxWidth="sm" fullWidth>
-      <DialogTitle>Keystore 로그인</DialogTitle>
+    <Dialog open={visible} maxWidth="sm" fullWidth>
+      <DialogTitle>Keystore</DialogTitle>
       <DialogContent>
-        <Box
-          component="form"
-          className="space-y-3"
-          onSubmit={handleSubmit(onSubmit)}
-          ref={formRef}
-          sx={{ mt: 1 }}
-        >
-          <Controller
-            control={control}
-            name="keystore"
-            rules={{ required: true }}
-            render={({ field: { value, ref, ...field } }) => (
-              <TextField
-                required
-                aria-readonly
-                label="Keystore 파일"
-                placeholder="Keystore File"
-                autoComplete="off"
-                color="info"
-                variant="standard"
-                fullWidth
-                className="cursor-pointer"
-                onClick={onClick}
-                InputProps={{
-                  readOnly: true,
-                  inputRef: ref,
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                error={!!errors?.keystore?.type}
-                helperText={
-                  !!errors?.keystore?.type
-                    ? 'keystore 파일을 선택해주세요.'
-                    : ''
-                }
-                value={value ? value.name : ''}
-                {...field}
-              />
-            )}
+        <Box component="div" className="space-y-3" sx={{ mt: 1 }}>
+          <TextField
+            required
+            aria-readonly
+            name="file"
+            label="Keystore 파일"
+            placeholder="Keystore File"
+            autoComplete="off"
+            color="info"
+            variant="standard"
+            fullWidth
+            className="cursor-pointer"
+            onClick={onClick}
+            value={form.file?.name || ''}
+            InputProps={{
+              readOnly: true,
+            }}
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
-          <Controller
-            control={control}
+          <TextField
+            required
+            type="password"
             name="password"
-            rules={{ required: true }}
-            render={({ field }) => (
-              <TextField
-                required
-                type="password"
-                label="비밀번호"
-                fullWidth
-                placeholder="비밀번호"
-                autoComplete="on"
-                variant="standard"
-                color="info"
-                error={!!errors?.password?.type}
-                helperText={
-                  !!errors?.password?.type ? '비밀번호를 입력해주세요.' : ''
-                }
-                {...field}
-              />
-            )}
+            label="비밀번호"
+            fullWidth
+            placeholder="비밀번호"
+            autoComplete="on"
+            variant="standard"
+            color="info"
+            value={form.password}
+            onChange={onChange}
           />
         </Box>
       </DialogContent>
@@ -248,10 +148,10 @@ const KeystoreLoginDialog: React.FC = () => {
         <Button
           type="button"
           size="medium"
-          variant="outlined"
-          color="secondary"
-          autoFocus
+          variant="contained"
+          color="primary"
           onClick={onClose}
+          fullWidth
         >
           취소
         </Button>
@@ -260,9 +160,10 @@ const KeystoreLoginDialog: React.FC = () => {
           size="medium"
           variant="contained"
           color="info"
-          onClick={onLogin}
+          fullWidth
+          onClick={onSubmit}
         >
-          로그인
+          인증
         </Button>
       </DialogActions>
     </Dialog>

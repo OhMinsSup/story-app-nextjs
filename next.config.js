@@ -53,6 +53,10 @@ const nextConfig = {
       config.watchOptions.aggregateTimeout = 300;
     }
 
+    // if (!isServer) {
+    //   config.resolve.fallback.fs = false;
+    // }
+
     return {
       ...config,
       mode: IS_PROD ? 'production' : 'development',
