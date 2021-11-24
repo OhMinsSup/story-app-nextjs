@@ -27,6 +27,11 @@ export const common = {
     .max(20, '20자 이하로 입력해주세요.')
     .required('닉네임을 입력해주세요.'),
   gender: yup.string().oneOf(['M', 'F']).required('성별을 선택해 주세요.'),
+  media: yup.object().shape({
+    contentUrl: yup.string().required('미디어 주소를 입력해주세요.'),
+    name: yup.string(),
+    idx: yup.number().required('미디어 주소를 입력해주세요.'),
+  }),
 };
 
 export const schema = {
@@ -48,28 +53,21 @@ export const schema = {
     file: yup.mixed().required('keystore 파일을 입력해 주세요.'),
     password: yup.string().required('비밀번호를 입력해 주세요.'),
   }),
+  publish: yup.object().shape({
+    name: yup.string().required('이름을 입력해주세요.'),
+    media: common.media.nullable(true).required('미디어를 등록해주세요.'),
+    description: yup.string().required('내용을 입력해주세요.'),
+    backgroundColor: yup
+      .string()
+      .matches(/^#[0-9a-fA-F]{6}$/, '색상 형식으로 입력해주세요.')
+      .notRequired(),
+    externalUrl: yup
+      .string()
+      .matches(
+        /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
+        '외부 URL형식으로 입력해주세요.',
+      )
+      .notRequired(),
+    tags: yup.array().of(yup.mixed()).notRequired(),
+  }),
 };
-
-export const mediaSchema = yup.object().shape({
-  contentUrl: yup.string().required('미디어 주소를 입력해주세요.'),
-  name: yup.string(),
-  idx: yup.number().required('미디어 주소를 입력해주세요.'),
-});
-
-export const publishSchema = yup.object().shape({
-  name: yup.string().required('이름을 입력해주세요.'),
-  media: mediaSchema.nullable(true).required('미디어를 등록해주세요.'),
-  description: yup.string().required('내용을 입력해주세요.'),
-  backgroundColor: yup
-    .string()
-    .matches(/^#[0-9a-fA-F]{6}$/, '색상 형식으로 입력해주세요.')
-    .notRequired(),
-  externalUrl: yup
-    .string()
-    .matches(
-      /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/,
-      '외부 URL형식으로 입력해주세요.',
-    )
-    .notRequired(),
-  tags: yup.array().of(yup.mixed()).notRequired(),
-});

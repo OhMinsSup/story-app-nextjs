@@ -45,7 +45,8 @@ const LoginPage: React.FC = () => {
     formState: { errors },
   } = useForm<LoginInput>({
     mode: 'onSubmit',
-    resolver: yupResolver(schema.login as any),
+    // @ts-ignore
+    resolver: yupResolver(schema.login),
     criteriaMode: 'firstError',
     reValidateMode: 'onChange',
     defaultValues: {

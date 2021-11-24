@@ -15,19 +15,6 @@ export type StoryUploadType =
   | StoryUploadTypeEnum.ETC
   | StoryUploadTypeEnum.PROFILE;
 
-// ================== Storage ================== //
-
-export interface StorageUserInfo {
-  id: number;
-  email: string;
-  profile: {
-    nickname: string;
-    profileUrl: string | null;
-    avatarSvg: string | null;
-    defaultProfile: boolean;
-  };
-}
-
 // ================== File ================== //
 
 interface FileModel {
@@ -109,8 +96,12 @@ export interface MediaModel {
 export interface UserModel {
   id: number;
   email: string;
-  address: string;
   profile: ProfileModel;
+  account: AccountModel;
+}
+
+export interface AccountModel {
+  address: string;
 }
 
 export interface ProfileModel {
@@ -133,17 +124,9 @@ export interface LoginInput {
   password: string;
 }
 
-export type LoginSchema = {
-  id: number;
-  email: string;
+export interface LoginSchema extends UserModel {
   accessToken: string;
-  profile: {
-    nickname: string;
-    profileUrl: string | null;
-    avatarSvg: string | null;
-    defaultProfile: boolean;
-  };
-};
+}
 
 // ================== Signup ================== //
 

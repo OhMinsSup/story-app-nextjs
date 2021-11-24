@@ -3,8 +3,8 @@ import { TwitterPicker } from 'react-color';
 import { useRouter } from 'next/router';
 
 // validation
-import { yupResolver } from '@hookform/resolvers/yup';
-import { publishSchema } from '@libs/yup/schema';
+import { schema } from '@libs/yup/schema';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
 
 // components
@@ -76,7 +76,7 @@ const StoryForm: React.FC<StoryFormProps> = () => {
   } = useForm<FormFieldValues>({
     mode: 'onSubmit',
     // @ts-ignore
-    resolver: yupResolver(publishSchema),
+    resolver: yupResolver(schema.publish),
     criteriaMode: 'firstError',
     reValidateMode: 'onChange',
     defaultValues: {

@@ -76,7 +76,8 @@ const SignupPage: React.FC = () => {
     formState: { errors, isValid, isDirty },
   } = useForm<FormFieldValues>({
     mode: 'onSubmit',
-    resolver: yupResolver(schema.signup as any),
+    // @ts-ignore
+    resolver: yupResolver(schema.signup),
     criteriaMode: 'firstError',
     reValidateMode: 'onChange',
     defaultValues: {

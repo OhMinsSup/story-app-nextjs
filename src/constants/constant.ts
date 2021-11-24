@@ -18,6 +18,9 @@ export const API_ENDPOINTS = {
       LOGIN: '/users/signin',
       SIGNUP: '/users/signup',
     },
+    USER: {
+      ME: '/users/me',
+    },
     FILE: {
       ROOT: '/files/upload',
     },

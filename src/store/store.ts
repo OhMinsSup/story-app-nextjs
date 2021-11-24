@@ -3,26 +3,23 @@ import create from 'zustand';
 import createContext from 'zustand/context';
 import { userInfo } from '@utils/utils';
 
-import type { StorageUserInfo } from 'types/story-api';
+import type { UserModel } from 'types/story-api';
 import type { SetState, UseBoundStore, StoreApi } from 'zustand';
 
 export interface Actions {
-  setNetworkVersion: (version: number | null) => void;
-  setAuth: (userInfo: StorageUserInfo | null) => void;
+  setAuth: (userInfo: UserModel | null) => void;
 }
 
 export interface State {
   actions?: Actions;
-  userInfo: StorageUserInfo | null;
-  networkVersion: number | null;
+  userInfo: UserModel | null;
 }
 
 let store: UseBoundStore<State, StoreApi<State>> | null = null;
 
 const initialState: State = {
   actions: undefined,
-  userInfo: userInfo(),
-  networkVersion: null, // kaikas network version
+  userInfo: null,
 };
 
 const zustandContext = createContext<State>();
@@ -34,11 +31,7 @@ export const useStore = zustandContext.useStore;
 export const initializeStore = (preloadedState = {} as State) => {
   return create<State>((set: SetState<State>, get: SetState<State>) => {
     const actions: Actions = {
-      setNetworkVersion: (version: number | null) =>
-        set({
-          networkVersion: version,
-        }),
-      setAuth: (userInfo: StorageUserInfo | null) =>
+      setAuth: (userInfo: UserModel | null) =>
         set({
           userInfo,
         }),
