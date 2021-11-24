@@ -1,38 +1,84 @@
-import 'lazysizes';
-import 'lazysizes/plugins/parent-fit/ls.parent-fit';
-import 'lazysizes/plugins/blur-up/ls.blur-up';
+import '@assets/main.css';
 
-import 'react-toastify/dist/ReactToastify.css';
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+import 'filepond-plugin-get-file/dist/filepond-plugin-get-file.min.css';
 
-import React from 'react';
-import type { AppContext, AppInitialProps, AppProps } from 'next/app';
-import { HelmetProvider } from 'react-helmet-async';
+import React, { useRef, useEffect } from 'react';
+import NProgress from 'nprogress';
+import { Router } from 'next/router';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { Hydrate } from 'react-query/hydration';
 
-import { wrapper } from '~/store/configure';
-import Core from '~/containers/base/Core';
+// components
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { blueGrey, grey, red } from '@mui/material/colors';
+import Core from '@components/common/Core';
 
-function AppPage({ Component, pageProps }: AppProps) {
-  return (
-    <>
-      <HelmetProvider>
-        <Component {...pageProps} />
-        <Core />
-      </HelmetProvider>
-    </>
-  );
-}
+// type
+import type { AppProps } from 'next/app';
 
-AppPage.getInitialProps = async ({
-  Component,
-  ctx,
-}: AppContext): Promise<AppInitialProps> => {
-  let pageProps = {};
+// store
+import { useCreateStore, ZustandProvider } from '@store/store';
+import SeoHead from '@components/common/SEO';
 
-  if (Component.getInitialProps) {
-    pageProps = (await Component.getInitialProps(ctx)) || {};
-  }
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: grey[50],
+    },
+    secondary: {
+      main: blueGrey[700],
+    },
+    error: {
+      main: red.A400,
+    },
+  },
+});
 
-  return { pageProps };
+const Noop: React.FC = ({ children }) => <>{children}</>;
+
+const start = (url: string) => {
+  NProgress.start();
 };
 
-export default wrapper.withRedux(AppPage);
+const done = () => {
+  NProgress.done();
+};
+
+Router.events.on('routeChangeStart', start);
+Router.events.on('routeChangeComplete', done);
+Router.events.on('routeChangeError', done);
+
+const AppPage = ({ Component, pageProps }: AppProps) => {
+  const Layout = (Component as any).Layout || Noop;
+  const queryClientRef = useRef<QueryClient | null>();
+
+  if (!queryClientRef.current) {
+    queryClientRef.current = new QueryClient();
+  }
+
+  const createStore = useCreateStore(pageProps.initialZustandState);
+
+  return (
+    <>
+      <SeoHead />
+      <QueryClientProvider client={queryClientRef.current}>
+        <Hydrate state={pageProps.dehydratedState}>
+          <ZustandProvider createStore={createStore}>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+              <Core />
+            </ThemeProvider>
+          </ZustandProvider>
+        </Hydrate>
+      </QueryClientProvider>
+    </>
+  );
+};
+
+export default AppPage;

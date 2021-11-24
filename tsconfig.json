@@ -1,47 +1,42 @@
 {
   "compilerOptions": {
-    "incremental": true,
-    "target": "es2017",
-    "module": "commonjs",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "baseUrl": ".",
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "jsx": "preserve",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "isolatedModules": true,
-    "strict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
-    "typeRoots": [
-      "node_modules/@types",
-      "src/types"
-    ],
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "baseUrl": "./src",
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "typeRoots": ["types", "./node_modules/@types"],
     "paths": {
-      "~/*": [
-        "./*"
-      ]
-    },
-    "experimentalDecorators": true,
-    "noEmit": true
+      "@klaytn/*": ["src/libs/klaytn/*"],
+      "@assets/*": ["src/assets/*"],
+      "@libs/*": ["src/libs/*"],
+      "@utils/*": ["src/utils/*"],
+      "@config/*": ["src/config/*"],
+      "@constants/*": ["src/constants/*"],
+      "@components/*": ["src/components/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@api/*": ["src/api/*"],
+      "@store/*": ["src/store/*"]
+    }
   },
-  "exclude": [
-    "node_modules"
-  ],
   "include": [
-    "src/next-env.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ]
+    "next-env.d.ts",
+    "global.d.ts",
+    "**/*.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "node_modules/caver-js/types/**/*.d.ts"
+  ],
+  "exclude": ["node_modules", ".next", "out"]
 }

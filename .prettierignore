@@ -1,5 +1,3 @@
 node_modules
-dist/.next
-yarn.lock
-package-lock.json
+.next
 public

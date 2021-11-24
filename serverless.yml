@@ -1,0 +1,17 @@
+servername:
+  component: '@sls-next/serverless-component'
+  inputs:
+    #bucketRegion: ap-northeast-2
+    #bucketName: [bucketName]
+    #bucketTags: {
+    #  service: [bucket],
+    #}
+    # name:
+    #   defaultLambda: lambda-name
+    #   apiLambda: api-lambda-name
+    # cloudfront:
+    #   distributionId: [distributionId]
+    # sub-domain defaults to www
+    # domain: "example.com"
+    # [ sub-domain, domain ]
+    # domain: ["sub", "example.com"]

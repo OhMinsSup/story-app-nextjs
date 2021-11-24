@@ -1,3 +1,17 @@
-**/node_modules/*
-**/dist/*
-**/.next/*
+# vscode
+.vscode
+
+# npm 
+node_modules
+
+# nextjs
+out
+.next
+next.config.js
+
+# truffle
+truffle-config.js
+
+# serverless
+.serverless/
+.serverless-next/
