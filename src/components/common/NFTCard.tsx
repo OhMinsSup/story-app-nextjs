@@ -9,11 +9,9 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import ShareIcon from '@mui/icons-material/Share';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Skeleton from '@mui/material/Skeleton';
 
@@ -27,7 +25,7 @@ function NFTCard({ item }: NFTCardProps) {
   const router = useRouter();
 
   const onMoveToPage = useCallback(() => {
-    router.push(`/publish/3`);
+    router.push(`/publish/${item.id}`);
   }, [router, item]);
 
   return (

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { QueryClient, dehydrate } from 'react-query';
 
 // api
 import { fetcherOne, useStoryQuery } from '@api/story/story';
+import { client } from '@api/client';
 
 // common
 import { API_ENDPOINTS } from '@constants/constant';
@@ -30,8 +31,14 @@ import type {
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.query.id?.toString();
 
-  console.log('id', ctx);
   const queryClient = new QueryClient();
+  const cookie = ctx.req ? ctx.req.headers.cookie : '';
+  if (client.defaults.headers) {
+    client.defaults.headers.Cookie = '';
+    if (ctx.req && cookie) {
+      client.defaults.headers.Cookie = cookie;
+    }
+  }
 
   await queryClient.prefetchQuery(
     [API_ENDPOINTS.LOCAL.STORY.ROOT, id],
@@ -50,8 +57,20 @@ function PublishDetailPage({}: InferGetServerSidePropsType<
 >) {
   const router = useRouter();
   const id = router.query.id?.toString();
-  const { Alert } = useAlert();
-  const { data, isLoading, isError } = useStoryQuery(id);
+  const { showAlert, Alert } = useAlert();
+  const { data, isLoading, isError, error } = useStoryQuery(id);
+
+  useEffect(() => {
+    if (isError && error) {
+      showAlert({
+        content: {
+          text: error.response?.data.message,
+        },
+        okHandler: () => router.back(),
+        closeHandler: () => router.back(),
+      });
+    }
+  }, [isError, error]);
 
   return (
     <>

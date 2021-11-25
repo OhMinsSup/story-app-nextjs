@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { QueryClient, dehydrate } from 'react-query';
+import { client } from '@api/client';
 
 // common
 import { API_ENDPOINTS } from '@constants/constant';
@@ -22,6 +23,14 @@ import type {
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const queryClient = new QueryClient();
 
+  const cookie = ctx.req ? ctx.req.headers.cookie : '';
+  if (client.defaults.headers) {
+    client.defaults.headers.Cookie = '';
+    if (ctx.req && cookie) {
+      client.defaults.headers.Cookie = cookie;
+    }
+  }
+
   await queryClient.prefetchInfiniteQuery(
     [API_ENDPOINTS.LOCAL.STORY.ROOT],
     fetcherStories,
@@ -35,7 +44,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 function IndexPage({}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data, fetchNextPage, hasNextPage } = useStoriesQuery();
+  const { data, fetchNextPage, hasNextPage, isError } = useStoriesQuery();
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,8 +57,8 @@ function IndexPage({}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <div>
       <Box sx={{ flexGrow: 1 }}>
-        <Box sx={{ width: '100%' }} className="space-y-5 pt-8">
-          <Grid container spacing={3} direction="row" justifyContent="center">
+        <Box sx={{ width: '100%' }} className="space-y-5 p-5">
+          <Grid container spacing={3} direction="row">
             {data?.pages.map((item, i) => (
               <React.Fragment key={i}>
                 {item.list.map((store) => (

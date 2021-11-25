@@ -26,6 +26,7 @@ export const fetcherStories = async ({
 
 export function useStoriesQuery() {
   return useInfiniteQuery([API_ENDPOINTS.LOCAL.STORY.ROOT], fetcherStories, {
+    retry: false,
     getNextPageParam: (lastPage, allPages) => {
       const { total, pageNo } = lastPage;
       // 페이지 넘버와 페이지 사이즈를 가지고 총 페이지 넘버보다 크면 더이상 불러오지 않는다.

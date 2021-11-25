@@ -22,6 +22,7 @@ interface AlertOptions {
   content?: Record<string, string | number | React.ReactNode>;
   okHandler?: (...args: any[]) => any;
   cancelHandler?: (...args: any[]) => any;
+  closeHandler?: (...args: any[]) => any;
   showCancel?: boolean;
 }
 
@@ -31,6 +32,7 @@ const defaultOptions: AlertOptions = {
   customComponent: undefined,
   okHandler: () => {},
   cancelHandler: () => {},
+  closeHandler: () => {},
   showCancel: false,
 };
 
@@ -93,6 +95,15 @@ export function useAlert() {
       };
     }
 
+    if (!options?.closeHandler) {
+      options = {
+        ...options,
+        closeHandler: () => {
+          alertInstance(false, defaultOptions);
+        },
+      };
+    }
+
     keyRef.current = key;
 
     const alertOptions = {
@@ -121,8 +132,14 @@ export function useAlert() {
     const alert = getInstance();
     if (!alert) return null;
 
-    const { okHandler, cancelHandler, content, showCancel, customComponent } =
-      alert;
+    const {
+      okHandler,
+      cancelHandler,
+      closeHandler,
+      content,
+      showCancel,
+      customComponent,
+    } = alert;
 
     // custom alert component
     if (customComponent) {
@@ -138,7 +155,7 @@ export function useAlert() {
     }
 
     return (
-      <Dialog onClose={closeAlert} open={isAlertOpen}>
+      <Dialog onClose={closeHandler} open={isAlertOpen}>
         {content?.title && <DialogTitle>{content.title}</DialogTitle>}
         <DialogContent className="font-bold text-sm">
           {content?.text}

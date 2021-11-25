@@ -3,7 +3,12 @@ import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
-import type { DataIdParams, Schema, StorySchema } from 'types/story-api';
+import type {
+  DataIdParams,
+  Schema,
+  StoryErrorApi,
+  StorySchema,
+} from 'types/story-api';
 
 export const fetcherOne = async ({
   queryKey,
@@ -17,10 +22,11 @@ export const fetcherOne = async ({
 };
 
 export const useStoryQuery = (id: DataIdParams) => {
-  const { data, ...fields } = useQuery<Schema<StorySchema>, Schema<any>>(
+  const { data, ...fields } = useQuery<Schema<StorySchema>, StoryErrorApi>(
     [API_ENDPOINTS.LOCAL.STORY.ROOT, id],
     fetcherOne,
     {
+      retry: false,
       enabled: !!id,
     },
   );
