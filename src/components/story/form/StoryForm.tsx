@@ -3,7 +3,7 @@ import { TwitterPicker } from 'react-color';
 import { useRouter } from 'next/router';
 
 // validation
-import { schema } from '@libs/yup/schema';
+import { schema } from '@libs/validation/schema';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
 

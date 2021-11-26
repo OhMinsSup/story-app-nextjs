@@ -14,7 +14,7 @@ import { validKeystore } from '@utils/utils';
 
 // hooks
 import useUpload from '@hooks/useUpload';
-import { schema } from '@libs/yup/schema';
+import { schema } from '@libs/validation/schema';
 
 interface KeystoreLoginDialogProps {
   visible: boolean;
