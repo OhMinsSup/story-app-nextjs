@@ -6,12 +6,12 @@ import React, {
   useState,
 } from 'react';
 
-import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import { Box } from '@mui/system';
 
 interface AlertOptions {
   key?: number;
@@ -156,32 +156,38 @@ export function useAlert() {
 
     return (
       <Dialog onClose={closeHandler} open={isAlertOpen}>
-        {content?.title && <DialogTitle>{content.title}</DialogTitle>}
-        <DialogContent className="font-bold text-sm">
-          {content?.text}
-        </DialogContent>
-        <DialogActions>
-          {showCancel && (
+        <Box
+          sx={{
+            width: 300,
+          }}
+        >
+          {content?.title && <DialogTitle>{content.title}</DialogTitle>}
+          <DialogContent className="font-bold text-sm">
+            {content?.text}
+          </DialogContent>
+          <DialogActions>
+            {showCancel && (
+              <Button
+                autoFocus
+                size="small"
+                onClick={cancelHandler}
+                variant="contained"
+                color="primary"
+              >
+                {content?.cancelText ?? '취소'}
+              </Button>
+            )}
             <Button
               autoFocus
               size="small"
-              onClick={cancelHandler}
+              onClick={okHandler}
               variant="contained"
-              color="primary"
+              color="info"
             >
-              {content?.cancelText ?? '취소'}
+              {content?.confirmText ?? '확인'}
             </Button>
-          )}
-          <Button
-            autoFocus
-            size="small"
-            onClick={okHandler}
-            variant="contained"
-            color="info"
-          >
-            {content?.confirmText ?? '확인'}
-          </Button>
-        </DialogActions>
+          </DialogActions>
+        </Box>
       </Dialog>
     );
   };

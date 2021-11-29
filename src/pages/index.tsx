@@ -55,7 +55,7 @@ function IndexPage({}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   });
 
   return (
-    <div>
+    <div className="main-container bg-gray-100">
       <Box sx={{ flexGrow: 1 }}>
         <Box sx={{ width: '100%' }} className="space-y-5 p-5">
           <Grid container spacing={3} direction="row">

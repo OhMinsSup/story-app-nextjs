@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { TwitterPicker } from 'react-color';
 import { useRouter } from 'next/router';
 
@@ -6,9 +6,6 @@ import { useRouter } from 'next/router';
 import { schema } from '@libs/validation/schema';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
-
-// components
-import FileUpload from '@components/common/FileUpload';
 
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -20,6 +17,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import ImagePreview from '@components/story/detail/ImageViewer';
 
 // api & hooks
 import { api } from '@api/module';
@@ -28,15 +26,20 @@ import { useMutationStoryRegister } from '@api/story/story';
 
 // common
 import { getColorHex } from '@libs/colors';
-import { isAxiosError } from '@utils/utils';
+import { isAxiosError, generateKey } from '@utils/utils';
 import { PAGE_ENDPOINTS, RESULT_CODE, STATUS_CODE } from '@constants/constant';
 
 // types
-import type { FileModel, MutationStoriesInput } from 'types/story-api';
+import type {
+  FileModel,
+  MutationStoriesInput,
+  StorySchema,
+} from 'types/story-api';
 import type { FieldArrayWithId, SubmitHandler } from 'react-hook-form';
 
 // enum
 import { StoryUploadTypeEnum } from 'types/enum';
+import FileUpload from '@components/common/FileUpload';
 
 interface Tag {
   name: string;
@@ -65,12 +68,16 @@ const serialize = (input: Required<FormFieldValues>): MutationStoriesInput => {
   };
 };
 
-interface StoryFormProps {}
-const StoryForm: React.FC<StoryFormProps> = () => {
+interface StoryFormProps {
+  data?: StorySchema | null;
+}
+const StoryForm: React.FC<StoryFormProps> = ({ data }) => {
   const {
     handleSubmit,
     register,
     control,
+    reset,
+    watch,
     setValue,
     formState: { errors },
   } = useForm<FormFieldValues>({
@@ -94,12 +101,33 @@ const StoryForm: React.FC<StoryFormProps> = () => {
     name: 'tags',
   });
 
+  const watchMedia = watch('media');
+
   const mutate = useMutationStoryRegister();
   const router = useRouter();
 
   const formRef = useRef<HTMLFormElement | null>(null);
 
   const { Alert, showAlert, closeAlert } = useAlert();
+
+  useEffect(() => {
+    if (!data) return;
+
+    const { media } = data;
+    const name = `${generateKey()}_${Date.now()}`;
+    reset({
+      name: data.name,
+      description: data.description,
+      media: {
+        idx: media.id,
+        name,
+        contentUrl: media.contentUrl,
+      },
+      backgroundColor: data.backgroundColor ?? undefined,
+      externalUrl: data.externalUrl ?? undefined,
+      tags: data.tags.map((tag) => ({ name: tag.name })),
+    });
+  }, [data]);
 
   // 등록
   const onSubmit: SubmitHandler<Required<FormFieldValues>> = async (input) => {
@@ -146,13 +174,15 @@ const StoryForm: React.FC<StoryFormProps> = () => {
   };
 
   // 발행하기
-  const onClickSubmit = useCallback(() => {
+  const onClickSubmit = () => {
     formRef.current?.dispatchEvent(
       new Event('submit', { cancelable: true, bubbles: true }),
     );
-  }, []);
+  };
 
   const processNFTImage = async (file: File) => {
+    if (!file) return;
+
     const response = await api.uploadResponse({
       file,
       storyType: StoryUploadTypeEnum.STORY,
@@ -193,12 +223,13 @@ const StoryForm: React.FC<StoryFormProps> = () => {
   };
 
   return (
-    <>
+    <div className="mb-5">
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid item md={12} lg={6} className="space-y-5">
           <Typography variant="h4" sx={{ fontWeight: 600 }} component="h2">
-            새로운 NFT Story 발행하기
+            {data ? 'NFT Story 수정하기' : '새로운 NFT Story 발행하기'}
           </Typography>
+          {renderActions()}
           <div>
             <Box
               component="form"
@@ -224,18 +255,7 @@ const StoryForm: React.FC<StoryFormProps> = () => {
                     </p>
                   </FormHelperText>
                   <div className="mt-3">
-                    <FileUpload
-                      imagePreviewHeight={600}
-                      onremovefile={() => {
-                        setValue('media', null, {
-                          shouldValidate: true,
-                        });
-                      }}
-                      onSetUploadFile={(filepond) => {
-                        if (!filepond) return;
-                        processNFTImage(filepond.file as File);
-                      }}
-                    />
+                    <FileUpload />
                     <input type="hidden" {...register('media')} />
                     {(errors as any).media?.message && (
                       <FormHelperText error>
@@ -301,6 +321,7 @@ const StoryForm: React.FC<StoryFormProps> = () => {
 
               <Autocomplete
                 multiple
+                value={fields}
                 onChange={(_, value) => {
                   const filterWithoutId = value.map((v) => {
                     return {
@@ -410,9 +431,8 @@ const StoryForm: React.FC<StoryFormProps> = () => {
           </div>
         </Grid>
       </Grid>
-      {renderActions()}
       <Alert />
-    </>
+    </div>
   );
 };
 

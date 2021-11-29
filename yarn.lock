@@ -1923,6 +1923,11 @@ at-least-node@^1.0.0:
   resolved "https://registry.yarnpkg.com/at-least-node/-/at-least-node-1.0.0.tgz#602cd4b46e844ad4effc92a8011a3c46e0238dc2"
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
 
+attr-accept@^2.2.1:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/attr-accept/-/attr-accept-2.2.2.tgz#646613809660110749e92f2c10833b70968d929b"
+  integrity sha512-7prDjvt9HmqiZ0cl5CRjtS84sEyhsHP2coDkaZKRKVfCDo9s7iw7ChVmar78Gu9pC4SoR/28wFu/G5JJhTnqEg==
+
 autoprefixer@^10.3.6:
   version "10.3.6"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-10.3.6.tgz#537c8a046e32ec46bfe528bcc9e2a5f2d87cd4c4"
@@ -3256,35 +3261,12 @@ file-entry-cache@^6.0.1:
   dependencies:
     flat-cache "^3.0.4"
 
-filepond-plugin-file-validate-size@^2.2.5:
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/filepond-plugin-file-validate-size/-/filepond-plugin-file-validate-size-2.2.5.tgz#985c83f0e0a9c09918310a231c5f014fb642c92b"
-  integrity sha512-x+fYZl317R17w3dExKab1oYZa10Wl2HcXKD6dzIgRKyngEHtjBF99geGaiDPk9IfozV8Zjzx69D7urcthF2CYQ==
-
-filepond-plugin-file-validate-type@^1.2.6:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/filepond-plugin-file-validate-type/-/filepond-plugin-file-validate-type-1.2.6.tgz#5a03e04fb8f70f0df37ff9a285d3d2343cdc55f2"
-  integrity sha512-3JFxpb4o5D4BssP/Drjn2GPpejg/QXzU4e3/Pq8IvIJuokHz95b6+RPYstQ+6ITKREYup0N8F/CO/OQfhVkUgg==
-
-filepond-plugin-get-file@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/filepond-plugin-get-file/-/filepond-plugin-get-file-1.0.7.tgz#e7386ceed14586766662b2b767aaac640075721b"
-  integrity sha512-Bnn0IXZp5CZm9yPsVUlnbB5tWQtSB99ZqHOXkJdu1qtcp07YxPBFKZ8OY/STfsZmVkNp6qusDd2H3szZglh7Fg==
-
-filepond-plugin-image-preview@^4.6.10:
-  version "4.6.10"
-  resolved "https://registry.yarnpkg.com/filepond-plugin-image-preview/-/filepond-plugin-image-preview-4.6.10.tgz#6e7ecc0997b1b6295e06d3824c37de3111a40c1f"
-  integrity sha512-C7Q5Sr/d4RQb2nMNQR93OiMt91OHxpvmIBGl+CO1dZE46lM49NUfI08dyElAOxTslDcA8pAfjFFCKo0sNYbrBg==
-
-filepond-plugin-image-validate-size@^1.2.6:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/filepond-plugin-image-validate-size/-/filepond-plugin-image-validate-size-1.2.6.tgz#38c8fb354c4f59a1c3c004960f84d416bdf8b76a"
-  integrity sha512-yQfw46kTPj+troodsV7E3Mh83Rvc2bf8l3Un8+O5LZ0CCECwV8c31nnsxp3ObMS1HD6n1oWHicnyga1qRVVqbA==
-
-filepond@^4.30.0:
-  version "4.30.0"
-  resolved "https://registry.yarnpkg.com/filepond/-/filepond-4.30.0.tgz#0b6f20129eb39d0b1ab26539eba6cb91b47f48b4"
-  integrity sha512-HLwDygc7xl13n53BX3C3zvsdhdb8yWcsmC5FGuFWlcVZuSQ0/xcEGcVwbo8WgZo9G+LdM92oxTGwgzjuTSbgkg==
+file-selector@^0.2.2:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/file-selector/-/file-selector-0.2.4.tgz#7b98286f9dbb9925f420130ea5ed0a69238d4d80"
+  integrity sha512-ZDsQNbrv6qRi1YTDOEWzf5J2KjZ9KMI1Q2SGeTkCJmNNW25Jg4TW4UMcmoqcg4WrAyKRcpBXdbWRxkfrOzVRbA==
+  dependencies:
+    tslib "^2.0.3"
 
 fill-range@^7.0.1:
   version "7.0.1"
@@ -5383,6 +5365,15 @@ react-dom@^17.0.2:
     object-assign "^4.1.1"
     scheduler "^0.20.2"
 
+react-dropzone@^11.4.2:
+  version "11.4.2"
+  resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-11.4.2.tgz#1eb99e9def4cc7520f4f58e85c853ce52c483d56"
+  integrity sha512-ocYzYn7Qgp0tFc1gQtUTOaHHSzVTwhWHxxY+r7cj2jJTPfMTZB5GWSJHdIVoxsl+EQENpjJ/6Zvcw0BqKZQ+Eg==
+  dependencies:
+    attr-accept "^2.2.1"
+    file-selector "^0.2.2"
+    prop-types "^15.7.2"
+
 react-filepond@^7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/react-filepond/-/react-filepond-7.1.1.tgz#467aa45051da5dbbca03a2ce58d2aacbbcfbb0e9"
@@ -6399,6 +6390,11 @@ tslib@^1.8.1, tslib@^1.9.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
+
+tslib@^2.0.3:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.1.tgz#e8a335add5ceae51aa261d32a490158ef042ef01"
+  integrity sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==
 
 tslib@^2.1.0:
   version "2.3.0"

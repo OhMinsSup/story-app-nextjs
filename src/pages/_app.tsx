@@ -1,10 +1,6 @@
 import '@assets/main.css';
 
-import 'filepond/dist/filepond.min.css';
-import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-import 'filepond-plugin-get-file/dist/filepond-plugin-get-file.min.css';
-
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import NProgress from 'nprogress';
 import { Router } from 'next/router';
 import { QueryClient, QueryClientProvider } from 'react-query';

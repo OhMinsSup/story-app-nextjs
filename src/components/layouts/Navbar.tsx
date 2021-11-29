@@ -21,8 +21,8 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Typography from '@mui/material/Typography';
 
-// // icons
-// import SearchIcon from '@mui/icons-material/Search';
+// icons
+import SearchIcon from '@mui/icons-material/Search';
 
 // store
 import { useStore } from '@store/store';
@@ -43,13 +43,20 @@ const Navbar: React.FC<NavbarProps> = () => {
   const userInfo = useStore((store) => store.userInfo, shallow);
   const [isOpen, setOpen] = useState(false);
 
-  const onAuthPage = useCallback(() => {
+  const onAuthPage = () => {
+    setOpen(false);
     router.push(PAGE_ENDPOINTS.LOGIN);
-  }, [router]);
+  };
 
-  const onPublish = useCallback(() => {
+  const onPublishPage = () => {
+    setOpen(false);
     router.push(PAGE_ENDPOINTS.PUBLISH.ROOT);
-  }, [router]);
+  };
+
+  const onSearchPage = () => {
+    setOpen(false);
+    router.push(PAGE_ENDPOINTS.SEARCH.ROOT);
+  };
 
   const renderDrawer = (
     <Box sx={{ width: 250 }} role="presentation">
@@ -86,7 +93,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           />
         </ListItem>
         <Divider />
-        <ListItem button>
+        <ListItem button onClick={onSearchPage}>
           <ListItemText
             primary={
               <Typography
@@ -100,7 +107,7 @@ const Navbar: React.FC<NavbarProps> = () => {
             }
           />
         </ListItem>
-        <ListItem button onClick={onPublish}>
+        <ListItem button onClick={onPublishPage}>
           <ListItemText
             primary={
               <Typography
@@ -135,7 +142,7 @@ const Navbar: React.FC<NavbarProps> = () => {
 
   return (
     <>
-      <AppBar position="static" className="shadow-sm" color="transparent">
+      <AppBar position="sticky" className="shadow-md" color="primary">
         <Toolbar>
           <Link href={PAGE_ENDPOINTS.INDEX}>
             <a>
@@ -150,6 +157,18 @@ const Navbar: React.FC<NavbarProps> = () => {
             >
               {userInfo ? (
                 <>
+                  <IconButton
+                    size="large"
+                    edge={false}
+                    sx={{ border: 'none' }}
+                    className="border-none"
+                    aria-label="search icon button"
+                    aria-haspopup="true"
+                    onClick={onSearchPage}
+                    color="inherit"
+                  >
+                    <SearchIcon />
+                  </IconButton>
                   <NoSsr>
                     <IconButton
                       size="large"
