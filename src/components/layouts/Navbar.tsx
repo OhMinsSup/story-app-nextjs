@@ -142,7 +142,7 @@ const Navbar: React.FC<NavbarProps> = () => {
 
   return (
     <>
-      <AppBar position="sticky" className="shadow-md" color="primary">
+      <AppBar position="static" className="shadow-none" color="transparent">
         <Toolbar>
           <Link href={PAGE_ENDPOINTS.INDEX}>
             <a>

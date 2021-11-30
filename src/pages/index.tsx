@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
 import AppLayout from '@components/layouts/AppLayout';
-import NFTCard from '@components/common/NFTCard';
+import StoriesGridItem from '@components/common/StoriesGridItem';
 
 import { fetcherStories, useStoriesQuery } from '@api/story/story';
 import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
@@ -55,37 +55,34 @@ function IndexPage({}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   });
 
   return (
-    <div className="main-container bg-gray-100">
-      <Box sx={{ flexGrow: 1 }}>
-        <Box sx={{ width: '100%' }} className="space-y-5 p-5">
-          <Grid container spacing={3} direction="row">
-            {data?.pages.map((item, i) => (
-              <React.Fragment key={i}>
-                {item.list.map((store) => (
-                  <Grid
-                    item
-                    columns={{ xl: 4, xs: 4, lg: 3, md: 3, sm: 5 }}
-                    key={`nft-${store.id}`}
-                  >
-                    <NFTCard item={store} />
-                  </Grid>
-                ))}
-              </React.Fragment>
-            ))}
-
-            {hasNextPage &&
-              Array.from({ length: 10 }).map((_, index) => (
-                <Grid
-                  item
-                  ref={index === 0 ? loadMoreRef : undefined}
-                  columns={{ xl: 4, xs: 4, lg: 3, md: 3, sm: 5 }}
-                  key={`nft-next-loading-${index}`}
-                >
-                  <NFTCard.Skeleton />
+    <div className="main-container">
+      <Box sx={{ width: '100%' }} className="space-y-5 p-5">
+        <Grid container spacing={3}>
+          {data?.pages.map((item, i) => (
+            <React.Fragment key={i}>
+              {item.list.map((story) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={story.id}>
+                  <StoriesGridItem item={story} />
                 </Grid>
               ))}
-          </Grid>
-        </Box>
+            </React.Fragment>
+          ))}
+          {hasNextPage &&
+            Array.from({ length: 10 }).map((_, index) => (
+              <Grid
+                item
+                ref={index === 0 ? loadMoreRef : undefined}
+                xs={12}
+                sm={6}
+                md={4}
+                lg={3}
+                xl={2}
+                key={`nft-next-loading-${index}`}
+              >
+                <StoriesGridItem.Skeleton />
+              </Grid>
+            ))}
+        </Grid>
       </Box>
     </div>
   );
