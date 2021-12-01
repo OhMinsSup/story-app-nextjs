@@ -11,6 +11,11 @@ export const PAGE_ENDPOINTS = {
   SEARCH: {
     ROOT: '/search/',
   },
+  PROFILE: {
+    ROOT: '/profile/',
+    DETAIL: (id: string | number) => `/profile/${id}/`,
+    EDIT: (id: string | number) => `/profile/${id}/edit/`,
+  },
 };
 
 export const API_ENDPOINTS = {
@@ -23,7 +28,9 @@ export const API_ENDPOINTS = {
       SIGNUP: '/users/signup',
     },
     USER: {
+      ROOT: '/users',
       ME: '/users/me',
+      DETAIL: (id: string | number) => `/users/${id}`,
     },
     FILE: {
       ROOT: '/files/upload',

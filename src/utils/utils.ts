@@ -124,3 +124,10 @@ export const getUserThumbnail = (data?: UserProfileImage) => {
 
 export const delay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
+
+export function getShortAddress(address?: string | null) {
+  if (!address || address.length <= 13) {
+    return '';
+  }
+  return `${address.substr(0, 6)}...${address.substr(address.length - 6, 6)}`;
+}

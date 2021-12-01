@@ -9,7 +9,7 @@ import { Hydrate } from 'react-query/hydration';
 // components
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { blueGrey, grey, red } from '@mui/material/colors';
+import { blueGrey, grey, red, blue } from '@mui/material/colors';
 import Core from '@components/common/Core';
 
 // type
@@ -22,7 +22,7 @@ import SeoHead from '@components/common/SEO';
 const theme = createTheme({
   palette: {
     primary: {
-      main: grey[50],
+      main: blue[600],
     },
     secondary: {
       main: blueGrey[700],

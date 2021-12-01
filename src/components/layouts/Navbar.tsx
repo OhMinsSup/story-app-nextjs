@@ -3,11 +3,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import shallow from 'zustand/shallow';
 
-import { alpha, styled } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Drawer from '@mui/material/Drawer';
-import InputBase from '@mui/material/InputBase';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
@@ -32,11 +30,6 @@ import { blueGrey } from '@mui/material/colors';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 import { getUserThumbnail } from '@utils/utils';
 
-const Div = styled('div')(({ theme }) => ({
-  ...theme.typography.button,
-  padding: theme.spacing(1),
-}));
-
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
   const router = useRouter();
@@ -58,10 +51,16 @@ const Navbar: React.FC<NavbarProps> = () => {
     router.push(PAGE_ENDPOINTS.SEARCH.ROOT);
   };
 
+  const onUserProfilePage = () => {
+    setOpen(false);
+    if (!userInfo) return;
+    router.push(PAGE_ENDPOINTS.PROFILE.DETAIL(userInfo.id));
+  };
+
   const renderDrawer = (
     <Box sx={{ width: 250 }} role="presentation">
       <List>
-        <ListItem alignItems="flex-start" button>
+        <ListItem alignItems="flex-start" button onClick={onUserProfilePage}>
           <ListItemAvatar>
             <Avatar
               src={getUserThumbnail({
@@ -146,7 +145,7 @@ const Navbar: React.FC<NavbarProps> = () => {
         <Toolbar>
           <Link href={PAGE_ENDPOINTS.INDEX}>
             <a>
-              <Div className="font-sans text-base">Story</Div>
+              <div className="font-sans text-base">Story</div>
             </a>
           </Link>
           <Box sx={{ flexGrow: 1 }} />
