@@ -23,6 +23,7 @@ import type {
   InferGetServerSidePropsType,
 } from 'next';
 import { API_ENDPOINTS } from '@constants/constant';
+import UserStoriesTabList from '@components/profile/detail/UserStoriesTabList';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.query.id?.toString();
@@ -57,7 +58,7 @@ function ProfilePage({}: InferGetServerSidePropsType<
 
   const { data, isError, error } = useUserProfileQuery(id);
 
-  const [value, setValue] = React.useState('1');
+  const [value, setValue] = React.useState('story');
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
@@ -90,14 +91,12 @@ function ProfilePage({}: InferGetServerSidePropsType<
                 indicatorColor="primary"
                 aria-label="lab API tabs example"
               >
-                <Tab label="Item One" wrapped value="1" />
-                <Tab label="Item Two" wrapped value="2" />
-                <Tab label="Item Three" wrapped value="3" />
+                <Tab label="나의 Story" wrapped value="story" />
               </Tabs>
             </Box>
-            <TabPanel value="1">Item One</TabPanel>
-            <TabPanel value="2">Item Two</TabPanel>
-            <TabPanel value="3">Item Three</TabPanel>
+            <TabPanel value="story">
+              <UserStoriesTabList />
+            </TabPanel>
           </TabContext>
         </div>
       </div>
