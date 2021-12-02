@@ -13,17 +13,18 @@ import { useAlert } from '@hooks/useAlert';
 import { useUserProfileQuery, fetcherProfile } from '@api/story/user';
 
 import { client } from '@api/client';
+import { fetcherStories } from '@api/story/story';
+import { API_ENDPOINTS } from '@constants/constant';
 
 // components
 import AppLayout from '@components/layouts/AppLayout';
 import ProfileMasthead from '@components/profile/detail/ProfileMasthead';
+import UserStoriesTabList from '@components/profile/detail/UserStoriesTabList';
 
 import type {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from 'next';
-import { API_ENDPOINTS } from '@constants/constant';
-import UserStoriesTabList from '@components/profile/detail/UserStoriesTabList';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.query.id?.toString();
@@ -37,10 +38,16 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     }
   }
 
-  await queryClient.prefetchQuery(
-    [API_ENDPOINTS.LOCAL.USER.ROOT, id],
-    fetcherProfile,
-  );
+  await Promise.all([
+    queryClient.prefetchQuery(
+      [API_ENDPOINTS.LOCAL.USER.ROOT, id],
+      fetcherProfile,
+    ),
+    queryClient.prefetchInfiniteQuery(
+      [API_ENDPOINTS.LOCAL.STORY.ROOT, { userId: Number(id) }],
+      fetcherStories,
+    ),
+  ]);
 
   return {
     props: {

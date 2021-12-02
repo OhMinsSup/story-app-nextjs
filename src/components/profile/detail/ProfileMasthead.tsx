@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+
+// hooks
 import { useRouter } from 'next/router';
 import { useCopyToClipboard } from 'react-use';
+import { useMeQuery } from '@api/story/user';
 
+// components
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Snackbar from '@mui/material/Snackbar';
 
+// utils
 import { getShortAddress, getUserThumbnail } from '@utils/utils';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 
@@ -18,6 +23,7 @@ interface ProfileMastheadProps {
 const ProfileMasthead: React.FC<ProfileMastheadProps> = ({ userInfo }) => {
   const router = useRouter();
   const id = router.query.id?.toString();
+  const { userInfo: me } = useMeQuery();
 
   const [snackbar, setSnackbar] = useState(false);
   const [_, copyToClipboard] = useCopyToClipboard();
@@ -35,6 +41,17 @@ const ProfileMasthead: React.FC<ProfileMastheadProps> = ({ userInfo }) => {
 
   const onCloseSnackbar = () => {
     setSnackbar(false);
+  };
+
+  const renderActions = () => {
+    if (me?.id !== userInfo?.id) return;
+    return (
+      <div className="masthead-actions mt-3 flex flex-wrap transition-opacity opacity-100">
+        <Button variant="outlined" color="secondary" onClick={onProfileEdit}>
+          프로필 수정
+        </Button>
+      </div>
+    );
   };
 
   return (
@@ -64,15 +81,7 @@ const ProfileMasthead: React.FC<ProfileMastheadProps> = ({ userInfo }) => {
                 onClick={onAddressCopy}
               />
             </p>
-            <div className="masthead-actions mt-3 flex flex-wrap transition-opacity opacity-100">
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={onProfileEdit}
-              >
-                프로필 수정
-              </Button>
-            </div>
+            {renderActions()}
           </div>
         </div>
       </div>
