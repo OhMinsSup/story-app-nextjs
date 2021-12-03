@@ -131,3 +131,8 @@ export function getShortAddress(address?: string | null) {
   }
   return `${address.substr(0, 6)}...${address.substr(address.length - 6, 6)}`;
 }
+
+export const safeDataId = (dataId?: string | number | null) => {
+  if (!dataId) return '';
+  return dataId.toString();
+};

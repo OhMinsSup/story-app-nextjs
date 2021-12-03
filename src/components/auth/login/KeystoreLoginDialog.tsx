@@ -61,12 +61,11 @@ const KeystoreLoginDialog: React.FC<KeystoreLoginDialogProps> = ({
   const onSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
       const input = await schema.keystore.validate(form);
-      console.log(input);
       if (!input) return;
       const keystore = await readKeystoreFile(input.file);
       console.log(keystore);
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   };
 

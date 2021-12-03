@@ -20,7 +20,6 @@ export const fetcherStories = async ({
   meta,
 }: QueryFunctionContext<EnsuredQueryKey<any>, any>) => {
   const [_key, _params] = queryKey;
-  console.log('_key', _key, _params, meta);
   const safeParams = _params || {};
   const query = makeQueryString({
     pageNo: pageParam ?? 1,

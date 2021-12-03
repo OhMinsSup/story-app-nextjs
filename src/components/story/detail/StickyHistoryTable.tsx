@@ -67,7 +67,6 @@ const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({}) => {
   const router = useRouter();
   const id = router.query.id?.toString();
   const { data } = useHistoriesQuery(id);
-  console.log(data);
   const rows = data?.list ?? [];
 
   const [page, setPage] = React.useState(0);
