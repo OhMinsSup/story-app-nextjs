@@ -43,8 +43,8 @@ const ProfileEditPage = () => {
     <>
       <div className="w-full box-border pt-8 px-8 pb-10 h-full">
         <div className="p-0 m-auto relative h-full">
-          <div className="overflow-auto py-8 relative m-auto constrained-content h-full">
-            <ProfileEditTitle />
+          <div className="py-8 relative m-auto constrained-content h-full">
+            <ProfileEditTitle nikcname={data?.profile?.nickname} />
             <SettingUserProfile profile={data?.profile} />
             <div className="mt-20 space-y-5">
               <SettingRow title="성별">

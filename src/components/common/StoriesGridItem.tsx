@@ -11,6 +11,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { getUserThumbnail, blurDataUrl } from '@utils/utils';
 
 import type { StorySchema } from 'types/story-api';
+import { PAGE_ENDPOINTS } from '@constants/constant';
 
 interface StoriesGridProps {
   item: StorySchema;
@@ -21,7 +22,7 @@ function StoriesGridItem({ item }: StoriesGridProps) {
 
   return (
     <>
-      <Link href="/">
+      <Link href={PAGE_ENDPOINTS.PUBLISH.DETAIL(item.id)}>
         <a className="stories-grid-item no-underline block shadow xl:w-full hover:shadow-md hover:transform-gpu">
           <div className="image-wrapper relative p-8 bg-gray-50">
             <Image

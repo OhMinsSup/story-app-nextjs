@@ -4,8 +4,10 @@ import { useRouter } from 'next/router';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 import { safeDataId } from '@utils/utils';
 
-interface ProfileEditTitleProps {}
-const ProfileEditTitle: React.FC<ProfileEditTitleProps> = () => {
+interface ProfileEditTitleProps {
+  nikcname?: string;
+}
+const ProfileEditTitle: React.FC<ProfileEditTitleProps> = ({ nikcname }) => {
   const router = useRouter();
   const id = router.query.id?.toString();
 
@@ -17,7 +19,7 @@ const ProfileEditTitle: React.FC<ProfileEditTitleProps> = () => {
             <h1 className="p-0 text-base font-medium">
               <Link href={PAGE_ENDPOINTS.PROFILE.DETAIL(safeDataId(id))}>
                 <a>
-                  <span className="display-name text-gray-800">OhMinSeop</span>
+                  <span className="display-name text-gray-800">{nikcname}</span>
                 </a>
               </Link>
               <span className="sep">/</span>
