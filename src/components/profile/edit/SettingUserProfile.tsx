@@ -2,17 +2,21 @@ import React from 'react';
 
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
+import type { ProfileModel } from 'types/story-api';
+import { getUserThumbnail } from '@utils/utils';
 
-interface SettingUserProfileProps {}
-const SettingUserProfile: React.FC<SettingUserProfileProps> = () => {
+interface SettingUserProfileProps {
+  profile?: ProfileModel;
+}
+const SettingUserProfile: React.FC<SettingUserProfileProps> = ({ profile }) => {
   return (
     <>
       <section className="flex setting-user-profile">
         <div className="thumbnail-area pr-6 flex flex-col">
           <img
             className="w-32 h-32 rounded-full block object-cover mb-5"
-            alt="OhMinSeop"
-            src="https://cdn.dribbble.com/users/4714321/avatars/small/open-uri20200123-26444-dmet7r?1579773018"
+            alt={profile?.nickname}
+            src={getUserThumbnail(profile)}
           />
           <Stack spacing={2}>
             <Button variant="contained">이미지 업로드</Button>
@@ -20,9 +24,11 @@ const SettingUserProfile: React.FC<SettingUserProfileProps> = () => {
           </Stack>
         </div>
         <div className="info-area">
-          <h2>Veloss</h2>
-          <p>Bio</p>
-          {/* <SettingEditButton onClick={onToggleEdit} /> */}
+          <Button size="small" className="float-right" onClick={() => {}}>
+            수정
+          </Button>
+          <h2>{profile?.nickname}</h2>
+          <p>{profile?.bio}</p>
         </div>
       </section>
       <style jsx>{`

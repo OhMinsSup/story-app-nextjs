@@ -110,6 +110,7 @@ export interface ProfileModel {
   avatarSvg: string;
   defaultProfile: boolean;
   gender: GenderType;
+  bio?: string | null;
 }
 
 export interface TagModel {

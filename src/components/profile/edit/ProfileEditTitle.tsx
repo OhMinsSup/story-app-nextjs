@@ -17,18 +17,6 @@ const ProfileEditTitle: React.FC<ProfileEditTitleProps> = () => {
             <h1 className="p-0 text-base font-medium">
               <Link href={PAGE_ENDPOINTS.PROFILE.DETAIL(safeDataId(id))}>
                 <a>
-                  <picture>
-                    <source
-                      srcSet="https://cdn.dribbble.com/users/4714321/avatars/normal/open-uri20200123-26444-dmet7r?1579773018"
-                      media="(-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 3/2), (min-device-pixel-ratio: 1.5), (min-resolution: 1.5dppx)"
-                    />
-                    <source srcSet="https://cdn.dribbble.com/users/4714321/avatars/small/open-uri20200123-26444-dmet7r?1579773018" />
-                    <img
-                      className="photo"
-                      alt="OhMinSeop"
-                      src="https://cdn.dribbble.com/users/4714321/avatars/small/open-uri20200123-26444-dmet7r?1579773018"
-                    />
-                  </picture>
                   <span className="display-name text-gray-800">OhMinSeop</span>
                 </a>
               </Link>
@@ -45,7 +33,7 @@ const ProfileEditTitle: React.FC<ProfileEditTitleProps> = () => {
 
         .slat-header.user {
           min-height: 40px;
-          padding-left: 52px;
+          /* padding-left: 52px; */
         }
 
         h1 span.sep {
@@ -73,7 +61,7 @@ const ProfileEditTitle: React.FC<ProfileEditTitleProps> = () => {
 
         @media (min-width: 768px) {
           .slat-header.user {
-            padding-left: 60px;
+            /* padding-left: 60px; */
           }
         }
 
