@@ -210,8 +210,7 @@ const StoryForm: React.FC<StoryFormProps> = ({ data }) => {
         <LoadingButton
           loading={false}
           loadingPosition="start"
-          startIcon={<SaveIcon />}
-          color="info"
+          color="primary"
           size="large"
           variant="contained"
           onClick={onClickSubmit}

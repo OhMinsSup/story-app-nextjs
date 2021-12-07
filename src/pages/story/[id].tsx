@@ -52,7 +52,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   };
 };
 
-function PublishDetailPage({}: InferGetServerSidePropsType<
+function StoryDetailPage({}: InferGetServerSidePropsType<
   typeof getServerSideProps
 >) {
   const router = useRouter();
@@ -115,6 +115,6 @@ function PublishDetailPage({}: InferGetServerSidePropsType<
   );
 }
 
-export default PublishDetailPage;
+export default StoryDetailPage;
 
-PublishDetailPage.Layout = AppLayout;
+StoryDetailPage.Layout = AppLayout;

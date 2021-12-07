@@ -6,8 +6,8 @@ import { useStoryQuery } from '@api/story/story';
 
 // components
 import AppLayout from '@components/layouts/AppLayout';
-import StoryForm from '@components/story/form/StoryForm';
-import StoryLayout from '@components/story/common/StoryLayout';
+import StoryForm from '@components/publish/form/StoryForm';
+import StoryLayout from '@components/layouts/StoryLayout';
 
 const PublishModifyPage = () => {
   const router = useRouter();
