@@ -16,7 +16,7 @@ import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 
 import Description from '@components/story/detail/Description';
-import AppLayout from '@components/layouts/AppLayout';
+import AppLayout from '@components/ui/layouts/AppLayout';
 import NavigationTopbar from '@components/story/detail/NavigationTopbar';
 import ImageViewer from '@components/story/detail/ImageViewer';
 import PostHead from '@components/story/detail/PostHead';

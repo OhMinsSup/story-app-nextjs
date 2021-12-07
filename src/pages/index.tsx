@@ -9,7 +9,7 @@ import { API_ENDPOINTS } from '@constants/constant';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
-import AppLayout from '@components/layouts/AppLayout';
+import AppLayout from '@components/ui/layouts/AppLayout';
 import StoriesGridItem from '@components/common/StoriesGridItem';
 
 import { fetcherStories, useStoriesQuery } from '@api/story/story';

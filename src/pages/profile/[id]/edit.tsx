@@ -15,7 +15,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 
 // custom components
-import AppLayout from '@components/layouts/AppLayout';
+import AppLayout from '@components/ui/layouts/AppLayout';
 import ProfileEditTitle from '@components/profile/edit/ProfileEditTitle';
 import SettingUserProfile from '@components/profile/edit/SettingUserProfile';
 import SettingRow from '@components/profile/edit/SettingRow';

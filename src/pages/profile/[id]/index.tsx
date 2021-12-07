@@ -17,7 +17,7 @@ import { fetcherStories } from '@api/story/story';
 import { API_ENDPOINTS } from '@constants/constant';
 
 // components
-import AppLayout from '@components/layouts/AppLayout';
+import AppLayout from '@components/ui/layouts/AppLayout';
 import ProfileMasthead from '@components/profile/detail/ProfileMasthead';
 import UserStoriesTabList from '@components/profile/detail/UserStoriesTabList';
 

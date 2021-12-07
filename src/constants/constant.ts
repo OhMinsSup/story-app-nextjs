@@ -8,6 +8,10 @@ export const PAGE_ENDPOINTS = {
     DETAIL: (id: string | number) => `/publish/${id}/`,
     MODIFY: (id: string | number) => `/publish/${id}/modify/`,
   },
+  STORY: {
+    ROOT: '/story/',
+    DETAIL: (id: string | number) => `/story/${id}/`,
+  },
   SEARCH: {
     ROOT: '/search/',
   },

@@ -5,9 +5,9 @@ import { useAlert } from '@hooks/useAlert';
 import { useStoryQuery } from '@api/story/story';
 
 // components
-import AppLayout from '@components/layouts/AppLayout';
+import AppLayout from '@components/ui/layouts/AppLayout';
 import StoryForm from '@components/publish/form/StoryForm';
-import StoryLayout from '@components/layouts/StoryLayout';
+import StoryLayout from '@components/ui/layouts/StoryLayout';
 
 const PublishModifyPage = () => {
   const router = useRouter();

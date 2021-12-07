@@ -22,7 +22,7 @@ function StoriesGridItem({ item }: StoriesGridProps) {
 
   return (
     <>
-      <Link href={PAGE_ENDPOINTS.PUBLISH.DETAIL(item.id)}>
+      <Link href={PAGE_ENDPOINTS.STORY.DETAIL(item.id)}>
         <a className="stories-grid-item no-underline block shadow xl:w-full hover:shadow-md hover:transform-gpu">
           <div className="image-wrapper relative p-8 bg-gray-50">
             <Image
