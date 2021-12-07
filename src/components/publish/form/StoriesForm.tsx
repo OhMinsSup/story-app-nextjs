@@ -20,6 +20,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import ImagePreview from '@components/story/detail/ImageViewer';
 
+import { Upload } from '../../upload';
+
 // api & hooks
 import { api } from '@api/module';
 import { useAlert } from '@hooks/useAlert';
@@ -41,6 +43,7 @@ import type { FieldArrayWithId, SubmitHandler } from 'react-hook-form';
 // enum
 import { StoryUploadTypeEnum } from 'types/enum';
 import FileUpload from '@components/common/FileUpload';
+import FileItemList from '@components/upload/FileItem';
 
 interface Tag {
   name: string;
@@ -224,7 +227,7 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
 
   return (
     <>
-      <Container className="space-y-5">
+      <Container className="space-y-5" maxWidth="md">
         <Typography variant="h4" sx={{ fontWeight: 600 }} component="h2">
           {data ? 'NFT Story 수정하기' : '새로운 NFT Story 발행하기'}
         </Typography>
@@ -260,6 +263,8 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
                     </FormHelperText>
                   )}
                 </div>
+                {/* <FileItemList /> */}
+                <Upload fileList={[]}>업로드 합시다</Upload>
               </FormGroup>
             </Box>
             <Controller
