@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { TwitterPicker } from 'react-color';
 import { useRouter } from 'next/router';
 
@@ -7,8 +7,9 @@ import { schema } from '@libs/validation/schema';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
 
+import CircularProgress from '@mui/material/CircularProgress';
+import InboxIcon from '@mui/icons-material/Inbox';
 import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -19,8 +20,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import ImagePreview from '@components/story/detail/ImageViewer';
-
-import { Upload } from '../../upload';
 
 // api & hooks
 import { api } from '@api/module';
@@ -42,8 +41,8 @@ import type { FieldArrayWithId, SubmitHandler } from 'react-hook-form';
 
 // enum
 import { StoryUploadTypeEnum } from 'types/enum';
-import FileUpload from '@components/common/FileUpload';
-import FileItemList from '@components/upload/FileItem';
+import Thumbnail from './Thumbnail';
+import TagInput from './TagInput';
 
 interface Tag {
   name: string;
@@ -110,6 +109,7 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
   const mutate = useMutationStoryRegister();
   const router = useRouter();
 
+  const [uploading, setUploading] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
 
   const { Alert, showAlert, closeAlert } = useAlert();
@@ -184,7 +184,7 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
     );
   };
 
-  const processNFTImage = async (file: File) => {
+  const process = async (file: File) => {
     if (!file) return;
 
     const response = await api.uploadResponse({
@@ -216,7 +216,7 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
           loadingPosition="start"
           color="primary"
           size="large"
-          variant="contained"
+          variant="outlined"
           onClick={onClickSubmit}
         >
           발행하기
@@ -255,16 +255,13 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
                   </p>
                 </FormHelperText>
                 <div className="mt-3">
-                  <FileUpload />
-                  <input type="hidden" {...register('media')} />
+                  <Thumbnail thumbnail={null} onUploadClick={() => {}} />
                   {(errors as any).media?.message && (
                     <FormHelperText error>
                       {(errors as any).media.message}
                     </FormHelperText>
                   )}
                 </div>
-                {/* <FileItemList /> */}
-                <Upload fileList={[]}>업로드 합시다</Upload>
               </FormGroup>
             </Box>
             <Controller
@@ -321,56 +318,7 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
               )}
             />
 
-            <Autocomplete
-              multiple
-              value={fields}
-              onChange={(_, value) => {
-                const filterWithoutId = value.map((v) => {
-                  return {
-                    name: v.name,
-                  };
-                });
-                replace(filterWithoutId);
-              }}
-              filterOptions={(options, params) => {
-                const filtered = filter(options, params);
-                const { inputValue } = params;
-                // Suggest the creation of a new value
-                const isExisting = options.some(
-                  (option) => inputValue === option.name,
-                );
-                if (inputValue !== '' && !isExisting) {
-                  filtered.push({
-                    name: inputValue,
-                    id: `create:${inputValue}`,
-                  });
-                }
-                return filtered;
-              }}
-              selectOnFocus
-              clearOnBlur
-              handleHomeEndKeys
-              filterSelectedOptions
-              id="tags-outlined"
-              getOptionLabel={(option) => {
-                // Value selected with enter, right from the input
-                if (typeof option === 'object') {
-                  // Add "xxx" option created dynamically
-                  return option.name;
-                }
-                // Regular option
-                return option;
-              }}
-              options={fields}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="standard"
-                  color="info"
-                  label="태그"
-                />
-              )}
-            />
+            <TagInput tags={[]} onChange={console.log} />
 
             <Controller
               control={control}
