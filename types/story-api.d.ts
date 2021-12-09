@@ -144,7 +144,7 @@ export interface SignupInput {
 
 // =================== Story =================== //
 
-export interface MutationStoriesInput {
+export interface PublishInput {
   name: string;
   tags: string[];
   description: string;

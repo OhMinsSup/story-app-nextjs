@@ -1,13 +1,26 @@
+import React from 'react';
+import { styled } from '@mui/system';
+
+// components
 import Button from '@mui/material/Button';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
-import styled from '@emotion/styled';
 import Divider from '@mui/material/Divider';
+import FormHelperText from '@mui/material/FormHelperText';
 
-type ThumbnailModifyProps = {
+// hooks
+import { useFormContext } from 'react-hook-form';
+
+// api
+import { api } from '@api/module';
+
+// types
+import { StoryUploadTypeEnum } from 'types/enum';
+
+interface ThumbnailModifyProps {
   visible: boolean;
   onResetThumbnail: () => void;
-  onChangeThumbnail: () => void;
-};
+  onChangeThumbnail: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
 const ThumbnailModify: React.FC<ThumbnailModifyProps> = ({
   visible,
   onResetThumbnail,
@@ -17,11 +30,18 @@ const ThumbnailModify: React.FC<ThumbnailModifyProps> = ({
   return (
     <ThumbnailModifyBlock>
       <div className="actions flex items-center">
-        <Button size="small" onClick={onChangeThumbnail}>
-          재업로드
-        </Button>
+        <label htmlFor="reUpload-button-file">
+          <Input
+            accept="image/*"
+            id="reUpload-button-file"
+            type="file"
+            onChange={onChangeThumbnail}
+          />
+          <Button size="small" component="span">
+            재업로드
+          </Button>
+        </label>
         <Divider orientation="vertical" flexItem />
-
         <Button size="small" onClick={onResetThumbnail}>
           제거
         </Button>
@@ -30,22 +50,67 @@ const ThumbnailModify: React.FC<ThumbnailModifyProps> = ({
   );
 };
 
-interface ThumbnailProps {
-  thumbnail: string | null;
-  onUploadClick: () => void;
-}
-const Thumbnail: React.FC<ThumbnailProps> = ({ onUploadClick, thumbnail }) => {
+const Thumbnail: React.FC = () => {
+  const {
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext();
+
+  const watchMedia = watch('media');
+
+  const upload = async (file: File) => {
+    try {
+      const response = await api.uploadResponse({
+        file,
+        storyType: StoryUploadTypeEnum.STORY,
+      });
+
+      const {
+        data: { ok, result },
+      } = response;
+
+      if (ok) {
+        setValue(
+          'media',
+          {
+            idx: result.id,
+            name: result.name,
+            contentUrl: result.path,
+          },
+          {
+            shouldValidate: true,
+          },
+        );
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const onResetClick = () => {
+    setValue('media', null, {
+      shouldValidate: true,
+    });
+  };
+
+  const onUploadClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    upload(file);
+  };
+
   return (
-    <>
+    <div className="mt-3">
       <ThumbnailModify
-        visible={!!thumbnail}
-        onResetThumbnail={() => {}}
-        onChangeThumbnail={() => {}}
+        visible={!!watchMedia}
+        onResetThumbnail={onResetClick}
+        onChangeThumbnail={onUploadClick}
       />
       <ThumbnailSizer>
         <ThumbnailBlock>
-          {thumbnail ? (
-            <Image src={thumbnail} data-testid="image" alt="image" />
+          {watchMedia ? (
+            <Image src={watchMedia.contentUrl} alt="story thumbnail" />
           ) : (
             <MissingThumbnail>
               <ImageOutlinedIcon className="w-32 h-32 text-gray-400" />
@@ -53,8 +118,8 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ onUploadClick, thumbnail }) => {
                 <Input
                   accept="image/*"
                   id="contained-button-file"
-                  multiple
                   type="file"
+                  onChange={onUploadClick}
                 />
                 <Button variant="outlined" component="span">
                   썸네일 업로드
@@ -64,7 +129,10 @@ const Thumbnail: React.FC<ThumbnailProps> = ({ onUploadClick, thumbnail }) => {
           )}
         </ThumbnailBlock>
       </ThumbnailSizer>
-    </>
+      {errors.media?.message && (
+        <FormHelperText error>{(errors as any).media.message}</FormHelperText>
+      )}
+    </div>
   );
 };
 
