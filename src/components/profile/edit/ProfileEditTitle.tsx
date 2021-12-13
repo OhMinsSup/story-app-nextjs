@@ -17,11 +17,15 @@ const ProfileEditTitle: React.FC<ProfileEditTitleProps> = ({ nikcname }) => {
         <div className="slat-header user relative mb-8">
           <div className="slat-details ml-3">
             <h1 className="p-0 text-base font-medium">
-              <Link href={PAGE_ENDPOINTS.PROFILE.DETAIL(safeDataId(id))}>
-                <a>
-                  <span className="display-name text-gray-800">{nikcname}</span>
-                </a>
-              </Link>
+              {id && (
+                <Link href={PAGE_ENDPOINTS.PROFILE.DETAIL(safeDataId(id))}>
+                  <a>
+                    <span className="display-name text-gray-800">
+                      {nikcname}
+                    </span>
+                  </a>
+                </Link>
+              )}
               <span className="sep">/</span>
               <span className="text-base font-medium">프로필 수정</span>
             </h1>

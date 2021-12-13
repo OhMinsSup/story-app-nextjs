@@ -16,28 +16,29 @@ import type {
 export function useMutationStoryRegister() {
   const queryClient = useQueryClient();
 
-  const fetcher = (input: PublishInput) =>
+  const fetcherRegister = (input: PublishInput) =>
     api.postResponse({
       url: API_ENDPOINTS.LOCAL.STORY.ROOT,
       body: input,
     });
 
-  const mutation = useMutation<StoryDataIdApi, StoryErrorApi, PublishInput>(
-    fetcher,
-    {
-      mutationKey: [API_ENDPOINTS.LOCAL.STORY.ROOT, 'POST'],
-      onSuccess: async (data) => {
-        const {
-          data: { result, resultCode },
-        } = data;
+  const onSuccess = async (data: StoryDataIdApi) => {
+    const {
+      data: { result, resultCode },
+    } = data;
 
-        if (resultCode === RESULT_CODE.OK) {
-          await queryClient.prefetchQuery([
-            API_ENDPOINTS.LOCAL.STORY.ROOT,
-            result.dataId,
-          ]);
-        }
-      },
+    if (resultCode === RESULT_CODE.OK) {
+      await queryClient.prefetchQuery([
+        API_ENDPOINTS.LOCAL.STORY.ROOT,
+        result.dataId,
+      ]);
+    }
+  };
+
+  const mutation = useMutation<StoryDataIdApi, StoryErrorApi, PublishInput>(
+    fetcherRegister,
+    {
+      onSuccess,
     },
   );
 

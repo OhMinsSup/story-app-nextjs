@@ -120,6 +120,15 @@ export interface TagModel {
 
 // ================== User  ================== //
 
+export interface ProfileInput {
+  nickname?: string;
+  defaultProfile?: boolean;
+  avatarSvg?: string;
+  profileUrl?: string;
+  bio?: string;
+  gender?: GenderType;
+}
+
 // ================== Login ================== //
 
 export interface LoginInput {
@@ -168,7 +177,7 @@ export interface StorySchema {
   tags: TagModel[];
 }
 
-export interface History {
+export interface HistorySchema {
   id: number;
   status: string;
   to: UserModel;

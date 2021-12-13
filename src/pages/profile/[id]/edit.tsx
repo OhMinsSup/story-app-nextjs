@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // hooks
 import { useRouter } from 'next/router';
-import { useUserProfileQuery } from '@api/story/user';
+import { useMutationProfileModify, useUserProfileQuery } from '@api/story/user';
 import { useAlert } from '@hooks/useAlert';
 
 // component
@@ -23,8 +23,19 @@ import SettingRow from '@components/profile/edit/SettingRow';
 const ProfileEditPage = () => {
   const router = useRouter();
   const id = router.query.id?.toString();
-  const { data, isError, error } = useUserProfileQuery(id);
+
+  const { data, isError, error, refetch } = useUserProfileQuery(id);
   const { showAlert, Alert } = useAlert();
+  const { mutateAsync } = useMutationProfileModify();
+
+  const [gender, setGender] = useState<'M' | 'F'>('M');
+
+  const onRefresh = () => refetch();
+
+  useEffect(() => {
+    if (!data) return;
+    setGender(data.profile.gender);
+  }, [data]);
 
   useEffect(() => {
     if (isError && error) {
@@ -39,20 +50,33 @@ const ProfileEditPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isError, error]);
 
+  const onChangeGender = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!id) return;
+    const value = e.target.value as 'M' | 'F';
+    await mutateAsync({
+      dataId: Number(id),
+      gender: value,
+    });
+    await refetch();
+    setGender(value);
+  };
+
   return (
     <>
       <div className="w-full box-border pt-8 px-8 pb-10 h-full">
         <div className="p-0 m-auto relative h-full">
           <div className="py-8 relative m-auto constrained-content h-full">
             <ProfileEditTitle nikcname={data?.profile?.nickname} />
-            <SettingUserProfile profile={data?.profile} />
+            <SettingUserProfile profile={data?.profile} onRefresh={onRefresh} />
             <div className="mt-20 space-y-5">
               <SettingRow title="성별">
                 <FormGroup>
                   <RadioGroup
                     row
+                    value={gender}
                     aria-label="gender"
                     name="row-radio-buttons-group"
+                    onChange={onChangeGender}
                   >
                     <FormControlLabel
                       value="F"
@@ -70,7 +94,6 @@ const ProfileEditPage = () => {
               <Divider />
               <SettingRow
                 title="이메일 주소"
-                editButton
                 description="회원 인증 또는 시스템에서 발송하는 이메일을 수신하는 주소입니다."
               >
                 {data?.email}
