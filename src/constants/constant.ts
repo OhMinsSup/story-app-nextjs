@@ -44,6 +44,8 @@ export const API_ENDPOINTS = {
       ROOT: '/stories',
       DETAIL: (id: string | number) => `/stories/${id}`,
       HISTORIES: (id: string | number) => `/stories/${id}/histories`,
+      ANOTHERS: (id: string | number, userId: string | number) =>
+        `/stories/${id}/anothers/${userId}`,
     },
   },
 };

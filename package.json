@@ -65,6 +65,7 @@
     "react-sticky-box": "^0.9.3",
     "react-use": "^17.3.1",
     "react-virtualized": "^9.22.3",
+    "swiper": "^7.3.2",
     "tailwindcss": "^2.2.19",
     "ua-parser-js": "^1.0.2",
     "yup": "^0.32.9",

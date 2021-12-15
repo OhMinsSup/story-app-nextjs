@@ -1,4 +1,5 @@
 import '@assets/main.css';
+import 'swiper/css';
 
 import React, { useRef } from 'react';
 import NProgress from 'nprogress';

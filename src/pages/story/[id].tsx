@@ -27,6 +27,7 @@ import type {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from 'next';
+import AnotherStories from '@components/story/detail/AnotherStories';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.query.id?.toString();
@@ -108,6 +109,7 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
             </>
           )}
           <StickyHistoryTable />
+          <AnotherStories userId={data?.user.id} storyId={data?.id} />
         </Stack>
       </Container>
       <Alert />
