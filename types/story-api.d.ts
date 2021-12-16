@@ -113,9 +113,11 @@ export interface ProfileModel {
   bio?: string | null;
 }
 
-export interface TagModel {
+export interface TagSchema {
   id: number;
   name: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // ================== User  ================== //

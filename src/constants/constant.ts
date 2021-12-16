@@ -40,6 +40,12 @@ export const API_ENDPOINTS = {
     FILE: {
       ROOT: '/files/upload',
     },
+    SEARCH: {
+      ROOT: '/search',
+    },
+    TAGS: {
+      ROOT: '/tags',
+    },
     STORY: {
       ROOT: '/stories',
       DETAIL: (id: string | number) => `/stories/${id}`,

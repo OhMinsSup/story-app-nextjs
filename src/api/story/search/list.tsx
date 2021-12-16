@@ -5,19 +5,14 @@ import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 import { makeQueryString } from '@utils/utils';
 
-import type {
-  QueryFunctionContext,
-  QueryKey,
-  EnsuredQueryKey,
-} from 'react-query';
+import type { QueryFunctionContext, EnsuredQueryKey } from 'react-query';
 import type { ListSchema, StorySchema } from 'types/story-api';
 
 const SIZE = 10;
 
-export const fetcherStories = async ({
+export const fetcherSearch = async ({
   queryKey,
   pageParam,
-  meta,
 }: QueryFunctionContext<EnsuredQueryKey<any>, any>) => {
   const [_key, _params] = queryKey;
   const safeParams = _params || {};
@@ -27,23 +22,23 @@ export const fetcherStories = async ({
     ...safeParams,
   });
   const response = await api.getResponse<ListSchema<StorySchema>>({
-    url: `${API_ENDPOINTS.LOCAL.STORY.ROOT}${query}`,
+    url: `${API_ENDPOINTS.LOCAL.SEARCH.ROOT}${query}`,
   });
   return response.data.result;
 };
 
 export interface SearchParams {
   pageSize: number;
-  isPrivate: boolean;
-  userId: number;
+  backgrounds?: string[];
+  tags?: string[];
 }
 
-export function useStoriesQuery(
+export function useSearchQuery(
   params: Partial<SearchParams> = {},
   enabled = true,
 ) {
   const getKey = () => {
-    const keys: EnsuredQueryKey<any> = [API_ENDPOINTS.LOCAL.STORY.ROOT];
+    const keys: EnsuredQueryKey<any> = [API_ENDPOINTS.LOCAL.SEARCH.ROOT];
     if (isEmpty(params)) {
       return keys;
     }
@@ -51,7 +46,7 @@ export function useStoriesQuery(
     return keys;
   };
 
-  return useInfiniteQuery(getKey(), fetcherStories, {
+  return useInfiniteQuery(getKey(), fetcherSearch, {
     retry: false,
     enabled,
     getNextPageParam: (lastPage, allPages) => {

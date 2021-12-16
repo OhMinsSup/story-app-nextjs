@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import isEmpty from 'lodash-es/isEmpty';
 import FilteredItem from './FilteredItem';
-import CategoryFilter from './CategoryFilter';
+import TagFilter from './TagFilter';
 import ColorFilter from './ColorFilter';
 
 const FilterBox: React.FC = () => {
@@ -42,7 +42,7 @@ const FilterBox: React.FC = () => {
         </div>
       </div>
 
-      <CategoryFilter />
+      <TagFilter />
       <ColorFilter />
     </div>
   );

@@ -136,3 +136,12 @@ export const safeDataId = (dataId?: string | number | null) => {
   if (!dataId) return '';
   return dataId.toString();
 };
+
+export const getUniqueFilter = (
+  iters: { [key: string]: any }[],
+  key: string,
+): any[] => {
+  return Array.from(
+    iters.reduce((map, obj) => map.set(obj[key], obj), new Map()).values(),
+  );
+};

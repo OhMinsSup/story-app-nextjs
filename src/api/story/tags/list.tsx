@@ -5,19 +5,14 @@ import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 import { makeQueryString } from '@utils/utils';
 
-import type {
-  QueryFunctionContext,
-  QueryKey,
-  EnsuredQueryKey,
-} from 'react-query';
-import type { ListSchema, StorySchema } from 'types/story-api';
+import type { QueryFunctionContext, EnsuredQueryKey } from 'react-query';
+import type { ListSchema, TagSchema } from 'types/story-api';
 
 const SIZE = 10;
 
-export const fetcherStories = async ({
+export const fetcherTags = async ({
   queryKey,
   pageParam,
-  meta,
 }: QueryFunctionContext<EnsuredQueryKey<any>, any>) => {
   const [_key, _params] = queryKey;
   const safeParams = _params || {};
@@ -26,19 +21,17 @@ export const fetcherStories = async ({
     pageSize: SIZE,
     ...safeParams,
   });
-  const response = await api.getResponse<ListSchema<StorySchema>>({
-    url: `${API_ENDPOINTS.LOCAL.STORY.ROOT}${query}`,
+  const response = await api.getResponse<ListSchema<TagSchema>>({
+    url: `${API_ENDPOINTS.LOCAL.TAGS.ROOT}${query}`,
   });
   return response.data.result;
 };
 
 export interface SearchParams {
   pageSize: number;
-  isPrivate: boolean;
-  userId: number;
 }
 
-export function useStoriesQuery(
+export function useTagsQuery(
   params: Partial<SearchParams> = {},
   enabled = true,
 ) {
@@ -51,7 +44,7 @@ export function useStoriesQuery(
     return keys;
   };
 
-  return useInfiniteQuery(getKey(), fetcherStories, {
+  return useInfiniteQuery(getKey(), fetcherTags, {
     retry: false,
     enabled,
     getNextPageParam: (lastPage, allPages) => {
