@@ -8,7 +8,7 @@ import { API_ENDPOINTS } from '@constants/constant';
 
 import type { SignupInput, StoryApi, StoryErrorApi } from 'types/story-api';
 
-const fetcher = (input: SignupInput) =>
+const fetcherSignup = (input: SignupInput) =>
   api.postResponse({
     url: API_ENDPOINTS.LOCAL.AUTH.SIGNUP,
     body: input,
@@ -19,9 +19,7 @@ export function useMutationSignUp() {
     StoryApi<string | boolean>,
     StoryErrorApi<string | null>,
     SignupInput
-  >(fetcher, {
-    mutationKey: API_ENDPOINTS.LOCAL.AUTH.SIGNUP,
-  });
+  >(fetcherSignup);
 
   return mutation;
 }

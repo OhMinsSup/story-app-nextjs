@@ -6,12 +6,12 @@ import React, {
   useState,
 } from 'react';
 
-import Typography from '@mui/material/Typography';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import { Box } from '@mui/system';
 
 interface AlertOptions {
   key?: number;
@@ -22,6 +22,7 @@ interface AlertOptions {
   content?: Record<string, string | number | React.ReactNode>;
   okHandler?: (...args: any[]) => any;
   cancelHandler?: (...args: any[]) => any;
+  closeHandler?: (...args: any[]) => any;
   showCancel?: boolean;
 }
 
@@ -31,6 +32,7 @@ const defaultOptions: AlertOptions = {
   customComponent: undefined,
   okHandler: () => {},
   cancelHandler: () => {},
+  closeHandler: () => {},
   showCancel: false,
 };
 
@@ -93,6 +95,15 @@ export function useAlert() {
       };
     }
 
+    if (!options?.closeHandler) {
+      options = {
+        ...options,
+        closeHandler: () => {
+          alertInstance(false, defaultOptions);
+        },
+      };
+    }
+
     keyRef.current = key;
 
     const alertOptions = {
@@ -121,8 +132,14 @@ export function useAlert() {
     const alert = getInstance();
     if (!alert) return null;
 
-    const { okHandler, cancelHandler, content, showCancel, customComponent } =
-      alert;
+    const {
+      okHandler,
+      cancelHandler,
+      closeHandler,
+      content,
+      showCancel,
+      customComponent,
+    } = alert;
 
     // custom alert component
     if (customComponent) {
@@ -138,33 +155,39 @@ export function useAlert() {
     }
 
     return (
-      <Dialog onClose={closeAlert} open={isAlertOpen}>
-        {content?.title && <DialogTitle>{content.title}</DialogTitle>}
-        <DialogContent className="font-bold text-sm">
-          {content?.text}
-        </DialogContent>
-        <DialogActions>
-          {showCancel && (
+      <Dialog onClose={closeHandler} open={isAlertOpen}>
+        <Box
+          sx={{
+            width: 300,
+          }}
+        >
+          {content?.title && <DialogTitle>{content.title}</DialogTitle>}
+          <DialogContent className="font-bold text-sm">
+            {content?.text}
+          </DialogContent>
+          <DialogActions>
+            {showCancel && (
+              <Button
+                autoFocus
+                size="small"
+                onClick={cancelHandler}
+                variant="contained"
+                color="primary"
+              >
+                {content?.cancelText ?? '취소'}
+              </Button>
+            )}
             <Button
               autoFocus
               size="small"
-              onClick={cancelHandler}
+              onClick={okHandler}
               variant="contained"
-              color="primary"
+              color="info"
             >
-              {content?.cancelText ?? '취소'}
+              {content?.confirmText ?? '확인'}
             </Button>
-          )}
-          <Button
-            autoFocus
-            size="small"
-            onClick={okHandler}
-            variant="contained"
-            color="info"
-          >
-            {content?.confirmText ?? '확인'}
-          </Button>
-        </DialogActions>
+          </DialogActions>
+        </Box>
       </Dialog>
     );
   };

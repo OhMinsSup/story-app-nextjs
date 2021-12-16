@@ -18,7 +18,7 @@ import type {
   StoryApi,
 } from 'types/story-api';
 
-const fetcher = (input: LoginInput) =>
+const fetcherLogin = (input: LoginInput) =>
   api.postResponse({
     url: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
     body: input,
@@ -32,24 +32,25 @@ export function useMutationLogin() {
     shallow,
   );
 
+  const onSuccess = (data: StoryApi<LoginSchema>, variable: LoginInput) => {
+    const {
+      data: { result, resultCode },
+    } = data;
+
+    if (RESULT_CODE.OK === resultCode && typeof result === 'object') {
+      const { accessToken, ...user } = result;
+      // 로그인 성공
+      localStorage.setItem(STORAGE_KEY.TOKEN_KEY, accessToken);
+      setAuth?.(user);
+    }
+  };
+
   const mutation = useMutation<
     StoryApi<LoginSchema>,
     StoryErrorApi<null>,
     LoginInput
-  >(fetcher, {
-    mutationKey: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
-    onSuccess: (data, variable) => {
-      const {
-        data: { result, resultCode },
-      } = data;
-
-      if (RESULT_CODE.OK === resultCode && typeof result === 'object') {
-        const { accessToken, ...user } = result;
-        // 로그인 성공
-        localStorage.setItem(STORAGE_KEY.TOKEN_KEY, accessToken);
-        setAuth?.(user);
-      }
-    },
+  >(fetcherLogin, {
+    onSuccess,
   });
 
   return mutation;

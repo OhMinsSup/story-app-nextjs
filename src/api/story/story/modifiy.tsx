@@ -8,38 +8,45 @@ import { API_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 
 // types
 import type {
-  MutationStoriesInput,
+  DataIdParams,
+  PublishInput,
   StoryDataIdApi,
   StoryErrorApi,
 } from 'types/story-api';
 
-export function useMutationStoryModifiy(dataId: number) {
+export type Input = PublishInput & {
+  dataId: DataIdParams;
+};
+
+export function useMutationStoryModifiy() {
   const queryClient = useQueryClient();
 
-  const fetcher = (input: MutationStoriesInput) =>
-    api.putResponse({
-      url: API_ENDPOINTS.LOCAL.STORY.DETAIL(dataId),
+  const fetcherModify = (input: Input) => {
+    const id = input.dataId ?? '';
+    return api.putResponse({
+      url: API_ENDPOINTS.LOCAL.STORY.DETAIL(id),
       body: input,
     });
+  };
 
-  const mutation = useMutation<
-    StoryDataIdApi,
-    StoryErrorApi,
-    MutationStoriesInput
-  >(fetcher, {
-    mutationKey: [API_ENDPOINTS.LOCAL.STORY.ROOT, dataId, 'PUT'],
-    onSuccess: async (data) => {
-      const {
-        data: { resultCode },
-      } = data;
-      if (resultCode === RESULT_CODE.OK) {
-        await queryClient.prefetchQuery([
-          API_ENDPOINTS.LOCAL.STORY.ROOT,
-          dataId,
-        ]);
-      }
+  const onSuccess = async (data: StoryDataIdApi, variables: Input) => {
+    const {
+      data: { resultCode },
+    } = data;
+    if (resultCode === RESULT_CODE.OK) {
+      await queryClient.prefetchQuery([
+        API_ENDPOINTS.LOCAL.STORY.ROOT,
+        variables.dataId,
+      ]);
+    }
+  };
+
+  const mutation = useMutation<StoryDataIdApi, StoryErrorApi, Input>(
+    fetcherModify,
+    {
+      onSuccess,
     },
-  });
+  );
 
   return mutation;
 }

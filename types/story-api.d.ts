@@ -110,11 +110,25 @@ export interface ProfileModel {
   avatarSvg: string;
   defaultProfile: boolean;
   gender: GenderType;
+  bio?: string | null;
 }
 
-export interface TagModel {
+export interface TagSchema {
   id: number;
   name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ================== User  ================== //
+
+export interface ProfileInput {
+  nickname?: string;
+  defaultProfile?: boolean;
+  avatarSvg?: string;
+  profileUrl?: string;
+  bio?: string;
+  gender?: GenderType;
 }
 
 // ================== Login ================== //
@@ -141,7 +155,7 @@ export interface SignupInput {
 
 // =================== Story =================== //
 
-export interface MutationStoriesInput {
+export interface PublishInput {
   name: string;
   tags: string[];
   description: string;
@@ -165,7 +179,7 @@ export interface StorySchema {
   tags: TagModel[];
 }
 
-export interface History {
+export interface HistorySchema {
   id: number;
   status: string;
   to: UserModel;

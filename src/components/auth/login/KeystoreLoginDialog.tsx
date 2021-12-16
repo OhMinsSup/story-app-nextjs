@@ -14,7 +14,7 @@ import { validKeystore } from '@utils/utils';
 
 // hooks
 import useUpload from '@hooks/useUpload';
-import { schema } from '@libs/yup/schema';
+import { schema } from '@libs/validation/schema';
 
 interface KeystoreLoginDialogProps {
   visible: boolean;
@@ -61,12 +61,11 @@ const KeystoreLoginDialog: React.FC<KeystoreLoginDialogProps> = ({
   const onSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
       const input = await schema.keystore.validate(form);
-      console.log(input);
       if (!input) return;
       const keystore = await readKeystoreFile(input.file);
       console.log(keystore);
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   };
 

@@ -15,7 +15,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 // validation
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Controller, useForm } from 'react-hook-form';
-import { schema } from '@libs/yup/schema';
+import { schema } from '@libs/validation/schema';
 import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 
 // components

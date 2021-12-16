@@ -1,15 +1,20 @@
 import React, { useRef, useCallback } from 'react';
 
 // components
-import AppLayout from '@components/layouts/AppLayout';
-import StoryForm from '@components/story/form/StoryForm';
-import StoryLayout from '@components/story/common/StoryLayout';
+import AppLayout from '@components/ui/layouts/AppLayout';
+import StoryForm from '@components/publish/form/StoryForm';
+import StoryLayout from '@components/ui/layouts/StoryLayout';
+
+// contexts
+import { UploadProvider } from '@contexts/upload/context';
 
 const PublishPage = () => {
   return (
-    <StoryLayout>
-      <StoryForm />
-    </StoryLayout>
+    <UploadProvider>
+      <StoryLayout>
+        <StoryForm />
+      </StoryLayout>
+    </UploadProvider>
   );
 };
 

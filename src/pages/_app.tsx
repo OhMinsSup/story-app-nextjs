@@ -1,10 +1,7 @@
 import '@assets/main.css';
+import 'swiper/css';
 
-import 'filepond/dist/filepond.min.css';
-import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-import 'filepond-plugin-get-file/dist/filepond-plugin-get-file.min.css';
-
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import NProgress from 'nprogress';
 import { Router } from 'next/router';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -13,7 +10,7 @@ import { Hydrate } from 'react-query/hydration';
 // components
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { blueGrey, grey, red } from '@mui/material/colors';
+import { blueGrey, red, blue } from '@mui/material/colors';
 import Core from '@components/common/Core';
 
 // type
@@ -26,7 +23,7 @@ import SeoHead from '@components/common/SEO';
 const theme = createTheme({
   palette: {
     primary: {
-      main: grey[50],
+      main: blue[600],
     },
     secondary: {
       main: blueGrey[700],

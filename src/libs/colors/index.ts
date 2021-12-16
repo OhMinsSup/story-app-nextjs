@@ -8,7 +8,6 @@ export function getOpenColorHex() {
 
   let colorMap = {};
   for (const child of colorWrap.children) {
-    console.log(child);
     const colorChips = child.querySelectorAll('.color-chip');
     let color = {};
     colorChips.forEach((chip) => {

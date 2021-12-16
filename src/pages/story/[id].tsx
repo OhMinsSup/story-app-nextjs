@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { QueryClient, dehydrate } from 'react-query';
 
 // api
 import { fetcherOne, useStoryQuery } from '@api/story/story';
+import { client } from '@api/client';
 
 // common
 import { API_ENDPOINTS } from '@constants/constant';
@@ -15,7 +16,7 @@ import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 
 import Description from '@components/story/detail/Description';
-import AppLayout from '@components/layouts/AppLayout';
+import AppLayout from '@components/ui/layouts/AppLayout';
 import NavigationTopbar from '@components/story/detail/NavigationTopbar';
 import ImageViewer from '@components/story/detail/ImageViewer';
 import PostHead from '@components/story/detail/PostHead';
@@ -26,12 +27,19 @@ import type {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from 'next';
+import AnotherStories from '@components/story/detail/AnotherStories';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.query.id?.toString();
 
-  console.log('id', ctx);
   const queryClient = new QueryClient();
+  const cookie = ctx.req ? ctx.req.headers.cookie : '';
+  if (client.defaults.headers) {
+    client.defaults.headers.Cookie = '';
+    if (ctx.req && cookie) {
+      client.defaults.headers.Cookie = cookie;
+    }
+  }
 
   await queryClient.prefetchQuery(
     [API_ENDPOINTS.LOCAL.STORY.ROOT, id],
@@ -45,13 +53,25 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   };
 };
 
-function PublishDetailPage({}: InferGetServerSidePropsType<
+function StoryDetailPage({}: InferGetServerSidePropsType<
   typeof getServerSideProps
 >) {
   const router = useRouter();
   const id = router.query.id?.toString();
-  const { Alert } = useAlert();
-  const { data, isLoading, isError } = useStoryQuery(id);
+  const { showAlert, Alert } = useAlert();
+  const { data, isLoading, isError, error } = useStoryQuery(id);
+
+  useEffect(() => {
+    if (isError && error) {
+      showAlert({
+        content: {
+          text: error.response?.data.message,
+        },
+        okHandler: () => router.back(),
+        closeHandler: () => router.back(),
+      });
+    }
+  }, [isError, error]);
 
   return (
     <>
@@ -89,6 +109,7 @@ function PublishDetailPage({}: InferGetServerSidePropsType<
             </>
           )}
           <StickyHistoryTable />
+          <AnotherStories userId={data?.user.id} storyId={data?.id} />
         </Stack>
       </Container>
       <Alert />
@@ -96,6 +117,6 @@ function PublishDetailPage({}: InferGetServerSidePropsType<
   );
 }
 
-export default PublishDetailPage;
+export default StoryDetailPage;
 
-PublishDetailPage.Layout = AppLayout;
+StoryDetailPage.Layout = AppLayout;

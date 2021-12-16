@@ -8,14 +8,16 @@ import Skeleton from '@mui/material/Skeleton';
 import { blurDataUrl } from '@utils/utils';
 
 interface ImageViewerProps {
-  backgroundColor: string;
   imageUrl: string;
-  name: string;
+  backgroundColor?: string;
+  name?: string;
+  onClick?: () => void;
 }
 function ImageViewer({
   backgroundColor,
   imageUrl,
   name,
+  onClick,
 }: Partial<ImageViewerProps>) {
   return (
     <Box component="div">
@@ -29,6 +31,7 @@ function ImageViewer({
             placeholder="blur"
             blurDataURL={blurDataUrl(600, 500)}
             alt={`${name} image`}
+            onClick={onClick}
           />
         )}
       </div>

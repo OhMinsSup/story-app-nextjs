@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 // validation
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Controller, useForm } from 'react-hook-form';
-import { schema } from '@libs/yup/schema';
+import { schema } from '@libs/validation/schema';
 
 // components
 import UserProfile from '@components/common/UserProfile';

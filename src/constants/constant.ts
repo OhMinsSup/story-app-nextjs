@@ -6,6 +6,19 @@ export const PAGE_ENDPOINTS = {
   PUBLISH: {
     ROOT: '/publish/',
     DETAIL: (id: string | number) => `/publish/${id}/`,
+    MODIFY: (id: string | number) => `/publish/${id}/modify/`,
+  },
+  STORY: {
+    ROOT: '/story/',
+    DETAIL: (id: string | number) => `/story/${id}/`,
+  },
+  SEARCH: {
+    ROOT: '/search/',
+  },
+  PROFILE: {
+    ROOT: '/profile/',
+    DETAIL: (id: string | number) => `/profile/${id}/`,
+    EDIT: (id: string | number) => `/profile/${id}/edit/`,
   },
 };
 
@@ -19,15 +32,26 @@ export const API_ENDPOINTS = {
       SIGNUP: '/users/signup',
     },
     USER: {
+      ROOT: '/users',
       ME: '/users/me',
+      DETAIL: (id: string | number) => `/users/${id}`,
+      UNREGIISTER: (id: string | number) => `/users/${id}/unregister`,
     },
     FILE: {
       ROOT: '/files/upload',
+    },
+    SEARCH: {
+      ROOT: '/search',
+    },
+    TAGS: {
+      ROOT: '/tags',
     },
     STORY: {
       ROOT: '/stories',
       DETAIL: (id: string | number) => `/stories/${id}`,
       HISTORIES: (id: string | number) => `/stories/${id}/histories`,
+      ANOTHERS: (id: string | number, userId: string | number) =>
+        `/stories/${id}/anothers/${userId}`,
     },
   },
 };

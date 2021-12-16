@@ -3,7 +3,7 @@ import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
-import type { DataIdParams, History, Schema } from 'types/story-api';
+import type { DataIdParams, HistorySchema, Schema } from 'types/story-api';
 
 export const fetcherHistories = async ({
   queryKey,
@@ -17,13 +17,12 @@ export const fetcherHistories = async ({
 };
 
 export const useHistoriesQuery = (id: DataIdParams) => {
-  const { data, ...fields } = useQuery<Schema<{ list: History[] }>, Schema>(
-    [API_ENDPOINTS.LOCAL.STORY.ROOT, id, 'HISTORIES'],
-    fetcherHistories,
-    {
-      enabled: !!id,
-    },
-  );
+  const { data, ...fields } = useQuery<
+    Schema<{ list: HistorySchema[] }>,
+    Schema
+  >([API_ENDPOINTS.LOCAL.STORY.ROOT, id, 'HISTORIES'], fetcherHistories, {
+    enabled: !!id,
+  });
   return {
     data: data?.result,
     originData: data,
