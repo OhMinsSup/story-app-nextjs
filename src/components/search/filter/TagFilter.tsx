@@ -33,7 +33,7 @@ const TagFilter: React.FC = () => {
 
   const onItemClick = (e: React.SyntheticEvent<Element, Event>) => {
     const { value } = e.currentTarget as any;
-    let currentFormState = formState.includes(value)
+    const currentFormState = formState.includes(value)
       ? formState.filter((i) => i !== value)
       : [...formState, value];
     const { tags, ...restQuery } = query;

@@ -42,7 +42,7 @@ const ColorFilter = () => {
   const onItemClick = (item: Record<string, string>) => {
     const { value } = item;
     console.log(value);
-    let currentFormState = formState.includes(value)
+    const currentFormState = formState.includes(value)
       ? formState.filter((i) => i !== value)
       : [...formState, value];
 

@@ -8,16 +8,21 @@
     "node": ">=14.15.0"
   },
   "scripts": {
-    "dev": "dotenv -e .env.local next",
+    "sitemap": "node --experimental-modules scripts/sitemap.mjs",
+    "env": "node --experimental-modules scripts/env.mjs",
+    "dev": "cross-env LOAD_ENV=local yarn env && next dev",
+    "dev:debug": "cross-env LOAD_ENV=debug yarn env && next dev",
     "build": "next build",
     "start": "cross-env NODE_ENV=production DEPLOY_GROUP=development next start -p 3000",
-    "build:dev": "dotenv -e .env.development next build && next export",
-    "build:prod": "dotenv -e .env.production next build && next export",
+    "build:analyze": "cross-env LOAD_ENV=analyze yarn env && yarn build",
+    "build:dev": "cross-env LOAD_ENV=development yarn env && next build && next export",
+    "build:prod": "cross-env LOAD_ENV=production yarn env && next build && next export",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint:types": "tsc --noEmit",
+    "lint-types": "tsc --noEmit",
     "lint": "next lint",
-    "lint:fix": "yarn lint -- --fix",
-    "prettier:fix": "prettier --config .prettierrc --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "lint-fix": "next lint --fix",
+    "prettier": "prettier --list-different '**/*.{js,jsx,md,ts,tsx}'",
+    "prettier-fix": "prettier --write '**/*.{js,jsx,md,ts,tsx}'",
     "prepare": "husky install"
   },
   "repository": {
@@ -79,21 +84,28 @@
     "@types/react-virtualized": "^9.21.15",
     "@types/ua-parser-js": "^0.7.36",
     "@types/yup": "^0.29.13",
-    "dotenv-cli": "^4.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "dotenv": "^10.0.0",
     "eslint": "7.32.0",
     "eslint-config-next": "11.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "globby": "^12.0.2",
     "husky": "^7.0.1",
     "lint-staged": "^11.1.1",
     "postcss": "^8.4.5",
     "prettier": "^2.3.2",
+    "shelljs": "^0.8.4",
     "typescript": "^4.5.4"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "yarn prettier:fix"
+    "*.{js,jsx,ts,tsx}": [
+      "yarn prettier-fix"
     ],
-    "*.{md,json,yml}": [
-      "prettier --write"
-    ]
+    "*.{js,jsx,ts,tsx,md}": "prettier --write"
   }
 }

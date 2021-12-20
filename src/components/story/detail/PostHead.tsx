@@ -9,13 +9,13 @@ import Skeleton from '@mui/material/Skeleton';
 // utils
 import { formatDiffText } from '@libs/date/date';
 
-import type { TagModel } from 'types/story-api';
+import type { TagSchema } from 'types/story-api';
 
 interface PostHeadProps {
   title: string;
   backgroundColor: string;
   createdAt: string | number;
-  tags: TagModel[];
+  tags: TagSchema[];
 }
 function PostHead({
   title,

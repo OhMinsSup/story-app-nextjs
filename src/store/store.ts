@@ -1,7 +1,6 @@
 import { useLayoutEffect } from 'react';
 import create from 'zustand';
 import createContext from 'zustand/context';
-import { userInfo } from '@utils/utils';
 
 import type { UserModel } from 'types/story-api';
 import type { SetState, UseBoundStore, StoreApi } from 'zustand';
