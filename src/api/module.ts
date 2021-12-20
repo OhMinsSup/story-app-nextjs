@@ -121,11 +121,10 @@ class APIMoudle {
           }),
           'Content-Type': 'multipart/form-data',
         },
-        onUploadProgress: (progressEvent) => {
-          const { loaded, total } = progressEvent;
-          const percent = Math.floor((loaded * 100) / total);
-          console.log(percent);
-        },
+        // onUploadProgress: (progressEvent) => {
+        //   const { loaded, total } = progressEvent;
+        //   const percent = Math.floor((loaded * 100) / total);
+        // },
       },
     );
     return result;

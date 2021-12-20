@@ -13,7 +13,7 @@ import Button from '@mui/material/Button';
 import { getColorHex } from '@libs/colors';
 import { getUniqueFilter } from '@utils/utils';
 
-const colors = getColorHex();
+const colors = getColorHex().sort(() => Math.random() - 0.5);
 
 const LocalColorPagination: Record<string, Record<string, string>[]> = {};
 colors.forEach((item, index) => {
@@ -41,7 +41,6 @@ const ColorFilter = () => {
 
   const onItemClick = (item: Record<string, string>) => {
     const { value } = item;
-    console.log(value);
     const currentFormState = formState.includes(value)
       ? formState.filter((i) => i !== value)
       : [...formState, value];
