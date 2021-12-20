@@ -4,7 +4,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
-// const fs = require('fs')
 const IS_PROD = process.env.NODE_ENV === 'production';
 
 // const DEPLOYED_ADDRESS = JSON.stringify(fs.readFileSync('deployedAddress', 'utf8').replace(/\n|\r/g, "")),
@@ -52,10 +51,6 @@ const nextConfig = {
       config.watchOptions.poll = 1000;
       config.watchOptions.aggregateTimeout = 300;
     }
-
-    // if (!isServer) {
-    //   config.resolve.fallback.fs = false;
-    // }
 
     return {
       ...config,
