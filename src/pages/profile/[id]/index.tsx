@@ -32,9 +32,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const queryClient = new QueryClient();
   const cookie = ctx.req ? ctx.req.headers.cookie : '';
   if (client.defaults.headers) {
-    client.defaults.headers.Cookie = '';
+    (client.defaults.headers as any).Cookie = '';
     if (ctx.req && cookie) {
-      client.defaults.headers.Cookie = cookie;
+      (client.defaults.headers as any).Cookie = cookie;
     }
   }
 

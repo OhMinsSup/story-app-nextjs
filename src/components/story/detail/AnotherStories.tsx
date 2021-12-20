@@ -19,7 +19,6 @@ interface AnotherStoriesProps {
 }
 const AnotherStories: React.FC<AnotherStoriesProps> = ({ storyId, userId }) => {
   const { data } = useAnothersQuery(storyId, userId);
-  console.log(data);
   return (
     <Stack spacing={1}>
       <Typography variant="h5" gutterBottom className="font-bold">

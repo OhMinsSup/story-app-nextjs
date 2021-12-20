@@ -4,7 +4,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
-// const fs = require('fs')
 const IS_PROD = process.env.NODE_ENV === 'production';
 
 // const DEPLOYED_ADDRESS = JSON.stringify(fs.readFileSync('deployedAddress', 'utf8').replace(/\n|\r/g, "")),
@@ -32,6 +31,29 @@ const nextConfig = {
   // * 주소 뒤에 슬래시를 붙일지 여부입니다.
   trailingSlash: true,
 
+  async headers() {
+    return [
+      {
+        // Apply these headers to all routes in your application.
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
+
   images: {
     domains: ['res.cloudinary.com'], // 외부 웹사이트 이미지인경우, 이미지 src 의 도메인을 옵션에 명시
     formats: ['image/avif', 'image/webp'],
@@ -52,10 +74,6 @@ const nextConfig = {
       config.watchOptions.poll = 1000;
       config.watchOptions.aggregateTimeout = 300;
     }
-
-    // if (!isServer) {
-    //   config.resolve.fallback.fs = false;
-    // }
 
     return {
       ...config,
