@@ -10,7 +10,7 @@ import Skeleton from '@mui/material/Skeleton';
 
 import { getUserThumbnail, blurDataUrl } from '@utils/utils';
 
-import type { StorySchema } from 'types/story-api';
+import type { StorySchema } from '@api/schema/story-api';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 
 interface StoriesGridProps {

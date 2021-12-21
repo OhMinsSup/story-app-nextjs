@@ -8,7 +8,7 @@ import { API_ENDPOINTS, STATUS_CODE } from '@constants/constant';
 import { isAxiosError } from '@utils/utils';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
-import type { Schema, StoryErrorApi, UserModel } from 'types/story-api';
+import type { Schema, StoryErrorApi, UserModel } from '@api/schema/story-api';
 
 export const fetcherOne = async ({
   queryKey,

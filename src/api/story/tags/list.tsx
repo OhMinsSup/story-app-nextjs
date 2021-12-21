@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from '@constants/constant';
 import { makeQueryString } from '@utils/utils';
 
 import type { QueryFunctionContext, EnsuredQueryKey } from 'react-query';
-import type { ListSchema, TagSchema } from 'types/story-api';
+import type { ListSchema, TagSchema } from '@api/schema/story-api';
 
 const SIZE = 10;
 

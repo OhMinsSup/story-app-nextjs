@@ -6,7 +6,11 @@ import { api } from '@api/module';
 // contatns
 import { API_ENDPOINTS } from '@constants/constant';
 
-import type { SignupInput, StoryApi, StoryErrorApi } from 'types/story-api';
+import type {
+  SignupInput,
+  StoryApi,
+  StoryErrorApi,
+} from '@api/schema/story-api';
 
 const fetcherSignup = (input: SignupInput) =>
   api.postResponse({

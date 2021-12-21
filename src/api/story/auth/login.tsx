@@ -16,7 +16,7 @@ import type {
   LoginSchema,
   StoryErrorApi,
   StoryApi,
-} from 'types/story-api';
+} from '@api/schema/story-api';
 
 const fetcherLogin = (input: LoginInput) =>
   api.postResponse({

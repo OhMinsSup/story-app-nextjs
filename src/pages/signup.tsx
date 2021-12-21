@@ -31,10 +31,10 @@ import { useMutationSignUp } from '@api/story/auth';
 import { generateKey, isAxiosError } from '@utils/utils';
 import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 
-import { GenderEnum } from 'types/enum';
+import { GenderEnum } from '@api/schema/enum';
 
 import type { SubmitHandler } from 'react-hook-form';
-import type { GenderType } from 'types/story-api';
+import type { GenderType } from '@api/schema/story-api';
 
 const KeystoreLoginDialog = dynamic(
   () => import('@components/auth/login/KeystoreLoginDialog'),

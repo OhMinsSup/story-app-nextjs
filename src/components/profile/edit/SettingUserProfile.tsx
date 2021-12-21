@@ -11,8 +11,8 @@ import { useRouter } from 'next/router';
 
 import { api } from '@api/module';
 
-import { StoryUploadTypeEnum } from 'types/enum';
-import type { ProfileModel } from 'types/story-api';
+import { StoryUploadTypeEnum } from '@api/schema/enum';
+import type { ProfileModel } from '@api/schema/story-api';
 
 interface SettingUserProfileProps {
   profile?: ProfileModel;

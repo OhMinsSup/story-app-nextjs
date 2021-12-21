@@ -12,7 +12,7 @@ import type {
   PublishInput,
   StoryDataIdApi,
   StoryErrorApi,
-} from 'types/story-api';
+} from '@api/schema/story-api';
 
 export type Input = PublishInput & {
   dataId: DataIdParams;

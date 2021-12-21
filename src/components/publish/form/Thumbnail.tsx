@@ -14,7 +14,7 @@ import { useFormContext } from 'react-hook-form';
 import { api } from '@api/module';
 
 // types
-import { StoryUploadTypeEnum } from 'types/enum';
+import { StoryUploadTypeEnum } from '@api/schema/enum';
 
 interface ThumbnailModifyProps {
   visible: boolean;

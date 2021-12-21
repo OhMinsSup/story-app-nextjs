@@ -15,7 +15,7 @@ import Snackbar from '@mui/material/Snackbar';
 import { getShortAddress, getUserThumbnail } from '@utils/utils';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 
-import type { UserModel } from 'types/story-api';
+import type { UserModel } from '@api/schema/story-api';
 
 interface ProfileMastheadProps {
   userInfo?: UserModel;

@@ -24,7 +24,7 @@ import AuthLayout from '@components/auth/common/AuthLayout';
 // api
 import { useMutationLogin } from '@api/story/auth';
 
-import type { LoginInput } from 'types/story-api';
+import type { LoginInput } from '@api/schema/story-api';
 import type { SubmitHandler } from 'react-hook-form';
 
 const initialState = {

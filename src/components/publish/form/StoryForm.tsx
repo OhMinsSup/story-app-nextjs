@@ -28,15 +28,14 @@ import {
 
 // common
 import { isAxiosError, generateKey } from '@utils/utils';
-import {
-  API_ENDPOINTS,
-  PAGE_ENDPOINTS,
-  RESULT_CODE,
-  STATUS_CODE,
-} from '@constants/constant';
+import { PAGE_ENDPOINTS, RESULT_CODE, STATUS_CODE } from '@constants/constant';
 
 // types
-import type { FileModel, PublishInput, StorySchema } from 'types/story-api';
+import type {
+  FileModel,
+  PublishInput,
+  StorySchema,
+} from '@api/schema/story-api';
 import type { SubmitHandler } from 'react-hook-form';
 
 interface Tag {
@@ -55,13 +54,15 @@ interface FormFieldValues {
 const serialize = (
   input: FormFieldValues & { dataId?: number },
 ): PublishInput => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { media, tags, externalUrl, ...field } = input;
+  const safeMediaId = input.media?.idx as number;
 
   return {
     ...field,
     externalUrl: externalUrl || null,
     isPrivate: false,
-    mediaId: input.media?.idx!,
+    mediaId: safeMediaId,
     tags: input.tags.map((tag) => tag.name),
   };
 };

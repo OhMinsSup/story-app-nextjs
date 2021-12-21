@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react';
 import create from 'zustand';
 import createContext from 'zustand/context';
 
-import type { UserModel } from 'types/story-api';
+import type { UserModel } from '@api/schema/story-api';
 import type { SetState, UseBoundStore, StoreApi } from 'zustand';
 
 export interface Actions {

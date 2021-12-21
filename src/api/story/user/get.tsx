@@ -8,7 +8,7 @@ import type {
   UserModel,
   Schema,
   StoryErrorApi,
-} from 'types/story-api';
+} from '@api/schema/story-api';
 
 export const fetcherProfile = async ({
   queryKey,

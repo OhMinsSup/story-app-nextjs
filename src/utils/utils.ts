@@ -3,7 +3,7 @@ import qs from 'qs';
 
 import type { MutableRefObject } from 'react';
 import type { AxiosError } from 'axios';
-import type { Schema } from 'types/story-api';
+import type { Schema } from '@api/schema/story-api';
 import { COLORS } from '@libs/colors/constants';
 
 const multiavatar = require('@multiavatar/multiavatar');

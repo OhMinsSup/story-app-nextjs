@@ -3,7 +3,7 @@ import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
-import type { DataIdParams, StorySchema, Schema } from 'types/story-api';
+import type { DataIdParams, StorySchema, Schema } from '@api/schema/story-api';
 
 export const fetcherAnothers = async ({
   queryKey,

@@ -8,7 +8,7 @@ import type {
   Schema,
   StoryErrorApi,
   StorySchema,
-} from 'types/story-api';
+} from '@api/schema/story-api';
 
 export const fetcherOne = async ({
   queryKey,
