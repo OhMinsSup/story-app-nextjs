@@ -9,6 +9,7 @@ import AppLayout from '@components/ui/layouts/AppLayout';
 import Container from '@components/search/common/Container';
 import FilterBox from '@components/search/filter/FilterBox';
 import StoriesGridItem from '@components/common/StoriesGridItem';
+import SortingSelect from '@components/search/filter/SortingSelect';
 
 import { useSearchQuery } from '@api/story/search';
 import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
@@ -24,6 +25,8 @@ const SearchPage = () => {
   const { data, fetchNextPage, hasNextPage } = useSearchQuery({
     tags: parsedQuery?.tags ?? [],
     backgrounds: parsedQuery?.color ?? [],
+    orderType: parsedQuery?.orderType ?? 'createdAt',
+    orderBy: parsedQuery?.orderBy ?? 'desc',
   });
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -45,6 +48,7 @@ const SearchPage = () => {
           </div>
 
           <Box sx={{ width: '100%' }} className="space-y-5 px-8">
+            <SortingSelect />
             <Grid container spacing={1}>
               {data?.pages.map((item, i) => (
                 <React.Fragment key={i}>

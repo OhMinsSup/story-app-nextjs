@@ -31,6 +31,8 @@ export interface SearchParams {
   pageSize: number;
   backgrounds?: string[];
   tags?: string[];
+  orderBy?: string;
+  orderType?: string;
 }
 
 export function useSearchQuery(
