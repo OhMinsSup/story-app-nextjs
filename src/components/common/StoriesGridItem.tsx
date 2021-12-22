@@ -86,7 +86,7 @@ function StoriesGridItem({ item }: StoriesGridProps) {
             </Link>
             <div className="flex justify-center items-center">
               <FavoriteIcon className="w-3 h-3 mr-1" />
-              <span>0</span>
+              <span>{item?.likes.length}</span>
             </div>
           </div>
         </a>
