@@ -8,7 +8,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Theme, useTheme } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 
-const ITEM_HEIGHT = 48;
+const ITEM_HEIGHT = 30;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
   PaperProps: {
@@ -109,7 +109,7 @@ const SortingSelect = () => {
   }, [query]);
 
   return (
-    <FormControl sx={{ width: 300, float: 'right' }}>
+    <FormControl sx={{ width: 100, float: 'right' }}>
       <Select
         displayEmpty
         value={sorting.value}
