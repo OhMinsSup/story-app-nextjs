@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { QueryClient, dehydrate } from 'react-query';
 
 // api
-import { fetcherOne, useStoryQuery } from '@api/story/story';
+import { fetcherOne, useMutationLike, useStoryQuery } from '@api/story/story';
 import { client } from '@api/client';
 
 // common
@@ -14,6 +14,9 @@ import { useAlert } from '@hooks/useAlert';
 
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import Typography from '@mui/material/Typography';
 
 import Description from '@components/story/detail/Description';
 import AppLayout from '@components/ui/layouts/AppLayout';
@@ -28,6 +31,7 @@ import type {
   InferGetServerSidePropsType,
 } from 'next';
 import AnotherStories from '@components/story/detail/AnotherStories';
+import { useStore } from '@store/store';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.query.id?.toString();
@@ -59,7 +63,12 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
   const router = useRouter();
   const id = router.query.id?.toString();
   const { showAlert, Alert } = useAlert();
+
+  const userInfo = useStore((store) => store.userInfo);
   const { data, isLoading, isError, error } = useStoryQuery(id);
+  const mutate = useMutationLike();
+
+  const isLike = !!data?.likes.find((like) => like.userId === userInfo?.id);
 
   useEffect(() => {
     if (isError && error) {
@@ -71,7 +80,25 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
         closeHandler: () => router.back(),
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isError, error]);
+
+  const onClickLike = async () => {
+    if (!id) return;
+    const dataId = id;
+
+    if (isLike) {
+      await mutate.mutateAsync({
+        dataId,
+        action: 'unlike',
+      });
+    } else {
+      await mutate.mutateAsync({
+        dataId,
+        action: 'like',
+      });
+    }
+  };
 
   return (
     <>
@@ -101,6 +128,19 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
                 imageUrl={data?.media.contentUrl}
                 name={data?.name}
               />
+              <Stack direction="row-reverse" spacing={1}>
+                <IconButton
+                  aria-label="favorite-border"
+                  color={isLike ? 'error' : 'secondary'}
+                  className="space-x-2"
+                  onClick={onClickLike}
+                >
+                  <FavoriteBorderIcon />
+                  <Typography variant="subtitle1">
+                    {data?.likes.length}
+                  </Typography>
+                </IconButton>
+              </Stack>
               <OwnerUser
                 creatorProfile={data?.user.profile}
                 ownerProfile={data?.owner.profile}

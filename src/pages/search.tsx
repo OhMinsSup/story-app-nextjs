@@ -47,7 +47,7 @@ const SearchPage = () => {
             </StickyBox>
           </div>
 
-          <Box sx={{ width: '100%' }} className="space-y-5 px-8">
+          <Box sx={{ width: '100%' }} className="space-y-5 md:pl-8">
             <SortingSelect />
             <Grid container spacing={1}>
               {data?.pages.map((item, i) => (

@@ -5,3 +5,4 @@ export * from './get';
 export * from './histories';
 export * from './list';
 export * from './anothers';
+export * from './likes';

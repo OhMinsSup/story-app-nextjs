@@ -28,6 +28,7 @@ export const ZustandProvider = zustandContext.Provider;
 export const useStore = zustandContext.useStore;
 
 export const initializeStore = (preloadedState = {} as State) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return create<State>((set: SetState<State>, get: SetState<State>) => {
     const actions: Actions = {
       setAuth: (userInfo: UserModel | null) =>

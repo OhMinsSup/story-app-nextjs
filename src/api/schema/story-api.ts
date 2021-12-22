@@ -174,6 +174,7 @@ export interface StorySchema {
   createdAt: string;
   updatedAt: string;
   media: MediaModel;
+  likes: { userId: number }[];
   user: UserModel;
   owner: UserModel;
   tags: TagSchema[];
