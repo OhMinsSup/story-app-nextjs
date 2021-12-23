@@ -65,9 +65,12 @@ function ProfilePage({}: InferGetServerSidePropsType<
 
   const { data, isError, error } = useUserProfileQuery(id);
 
-  const [value, setValue] = React.useState('story');
+  const [value, setValue] = React.useState<'story' | 'likes'>('story');
 
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleChange = (
+    event: React.SyntheticEvent,
+    newValue: 'story' | 'likes',
+  ) => {
     setValue(newValue);
   };
 
@@ -96,14 +99,16 @@ function ProfilePage({}: InferGetServerSidePropsType<
                 onChange={handleChange}
                 textColor="primary"
                 indicatorColor="primary"
-                aria-label="lab API tabs example"
+                aria-label="story tabs"
               >
                 <Tab label="나의 Story" wrapped value="story" />
+                <Tab label="좋아한 Story" wrapped value="likes" />
               </Tabs>
             </Box>
             <TabPanel value="story">
               <UserStoriesTabList />
             </TabPanel>
+            <TabPanel value="likes">likes</TabPanel>
           </TabContext>
         </div>
       </div>
