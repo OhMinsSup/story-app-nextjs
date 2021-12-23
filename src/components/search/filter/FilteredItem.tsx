@@ -12,7 +12,8 @@ const FilteredItem: React.FC<FilteredItemProps> = ({ itemKey, itemValue }) => {
   const { pathname, query } = router;
 
   const onClose = () => {
-    const currentItem = (query[itemKey]! as string)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const currentItem = (query[itemKey] as string)
       .split(',')
       .filter((i) => i !== itemValue);
     delete query[itemKey];

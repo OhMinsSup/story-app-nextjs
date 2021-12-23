@@ -8,7 +8,7 @@ import omit from 'lodash-es/omit';
 const FilterBox: React.FC = () => {
   const router = useRouter();
   const { pathname, query: q } = router;
-  const query = omit(q, ['orderBy', 'orderType']);
+  const query = omit(q, ['orderBy', 'orderType', 'open']);
 
   return (
     <div className="pt-1">

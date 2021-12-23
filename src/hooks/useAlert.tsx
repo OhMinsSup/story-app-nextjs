@@ -26,13 +26,16 @@ interface AlertOptions {
   showCancel?: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {};
+
 const defaultOptions: AlertOptions = {
   key: 0,
   content: {},
   customComponent: undefined,
-  okHandler: () => {},
-  cancelHandler: () => {},
-  closeHandler: () => {},
+  okHandler: noop,
+  cancelHandler: noop,
+  closeHandler: noop,
   showCancel: false,
 };
 
