@@ -12,7 +12,7 @@ import type {
   Params,
   FileUploadParams,
   StoryUploadApi,
-} from 'types/story-api';
+} from '@api/schema/story-api';
 
 class APIMoudle {
   withCredentials: boolean;

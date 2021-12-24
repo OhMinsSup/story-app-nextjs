@@ -3,10 +3,12 @@ import isEmpty from 'lodash-es/isEmpty';
 import FilteredItem from './FilteredItem';
 import TagFilter from './TagFilter';
 import ColorFilter from './ColorFilter';
+import omit from 'lodash-es/omit';
 
 const FilterBox: React.FC = () => {
   const router = useRouter();
-  const { pathname, query } = router;
+  const { pathname, query: q } = router;
+  const query = omit(q, ['orderBy', 'orderType', 'open']);
 
   return (
     <div className="pt-1">
@@ -33,6 +35,7 @@ const FilterBox: React.FC = () => {
               .map((v, idx) => (
                 <FilteredItem
                   itemKey={
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     Object.keys(query).find((k) => query[k]?.includes(v))!
                   }
                   itemValue={v}

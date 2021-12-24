@@ -11,7 +11,7 @@ import type {
   PublishInput,
   StoryDataIdApi,
   StoryErrorApi,
-} from 'types/story-api';
+} from '@api/schema/story-api';
 
 export function useMutationStoryRegister() {
   const queryClient = useQueryClient();

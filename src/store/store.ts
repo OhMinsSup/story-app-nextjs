@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react';
 import create from 'zustand';
 import createContext from 'zustand/context';
 
-import type { UserModel } from 'types/story-api';
+import type { UserModel } from '@api/schema/story-api';
 import type { SetState, UseBoundStore, StoreApi } from 'zustand';
 
 export interface Actions {
@@ -28,6 +28,7 @@ export const ZustandProvider = zustandContext.Provider;
 export const useStore = zustandContext.useStore;
 
 export const initializeStore = (preloadedState = {} as State) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return create<State>((set: SetState<State>, get: SetState<State>) => {
     const actions: Actions = {
       setAuth: (userInfo: UserModel | null) =>

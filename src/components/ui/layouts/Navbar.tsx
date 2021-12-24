@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import shallow from 'zustand/shallow';
@@ -26,7 +26,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useStore } from '@store/store';
 
 // utils
-import { blueGrey } from '@mui/material/colors';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 import { getUserThumbnail } from '@utils/utils';
 
@@ -151,7 +150,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { md: 'flex' } }}>
             <div
-              className="inline-block mx-3 align-middle p-2 space-x-5"
+              className="inline-block align-middle space-x-5"
               suppressHydrationWarning
             >
               {userInfo ? (

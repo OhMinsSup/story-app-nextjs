@@ -36,7 +36,7 @@ const theme = createTheme({
 
 const Noop: React.FC = ({ children }) => <>{children}</>;
 
-const start = (url: string) => {
+const start = () => {
   NProgress.start();
 };
 

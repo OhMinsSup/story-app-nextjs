@@ -10,7 +10,7 @@ import type {
   QueryKey,
   EnsuredQueryKey,
 } from 'react-query';
-import type { ListSchema, StorySchema } from 'types/story-api';
+import type { ListSchema, StorySchema } from '@api/schema/story-api';
 
 const SIZE = 10;
 

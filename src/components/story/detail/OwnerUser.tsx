@@ -12,7 +12,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { getUserThumbnail } from '@utils/utils';
 
 // types
-import type { ProfileModel } from 'types/story-api';
+import type { ProfileModel } from '@api/schema/story-api';
 
 interface OwnerUserProps {
   ownerProfile: ProfileModel;

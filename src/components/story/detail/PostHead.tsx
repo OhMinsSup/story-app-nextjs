@@ -9,7 +9,7 @@ import Skeleton from '@mui/material/Skeleton';
 // utils
 import { formatDiffText } from '@libs/date/date';
 
-import type { TagSchema } from 'types/story-api';
+import type { TagSchema } from '@api/schema/story-api';
 
 interface PostHeadProps {
   title: string;

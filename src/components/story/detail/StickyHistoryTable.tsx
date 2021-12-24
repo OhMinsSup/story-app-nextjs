@@ -14,7 +14,7 @@ import Stack from '@mui/material/Stack';
 
 import { useHistoriesQuery } from '@api/story/story';
 
-import type { UserModel } from 'types/story-api';
+import type { UserModel } from '@api/schema/story-api';
 import { getUserThumbnail } from '@utils/utils';
 import { Avatar } from '@mui/material';
 

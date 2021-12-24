@@ -17,7 +17,7 @@ export type StoryUploadType =
 
 // ================== File ================== //
 
-interface FileModel {
+export interface FileModel {
   idx: number;
   name?: string;
   contentUrl: string;
@@ -174,9 +174,10 @@ export interface StorySchema {
   createdAt: string;
   updatedAt: string;
   media: MediaModel;
+  likes: { userId: number }[];
   user: UserModel;
   owner: UserModel;
-  tags: TagModel[];
+  tags: TagSchema[];
 }
 
 export interface HistorySchema {

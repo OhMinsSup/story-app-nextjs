@@ -7,7 +7,11 @@ import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 
 // types
-import type { DataIdParams, StoryApi, StoryErrorApi } from 'types/story-api';
+import type {
+  DataIdParams,
+  StoryApi,
+  StoryErrorApi,
+} from '@api/schema/story-api';
 
 export function useMutationUnRegister() {
   const fetcherUnRegister = (dataId: DataIdParams) => {

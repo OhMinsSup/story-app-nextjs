@@ -15,7 +15,7 @@ import ActionMenu from '@components/story/common/ActionMenu';
 import { useStore } from '@store/store';
 
 // types
-import type { UserModel } from 'types/story-api';
+import type { UserModel } from '@api/schema/story-api';
 
 interface NavigationTopbarProps {
   creatorUser?: UserModel;

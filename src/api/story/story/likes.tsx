@@ -9,25 +9,40 @@ import { API_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 // types
 import type {
   DataIdParams,
-  PublishInput,
   StoryDataIdApi,
   StoryErrorApi,
 } from '@api/schema/story-api';
 
-export type Input = PublishInput & {
-  dataId: DataIdParams;
+const fetcherUnlike = (dataId: DataIdParams) => {
+  const id = dataId ?? '';
+  return api.deleteResponse({
+    url: API_ENDPOINTS.LOCAL.STORY.LIKE(id),
+  });
 };
 
-export function useMutationStoryModifiy() {
-  const queryClient = useQueryClient();
+const fetcherLike = (dataId: DataIdParams) => {
+  const id = dataId ?? '';
+  return api.postResponse({
+    url: API_ENDPOINTS.LOCAL.STORY.LIKE(id),
+    body: {},
+  });
+};
 
-  const fetcherModify = (input: Input) => {
-    const id = input.dataId ?? '';
-    return api.putResponse({
-      url: API_ENDPOINTS.LOCAL.STORY.DETAIL(id),
-      body: input,
-    });
-  };
+type Input = {
+  dataId: DataIdParams;
+  action: 'like' | 'unlike';
+};
+
+const fetcherAction = (input: Input) => {
+  const { action, dataId } = input;
+  if (action === 'like') {
+    return fetcherLike(dataId);
+  }
+  return fetcherUnlike(dataId);
+};
+
+export function useMutationLike() {
+  const queryClient = useQueryClient();
 
   const onSuccess = async (data: StoryDataIdApi, variables: Input) => {
     const {
@@ -42,7 +57,7 @@ export function useMutationStoryModifiy() {
   };
 
   const mutation = useMutation<StoryDataIdApi, StoryErrorApi, Input>(
-    fetcherModify,
+    fetcherAction,
     {
       onSuccess,
     },

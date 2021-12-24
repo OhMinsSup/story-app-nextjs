@@ -3,7 +3,11 @@ import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
-import type { DataIdParams, HistorySchema, Schema } from 'types/story-api';
+import type {
+  DataIdParams,
+  HistorySchema,
+  Schema,
+} from '@api/schema/story-api';
 
 export const fetcherHistories = async ({
   queryKey,

@@ -8,11 +8,12 @@ import type {
   Schema,
   StoryErrorApi,
   StorySchema,
-} from 'types/story-api';
+} from '@api/schema/story-api';
 
 export const fetcherOne = async ({
   queryKey,
 }: QueryFunctionContext<QueryKey, any>) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_key, _params] = queryKey;
   const id = _params as string | number;
   const response = await api.getResponse({

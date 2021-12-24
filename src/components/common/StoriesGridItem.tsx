@@ -10,7 +10,7 @@ import Skeleton from '@mui/material/Skeleton';
 
 import { getUserThumbnail, blurDataUrl } from '@utils/utils';
 
-import type { StorySchema } from 'types/story-api';
+import type { StorySchema } from '@api/schema/story-api';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 
 interface StoriesGridProps {
@@ -86,7 +86,7 @@ function StoriesGridItem({ item }: StoriesGridProps) {
             </Link>
             <div className="flex justify-center items-center">
               <FavoriteIcon className="w-3 h-3 mr-1" />
-              <span>0</span>
+              <span>{item?.likes.length}</span>
             </div>
           </div>
         </a>

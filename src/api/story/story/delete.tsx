@@ -12,7 +12,7 @@ import type {
   StoryApi,
   StoryDataIdApi,
   StoryErrorApi,
-} from 'types/story-api';
+} from '@api/schema/story-api';
 
 export function useMutationStoryDelete() {
   const queryClient = useQueryClient();

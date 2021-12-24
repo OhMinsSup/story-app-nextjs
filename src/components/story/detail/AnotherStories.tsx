@@ -11,7 +11,7 @@ import StoriesGridItem from '@components/common/StoriesGridItem';
 
 import { useAnothersQuery } from '@api/story/story';
 
-import type { DataIdParams } from 'types/story-api';
+import type { DataIdParams } from '@api/schema/story-api';
 
 interface AnotherStoriesProps {
   userId: DataIdParams;

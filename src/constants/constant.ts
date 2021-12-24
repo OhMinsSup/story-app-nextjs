@@ -52,6 +52,7 @@ export const API_ENDPOINTS = {
       HISTORIES: (id: string | number) => `/stories/${id}/histories`,
       ANOTHERS: (id: string | number, userId: string | number) =>
         `/stories/${id}/anothers/${userId}`,
+      LIKE: (id: string | number) => `/stories/${id}/like`,
     },
   },
 };
