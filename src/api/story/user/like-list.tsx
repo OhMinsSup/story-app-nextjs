@@ -6,11 +6,15 @@ import { API_ENDPOINTS } from '@constants/constant';
 import { makeQueryString } from '@utils/utils';
 
 import type { QueryFunctionContext, EnsuredQueryKey } from 'react-query';
-import type { ListSchema, StorySchema } from '@api/schema/story-api';
+import type {
+  DataIdParams,
+  ListSchema,
+  StorySchema,
+} from '@api/schema/story-api';
 
 const SIZE = 25;
 
-export const fetcherStories = async ({
+export const fetcherStoryLikes = async ({
   queryKey,
   pageParam,
 }: QueryFunctionContext<EnsuredQueryKey<any>, any>) => {
@@ -22,23 +26,23 @@ export const fetcherStories = async ({
     ...safeParams,
   });
   const response = await api.getResponse<ListSchema<StorySchema>>({
-    url: `${API_ENDPOINTS.LOCAL.STORY.ROOT}${query}`,
+    url: `${_key}${query}`,
   });
   return response.data.result;
 };
 
 export interface SearchParams {
   pageSize: number;
-  isPrivate: boolean;
-  userId: number;
 }
 
-export function useStoriesQuery(
+export function useStoryLikesQuery(
+  id: DataIdParams,
   params: Partial<SearchParams> = {},
   enabled = true,
 ) {
   const getKey = () => {
-    const keys: EnsuredQueryKey<any> = [API_ENDPOINTS.LOCAL.STORY.ROOT];
+    if (!id) return null;
+    const keys: EnsuredQueryKey<any> = [API_ENDPOINTS.LOCAL.USER.LIKES(id)];
     if (isEmpty(params)) {
       return keys;
     }
@@ -46,10 +50,10 @@ export function useStoriesQuery(
     return keys;
   };
 
-  return useInfiniteQuery(getKey(), fetcherStories, {
+  return useInfiniteQuery(getKey(), fetcherStoryLikes, {
     retry: false,
-    enabled,
-    getNextPageParam: (lastPage, allPages) => {
+    enabled: enabled && !!id,
+    getNextPageParam: (lastPage) => {
       const { total, pageNo } = lastPage;
       const size = params?.pageSize ?? SIZE;
       return pageNo + 1 <= Math.ceil(total / size) ? pageNo + 1 : null;

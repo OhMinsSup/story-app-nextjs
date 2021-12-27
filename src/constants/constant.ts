@@ -36,6 +36,7 @@ export const API_ENDPOINTS = {
       ME: '/users/me',
       DETAIL: (id: string | number) => `/users/${id}`,
       UNREGIISTER: (id: string | number) => `/users/${id}/unregister`,
+      LIKES: (id: string | number) => `/users/${id}/likes/stories`,
     },
     FILE: {
       ROOT: '/files/upload',
