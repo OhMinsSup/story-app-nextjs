@@ -6,6 +6,7 @@ import type { AxiosError } from 'axios';
 import type { Schema } from '@api/schema/story-api';
 import { COLORS } from '@libs/colors/constants';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const multiavatar = require('@multiavatar/multiavatar');
 
 export type BasicTarget<T = HTMLElement> =
@@ -145,3 +146,13 @@ export const getUniqueFilter = (
     iters.reduce((map, obj) => map.set(obj[key], obj), new Map()).values(),
   );
 };
+
+export function canUseDOM(): boolean {
+  return !!(
+    typeof window !== 'undefined' &&
+    window.document &&
+    window.document.createElement
+  );
+}
+
+export const isBrowser = canUseDOM();

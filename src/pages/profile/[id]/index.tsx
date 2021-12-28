@@ -20,6 +20,7 @@ import { API_ENDPOINTS } from '@constants/constant';
 import AppLayout from '@components/ui/layouts/AppLayout';
 import ProfileMasthead from '@components/profile/detail/ProfileMasthead';
 import UserStoriesTabList from '@components/profile/detail/UserStoriesTabList';
+import UserStoriesLikesTabList from '@components/profile/detail/UserStoriesLikesTabList';
 
 import type {
   GetServerSidePropsContext,
@@ -108,7 +109,9 @@ function ProfilePage({}: InferGetServerSidePropsType<
             <TabPanel value="story">
               <UserStoriesTabList />
             </TabPanel>
-            <TabPanel value="likes">likes</TabPanel>
+            <TabPanel value="likes">
+              <UserStoriesLikesTabList />
+            </TabPanel>
           </TabContext>
         </div>
       </div>

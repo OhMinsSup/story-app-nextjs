@@ -7,22 +7,15 @@ import StoriesGridItem from '@components/common/StoriesGridItem';
 
 // hooks
 import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
-import { useStoriesQuery } from '@api/story/story';
+import { useStoryLikesQuery } from '@api/story/user';
 import { useRouter } from 'next/router';
 
-interface UserStoriesTabListProps {}
-const UserStoriesTabList: React.FC<UserStoriesTabListProps> = () => {
+interface UserStoriesLikesTabListProps {}
+const UserStoriesLikesTabList: React.FC<UserStoriesLikesTabListProps> = () => {
   const router = useRouter();
   const id = router.query.id?.toString();
 
-  const { data, fetchNextPage, hasNextPage } = useStoriesQuery(
-    {
-      ...(id && {
-        userId: parseInt(id, 10),
-      }),
-    },
-    !!id,
-  );
+  const { data, fetchNextPage, hasNextPage } = useStoryLikesQuery(id);
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -38,14 +31,7 @@ const UserStoriesTabList: React.FC<UserStoriesTabListProps> = () => {
         {data?.pages.map((item, i) => (
           <React.Fragment key={i}>
             {item.list.map((story) => (
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
-                lg={3}
-                key={`default-${story.id}`}
-              >
+              <Grid item xs={12} sm={6} md={4} lg={3} key={`likes-${story.id}`}>
                 <StoriesGridItem item={story} />
               </Grid>
             ))}
@@ -60,7 +46,7 @@ const UserStoriesTabList: React.FC<UserStoriesTabListProps> = () => {
               sm={6}
               md={4}
               lg={3}
-              key={`nft-next-loading-${index}`}
+              key={`nft-likes-next-loading-${index}`}
             >
               <StoriesGridItem.Skeleton />
             </Grid>
@@ -70,4 +56,4 @@ const UserStoriesTabList: React.FC<UserStoriesTabListProps> = () => {
   );
 };
 
-export default UserStoriesTabList;
+export default UserStoriesLikesTabList;
