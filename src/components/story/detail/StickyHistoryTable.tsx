@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useCopyToClipboard } from 'react-use';
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,35 +12,68 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
+import IconButton from '@mui/material/IconButton';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import Snackbar from '@mui/material/Snackbar';
 
 import { useHistoriesQuery } from '@api/story/story';
 
-import type { UserModel } from '@api/schema/story-api';
-import { getUserThumbnail } from '@utils/utils';
+import {
+  generateAvatar,
+  getShortAddress,
+  getUserThumbnail,
+} from '@utils/utils';
 import { Avatar } from '@mui/material';
 
 interface Column {
-  id: 'status' | 'to' | 'from';
+  id:
+    | 'status'
+    | 'to'
+    | 'from'
+    | 'type'
+    | 'blockNumber'
+    | 'transactionHash'
+    | 'senderTxHash'
+    | 'createdAt'
+    | 'blockHash';
   label: string;
   minWidth?: number;
   align?: 'left';
-  format?: (value: any) => any;
+  format?: (value: any, row: any, ...args: any[]) => any;
 }
 
 const columns: readonly Column[] = [
-  { id: 'status', label: '구분' },
+  { id: 'blockNumber', label: 'BlockNo' },
+  {
+    id: 'blockHash',
+    label: 'BlockHash',
+    format: (value) => getShortAddress(value),
+  },
+  { id: 'status', label: '타입' },
   {
     id: 'to',
     label: '보낸사람',
     align: 'left',
-    format: (value: any) => {
+    format: (value, row, copy) => {
       return (
         <div className="flex items-center">
           <Avatar
             src={getUserThumbnail(value.profile)}
             alt={value.profile.nickname}
           />
-          <p className="p-2">{value.profile.nickname}</p>
+          <div className="flex p-2 flex-col">
+            <p>{value.profile.nickname}</p>
+            <p>{getShortAddress(row.toHash)}</p>
+          </div>
+          <IconButton
+            color="primary"
+            aria-label="content copy"
+            component="span"
+            size="small"
+            onClick={() => copy(row.toHash)}
+          >
+            <ContentCopyIcon />
+          </IconButton>
         </div>
       );
     },
@@ -48,17 +82,74 @@ const columns: readonly Column[] = [
     id: 'from',
     label: '받는사람',
     align: 'left',
-    format: (value: any) => {
+    format: (value, row, copy) => {
+      let nickname = value.profile.nickname;
+      let thumbnail = getUserThumbnail(value.profile);
+      if (row.status === 'ISSUE') {
+        nickname = '컨트랙트';
+        thumbnail = `data:image/svg+xml;utf8,${encodeURIComponent(
+          generateAvatar('story_smart_contract_icon'),
+        )}`;
+      }
       return (
         <div className="flex items-center">
-          <Avatar
-            src={getUserThumbnail(value.profile)}
-            alt={value.profile.nickname}
-          />
-          <p className="p-2">{value.profile.nickname}</p>
+          <Avatar src={thumbnail} alt={nickname} />
+          <div className="flex p-2 flex-col">
+            <p>{nickname}</p>
+            <p>{getShortAddress(row.fromHash)}</p>
+          </div>
+          <IconButton
+            color="primary"
+            aria-label="content copy"
+            component="span"
+            size="small"
+            onClick={() => copy(row.fromHash)}
+          >
+            <ContentCopyIcon />
+          </IconButton>
         </div>
       );
     },
+  },
+  {
+    id: 'transactionHash',
+    label: 'transactionHash',
+    format: (value: any, _, copy) => (
+      <div className="flex items-center">
+        {getShortAddress(value)}{' '}
+        <IconButton
+          color="primary"
+          aria-label="content copy"
+          component="span"
+          size="small"
+          onClick={() => copy(value)}
+        >
+          <ContentCopyIcon />
+        </IconButton>
+      </div>
+    ),
+  },
+  {
+    id: 'senderTxHash',
+    label: 'senderTxHash',
+    format: (value, _, copy) => (
+      <div className="flex items-center">
+        {getShortAddress(value)}{' '}
+        <IconButton
+          color="primary"
+          aria-label="content copy"
+          component="span"
+          size="small"
+          onClick={() => copy(value)}
+        >
+          <ContentCopyIcon />
+        </IconButton>
+      </div>
+    ),
+  },
+  {
+    id: 'type',
+    label: '이벤트',
   },
 ];
 
@@ -69,8 +160,11 @@ const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({}) => {
   const { data } = useHistoriesQuery(id);
   const rows = data?.list ?? [];
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [copy, copyFn] = useCopyToClipboard();
+
+  const [snackbar, setSnackbar] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -82,6 +176,16 @@ const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({}) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  const onCloseSnackbar = () => {
+    setSnackbar(false);
+  };
+
+  useEffect(() => {
+    if (copy?.value) {
+      setSnackbar(true);
+    }
+  }, [copy]);
 
   return (
     <>
@@ -120,7 +224,9 @@ const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({}) => {
                         const value = row[column.id];
                         return (
                           <TableCell key={column.id} align={column.align}>
-                            {column.format ? column.format(value) : value}
+                            {column.format
+                              ? column.format(value, row, copyFn)
+                              : value}
                           </TableCell>
                         );
                       })}
@@ -140,6 +246,14 @@ const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({}) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Stack>
+      <Snackbar
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        open={snackbar}
+        onClose={onCloseSnackbar}
+        autoHideDuration={1000}
+        message="클립보드에 복사 되었습니다."
+        key={'copy-address'}
+      />
     </>
   );
 };
