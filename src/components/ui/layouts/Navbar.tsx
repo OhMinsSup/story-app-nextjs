@@ -28,11 +28,13 @@ import { useStore } from '@store/store';
 // utils
 import { PAGE_ENDPOINTS } from '@constants/constant';
 import { getUserThumbnail } from '@utils/utils';
+import { useMutationLogout } from '@api/story/auth';
 
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
   const router = useRouter();
   const userInfo = useStore((store) => store.userInfo, shallow);
+  const mutate = useMutationLogout();
   const [isOpen, setOpen] = useState(false);
 
   const onAuthPage = () => {
@@ -54,6 +56,11 @@ const Navbar: React.FC<NavbarProps> = () => {
     setOpen(false);
     if (!userInfo) return;
     router.push(PAGE_ENDPOINTS.PROFILE.DETAIL(userInfo.id));
+  };
+
+  const onLogout = async () => {
+    await mutate.mutateAsync();
+    router.push(PAGE_ENDPOINTS.INDEX);
   };
 
   const renderDrawer = (
@@ -120,7 +127,7 @@ const Navbar: React.FC<NavbarProps> = () => {
           />
         </ListItem>
         <Divider />
-        <ListItem button>
+        <ListItem button onClick={onLogout}>
           <ListItemText
             primary={
               <Typography
@@ -191,14 +198,28 @@ const Navbar: React.FC<NavbarProps> = () => {
                   </NoSsr>
                 </>
               ) : (
-                <Button
-                  size="medium"
-                  variant="outlined"
-                  color="secondary"
-                  onClick={onAuthPage}
-                >
-                  인증하기
-                </Button>
+                <>
+                  <IconButton
+                    size="large"
+                    edge={false}
+                    sx={{ border: 'none' }}
+                    className="border-none"
+                    aria-label="search icon button"
+                    aria-haspopup="true"
+                    onClick={onSearchPage}
+                    color="inherit"
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                  <Button
+                    size="medium"
+                    variant="outlined"
+                    color="secondary"
+                    onClick={onAuthPage}
+                  >
+                    인증하기
+                  </Button>
+                </>
               )}
             </div>
           </Box>

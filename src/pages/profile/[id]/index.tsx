@@ -79,7 +79,7 @@ function ProfilePage({}: InferGetServerSidePropsType<
     if (isError && error) {
       showAlert({
         content: {
-          text: error.response?.data.message,
+          text: error.response?.data.message ?? '네트워크 오류가 발생했습니다.',
         },
         okHandler: () => router.back(),
         closeHandler: () => router.back(),

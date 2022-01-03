@@ -144,7 +144,7 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
         },
         okHandler: () => {
           closeAlert();
-          router.push(PAGE_ENDPOINTS.STORY.DETAIL(result.dataId));
+          router.replace(PAGE_ENDPOINTS.STORY.DETAIL(result.dataId));
         },
       });
 
@@ -174,7 +174,7 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
     return (
       <div className="flex justify-end">
         <LoadingButton
-          loading={false}
+          loading={mutateRegister.isLoading || mutateModify.isLoading}
           loadingPosition="start"
           color="primary"
           size="large"
