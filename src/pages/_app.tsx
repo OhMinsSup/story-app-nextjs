@@ -50,7 +50,7 @@ Router.events.on('routeChangeError', done);
 
 const AppPage = ({ Component, pageProps }: AppProps) => {
   const Layout = (Component as any).Layout || Noop;
-  const queryClientRef = useRef<QueryClient | null>();
+  const queryClientRef = useRef<QueryClient>();
 
   if (!queryClientRef.current) {
     queryClientRef.current = new QueryClient();
@@ -58,22 +58,31 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
 
   const createStore = useCreateStore(pageProps.initialZustandState);
 
-  return (
-    <>
-      <SeoHead />
-      <QueryClientProvider client={queryClientRef.current}>
+  const WrapperProvider: React.FC = ({ children }) => {
+    return (
+      <QueryClientProvider client={queryClientRef.current as QueryClient}>
         <Hydrate state={pageProps.dehydratedState}>
           <ZustandProvider createStore={createStore}>
             <ThemeProvider theme={theme}>
               <CssBaseline />
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-              <Core />
+              {children}
             </ThemeProvider>
           </ZustandProvider>
         </Hydrate>
       </QueryClientProvider>
+    );
+  };
+
+  return (
+    <>
+      <SeoHead />
+      <WrapperProvider>
+        <Core>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </Core>
+      </WrapperProvider>
     </>
   );
 };

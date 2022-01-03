@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import shallow from 'zustand/shallow';
 import { useStore } from '@store/store';
+import { parseCookies } from 'nookies';
 
 import { api } from '@api/module';
 
@@ -10,7 +11,7 @@ import { isAxiosError } from '@utils/utils';
 import type { QueryFunctionContext, QueryKey } from 'react-query';
 import type { Schema, StoryErrorApi, UserModel } from '@api/schema/story-api';
 
-export const fetcherOne = async ({
+export const fetcherMe = async ({
   queryKey,
 }: QueryFunctionContext<QueryKey, any>) => {
   const [_key, _params] = queryKey;
@@ -28,11 +29,17 @@ export const useMeQuery = () => {
     }),
     shallow,
   );
+
+  // Parse
+  const cookies = parseCookies();
+  // accessToken
+  const token = cookies?.access_token ?? null;
+
   const { data, ...fields } = useQuery<UserModel, StoryErrorApi<Schema>>(
     [API_ENDPOINTS.LOCAL.USER.ME],
-    fetcherOne,
+    fetcherMe,
     {
-      enabled: !userInfo,
+      enabled: !userInfo && !!token,
       initialData: userInfo ?? undefined,
       onSuccess: (data) => setAuth?.(data),
       onError: (error) => {

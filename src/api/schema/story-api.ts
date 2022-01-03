@@ -185,6 +185,13 @@ export interface HistorySchema {
   status: string;
   to: UserModel;
   from: UserModel;
+  tokenId: number;
+  toHash: string;
+  fromHash: string;
+  blockNumber: string;
+  blockHash: string;
+  transactionHash: string;
+  senderTxHash: string;
+  type: string;
   createdAt: string;
-  updatedAt: string;
 }

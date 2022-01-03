@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
@@ -9,14 +10,15 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import Skeleton from '@mui/material/Skeleton';
 
 import { getUserThumbnail, blurDataUrl } from '@utils/utils';
+import { PAGE_ENDPOINTS } from '@constants/constant';
 
 import type { StorySchema } from '@api/schema/story-api';
-import { PAGE_ENDPOINTS } from '@constants/constant';
 
 interface StoriesGridProps {
   item: StorySchema;
 }
 function StoriesGridItem({ item }: StoriesGridProps) {
+  const router = useRouter();
   const width = 300;
   const height = 300;
 
@@ -48,7 +50,13 @@ function StoriesGridItem({ item }: StoriesGridProps) {
                 label={item.backgroundColor}
               />
             </div>
-            <div className="user-badge pl-1 pr-2 items-center flex bg-white rounded-xl">
+            <div
+              className="user-badge pl-1 pr-2 items-center flex bg-white rounded-xl"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push(PAGE_ENDPOINTS.PROFILE.DETAIL(item.user.id));
+              }}
+            >
               <img
                 className="block w-4 h-4 mr-2 rounded-lg"
                 src={getUserThumbnail(item.user.profile)}
@@ -72,7 +80,7 @@ function StoriesGridItem({ item }: StoriesGridProps) {
           </section>
 
           <div className="flex text-xs justify-between border-t-2 border-gray-50 px-4 py-2">
-            <Link href="/">
+            <Link href={PAGE_ENDPOINTS.PROFILE.DETAIL(item.user.id)}>
               <a className=" flex items-center no-underline">
                 <img
                   className=" object-cover w-6 h-6  block mr-2 rounded-full"
