@@ -1,8 +1,8 @@
 import React from 'react';
-import { UploadProvider } from './upload/context';
+import { ErrorProvider } from './error/context';
 
 const Provider: React.FC = ({ children }) => {
-  return <UploadProvider>{children}</UploadProvider>;
+  return <ErrorProvider>{children}</ErrorProvider>;
 };
 
 export default Provider;

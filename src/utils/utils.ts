@@ -1,10 +1,11 @@
 import { STORAGE_KEY } from '@constants/constant';
 import qs from 'qs';
+import axios from 'axios';
+import { COLORS } from '@libs/colors/constants';
 
 import type { MutableRefObject } from 'react';
 import type { AxiosError } from 'axios';
 import type { Schema } from '@api/schema/story-api';
-import { COLORS } from '@libs/colors/constants';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const multiavatar = require('@multiavatar/multiavatar');
@@ -69,7 +70,7 @@ export const userInfo = () => {
 export function isAxiosError<R = any>(
   error: AxiosError | any,
 ): error is Required<AxiosError<Schema<R>>> {
-  return error && error.isAxiosError && error.response;
+  return error && axios.isAxiosError(error);
 }
 
 export const generateKey = () => {

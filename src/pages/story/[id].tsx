@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import { QueryClient, dehydrate } from 'react-query';
 
@@ -8,9 +8,6 @@ import { client } from '@api/client';
 
 // common
 import { API_ENDPOINTS } from '@constants/constant';
-
-// hooks
-import { useAlert } from '@hooks/useAlert';
 
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
@@ -62,26 +59,12 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
 >) {
   const router = useRouter();
   const id = router.query.id?.toString();
-  const { showAlert, Alert } = useAlert();
 
   const userInfo = useStore((store) => store.userInfo);
-  const { data, isLoading, isError, error } = useStoryQuery(id);
+  const { data, isLoading } = useStoryQuery(id);
   const mutate = useMutationLike();
 
   const isLike = !!data?.likes.find((like) => like.userId === userInfo?.id);
-
-  useEffect(() => {
-    if (isError && error) {
-      showAlert({
-        content: {
-          text: error.response?.data.message ?? '네트워크 오류가 발생했습니다.',
-        },
-        okHandler: () => router.back(),
-        closeHandler: () => router.back(),
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isError, error]);
 
   const onClickLike = async () => {
     if (!id) return;
@@ -152,7 +135,6 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
           <AnotherStories userId={data?.user.id} storyId={data?.id} />
         </Stack>
       </Container>
-      <Alert />
     </>
   );
 }

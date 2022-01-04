@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
+import { useErrorContext } from '@contexts/error/context';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
 import type { DataIdParams, StorySchema, Schema } from '@api/schema/story-api';
@@ -20,11 +21,18 @@ export const useAnothersQuery = (
   storyId: DataIdParams,
   userId: DataIdParams,
 ) => {
+  const { setGlobalError, setResetError } = useErrorContext();
   const { data, ...fields } = useQuery<Schema<{ list: StorySchema[] }>, Schema>(
     [API_ENDPOINTS.LOCAL.STORY.ROOT, { storyId, userId }, 'ANOTHERS'],
     fetcherAnothers,
     {
       enabled: !!userId && !!storyId,
+      onError: (error: any) => {
+        setGlobalError(error);
+      },
+      onSuccess: () => {
+        setResetError();
+      },
     },
   );
   return {

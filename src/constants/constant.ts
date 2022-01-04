@@ -112,4 +112,8 @@ export const RESULT_CODE = {
   INVALID_TOKEN: 4003,
   // 만료된 서명 토큰
   SIGNATURE_TOKEN: 4004,
+  // 자신이 생성한 아이템에 좋아요등의 액션을 할 수 없음
+  NO_PERMISSION_ACTION: 4005,
+  // NFT 발생 실패
+  NFT_FAIL: 4006,
 };

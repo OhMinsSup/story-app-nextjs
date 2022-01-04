@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import noop from 'lodash-es/noop';
 
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
@@ -25,9 +26,6 @@ interface AlertOptions {
   closeHandler?: (...args: any[]) => any;
   showCancel?: boolean;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const noop = () => {};
 
 const defaultOptions: AlertOptions = {
   key: 0,
@@ -65,63 +63,66 @@ export function useAlert() {
   }, []);
 
   // show
-  const showAlert = useCallback((options?: AlertOptions) => {
-    const key = getKeyThenIncreaseKey();
+  const showAlert = useCallback(
+    (options?: AlertOptions) => {
+      const key = getKeyThenIncreaseKey();
 
-    if (!options?.content) {
-      options = {
+      if (!options?.content) {
+        options = {
+          ...options,
+          content: {
+            title: '',
+            text: '',
+            cancelText: '취소',
+            confirmText: '확인',
+          },
+        };
+      }
+
+      if (!options?.cancelHandler) {
+        options = {
+          ...options,
+          cancelHandler: () => {
+            alertInstance(false, defaultOptions);
+          },
+        };
+      }
+
+      if (!options?.okHandler) {
+        options = {
+          ...options,
+          okHandler: () => {
+            alertInstance(false, defaultOptions);
+          },
+        };
+      }
+
+      if (!options?.closeHandler) {
+        options = {
+          ...options,
+          closeHandler: () => {
+            alertInstance(false, defaultOptions);
+          },
+        };
+      }
+
+      keyRef.current = key;
+
+      const alertOptions = {
         ...options,
-        content: {
-          title: '',
-          text: '',
-          cancelText: '취소',
-          confirmText: '확인',
-        },
+        key,
       };
-    }
 
-    if (!options?.cancelHandler) {
-      options = {
-        ...options,
-        cancelHandler: () => {
-          alertInstance(false, defaultOptions);
-        },
-      };
-    }
-
-    if (!options?.okHandler) {
-      options = {
-        ...options,
-        okHandler: () => {
-          alertInstance(false, defaultOptions);
-        },
-      };
-    }
-
-    if (!options?.closeHandler) {
-      options = {
-        ...options,
-        closeHandler: () => {
-          alertInstance(false, defaultOptions);
-        },
-      };
-    }
-
-    keyRef.current = key;
-
-    const alertOptions = {
-      ...options,
-      key,
-    };
-
-    alertInstance(true, alertOptions);
-  }, []);
+      alertInstance(true, alertOptions);
+    },
+    [alertInstance],
+  );
 
   // close
   const closeAlert = useCallback(() => {
     alertInstance(false, defaultOptions);
     keyRef.current = null;
-  }, []);
+  }, [alertInstance]);
 
   // current instance
   const getInstance = () =>
