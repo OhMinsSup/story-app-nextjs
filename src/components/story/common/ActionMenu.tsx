@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useAlert } from '@hooks/useAlert';
 import { useMutationStoryDelete } from '@api/story/story';
 import { useRouter } from 'next/router';
-import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
+import { PAGE_ENDPOINTS } from '@constants/constant';
 import { isAxiosError } from '@utils/utils';
 
 interface ActionMenuProps {
@@ -46,44 +46,54 @@ const ActionMenu: React.FC<ActionMenuProps> = ({ anchorEl, open, onClose }) => {
 
   const onDelete = async () => {
     if (!dataId) return;
-    const confirm = await asyncAlert('삭제하기', '삭제하시겠습니까?');
+    const confirm = await asyncAlert('', '삭제하시겠습니까?');
     closeAlert();
     if (!confirm) return;
 
     try {
       const {
-        data: { resultCode },
+        data: { resultCode, ok, message },
       } = await mutateAsync({ dataId: Number(dataId) });
-      if (resultCode === RESULT_CODE.OK) {
-        showAlert({
-          content: {
-            title: '삭제하기',
-            text: '삭제되었습니다.',
-          },
-        });
-        return;
+      if (!ok) {
+        const error = new Error();
+        error.name = 'ApiError';
+        error.message = JSON.stringify({ resultCode, message });
+        throw error;
       }
+
+      showAlert({
+        content: {
+          text: '삭제되었습니다.',
+        },
+      });
+      return;
     } catch (error) {
       if (isAxiosError(error)) {
-        const {
-          response: {
-            data: { message },
-          },
-        } = error;
+        const { response } = error;
+        let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
+        message = response.data.message || message;
         showAlert({
           content: {
-            title: '삭제하기',
             text: message,
           },
         });
-        return;
+        throw error;
+      }
+
+      if (error instanceof Error && error.name === 'ApiError') {
+        const { message } = JSON.parse(error.message);
+        showAlert({
+          content: {
+            text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
+          },
+        });
       }
     }
   };
 
   const onEdit = async () => {
     if (!dataId) return;
-    const confirm = await asyncAlert('수정하기', '수정하시겠습니까?');
+    const confirm = await asyncAlert('', '수정하시겠습니까?');
     closeAlert();
     if (!confirm) return;
     router.push(PAGE_ENDPOINTS.PUBLISH.MODIFY(dataId));

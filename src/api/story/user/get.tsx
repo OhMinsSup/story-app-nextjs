@@ -15,6 +15,7 @@ import type { AxiosError } from 'axios';
 export const fetcherProfile = async ({
   queryKey,
 }: QueryFunctionContext<QueryKey, any>) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_key, _params] = queryKey;
   const id = _params as string | number;
   const response = await api.getResponse({

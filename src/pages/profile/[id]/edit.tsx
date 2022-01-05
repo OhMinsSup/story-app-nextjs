@@ -8,6 +8,7 @@ import {
   useUserProfileQuery,
 } from '@api/story/user';
 import { useAlert } from '@hooks/useAlert';
+import { useTheme } from '@mui/material/styles';
 
 // component
 import Divider from '@mui/material/Divider';
@@ -24,24 +25,25 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
 
 // custom components
 import AppLayout from '@components/ui/layouts/AppLayout';
 import ProfileEditTitle from '@components/profile/edit/ProfileEditTitle';
 import SettingUserProfile from '@components/profile/edit/SettingUserProfile';
 import SettingRow from '@components/profile/edit/SettingRow';
+
 import { PAGE_ENDPOINTS } from '@constants/constant';
+import { isAxiosError } from '@utils/utils';
 
 const ProfileEditPage = () => {
   const router = useRouter();
   const id = router.query.id?.toString();
 
-  const { showAlert, Alert } = useAlert();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const { data, isError, error, refetch } = useUserProfileQuery(id);
+  const { data, refetch } = useUserProfileQuery(id);
+  const { showAlert, Alert } = useAlert();
   const { mutateAsync: modifyMutate } = useMutationProfileModify();
   const { mutateAsync: unRegisterMutate } = useMutationUnRegister();
 
@@ -55,34 +57,72 @@ const ProfileEditPage = () => {
     setGender(data.profile.gender);
   }, [data]);
 
-  useEffect(() => {
-    if (isError && error) {
-      showAlert({
-        content: {
-          text: error.response?.data.message ?? '네트워크 오류가 발생했습니다.',
-        },
-        okHandler: () => router.back(),
-        closeHandler: () => router.back(),
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isError, error]);
-
   const onChangeGender = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!id) return;
     const value = e.target.value as 'M' | 'F';
-    await modifyMutate({
-      dataId: Number(id),
-      gender: value,
-    });
-    await refetch();
-    setGender(value);
+
+    try {
+      const { data } = await modifyMutate({
+        dataId: Number(id),
+        gender: value,
+      });
+
+      if (!data.ok) {
+        const error = new Error();
+        error.name = 'ApiError';
+        error.message = JSON.stringify({
+          resultCode: data.resultCode,
+          message: data.message,
+        });
+        throw error;
+      }
+
+      await refetch();
+      setGender(value);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const { response } = error;
+        console.log(response);
+        let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
+        message = response.data.message || message;
+        showAlert({
+          content: {
+            text: message,
+          },
+        });
+        throw error;
+      }
+
+      if (error instanceof Error && error.name === 'ApiError') {
+        const { message } = JSON.parse(error.message);
+        showAlert({
+          content: {
+            text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
+          },
+        });
+      }
+    }
   };
 
   const onUnRegister = async () => {
     if (!id) return;
-    await unRegisterMutate(id);
-    router.replace(PAGE_ENDPOINTS.LOGIN);
+    try {
+      await unRegisterMutate(id);
+      router.replace(PAGE_ENDPOINTS.LOGIN);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const { response } = error;
+        console.log(response);
+        let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
+        message = response.data.message || message;
+        showAlert({
+          content: {
+            text: message,
+          },
+        });
+        throw error;
+      }
+    }
   };
 
   const onOpen = () => setOpen(true);
@@ -152,7 +192,6 @@ const ProfileEditPage = () => {
           </div>
         </div>
       </div>
-      <Alert />
       <Dialog
         fullScreen={fullScreen}
         open={open}
@@ -175,6 +214,7 @@ const ProfileEditPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Alert />
       <style jsx>{`
         .constrained-content {
           max-width: 878px;

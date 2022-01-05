@@ -147,10 +147,6 @@ const columns: readonly Column[] = [
       </div>
     ),
   },
-  {
-    id: 'type',
-    label: '이벤트',
-  },
 ];
 
 interface StickyHistoryTableProps {}
