@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import UAParser from 'ua-parser-js';
 
 const useUAParser = (uastring: string | undefined = undefined) => {

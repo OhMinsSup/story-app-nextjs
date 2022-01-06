@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import { useReducer } from 'react';
 
 export const useForceUpdate = () => {
   const [, forceUpdate] = useReducer((x) => x + 1, 0);

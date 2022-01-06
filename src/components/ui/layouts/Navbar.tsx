@@ -29,12 +29,14 @@ import { useStore } from '@store/store';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 import { getUserThumbnail } from '@utils/utils';
 import { useMutationLogout } from '@api/story/auth';
+import { useNotificationContext } from '@contexts/notification/context';
 
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
   const router = useRouter();
   const userInfo = useStore((store) => store.userInfo, shallow);
   const mutate = useMutationLogout();
+  const { notification } = useNotificationContext();
   const [isOpen, setOpen] = useState(false);
 
   const onAuthPage = () => {
@@ -219,6 +221,41 @@ const Navbar: React.FC<NavbarProps> = () => {
                   >
                     인증하기
                   </Button>
+                  {/* Push Test */}
+                  {/* <Button
+                    size="medium"
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      notification.notification();
+                      console.log('test');
+                    }}
+                  >
+                    푸시
+                  </Button>
+                  <Button
+                    size="medium"
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      notification.subscribe();
+                      console.log('test');
+                    }}
+                  >
+                    구독
+                  </Button>
+                  <Button
+                    size="medium"
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => {
+                      notification.unsubscribe();
+                      console.log('test');
+                    }}
+                  >
+                    구독취소
+                  </Button> */}
+                  {/* Push Test */}
                 </>
               )}
             </div>

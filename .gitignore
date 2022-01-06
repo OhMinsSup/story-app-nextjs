@@ -132,3 +132,4 @@ prisma/dev.db
 public/sw.js
 public/sw.js.map
 public/workbox-*
+public/worker-*

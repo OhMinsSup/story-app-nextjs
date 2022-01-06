@@ -48,6 +48,11 @@ export const API_ENDPOINTS = {
     TAGS: {
       ROOT: '/tags',
     },
+    MESSAGES: {
+      ROOT: '/messages',
+      TOKEN: '/messages/token',
+      PUSH: '/messages/push',
+    },
     STORY: {
       ROOT: '/stories',
       DETAIL: (id: string | number) => `/stories/${id}`,
