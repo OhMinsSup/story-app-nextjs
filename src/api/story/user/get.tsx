@@ -27,11 +27,12 @@ export const fetcherProfile = async ({
 export const useUserProfileQuery = (id: DataIdParams) => {
   const { setGlobalError, setResetError } = useErrorContext();
 
+  const queryKey = [API_ENDPOINTS.LOCAL.USER.ROOT, id];
+
   const { data, ...fields } = useQuery<Schema<UserModel>, StoryErrorApi>(
-    [API_ENDPOINTS.LOCAL.USER.ROOT, id],
+    queryKey,
     fetcherProfile,
     {
-      retry: false,
       enabled: !!id,
       onError: (error: Error | AxiosError<Schema<any>>) => {
         setGlobalError(error);
@@ -44,6 +45,7 @@ export const useUserProfileQuery = (id: DataIdParams) => {
   return {
     data: data?.result,
     originData: data,
+    queryKey,
     ...fields,
   };
 };

@@ -54,7 +54,7 @@ export const useMeQuery = () => {
   );
 
   return {
-    userInfo: data,
+    userInfo: userInfo ?? data,
     ...fields,
   };
 };

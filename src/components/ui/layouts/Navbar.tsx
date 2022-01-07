@@ -129,6 +129,30 @@ const Navbar: React.FC<NavbarProps> = () => {
           />
         </ListItem>
         <Divider />
+
+        <ListItem
+          button
+          onClick={() => {
+            notification.notification(
+              '푸시 발송 테스트',
+              '푸시 발송 테스트 내용',
+            );
+          }}
+        >
+          <ListItemText
+            primary={
+              <Typography
+                className="font-bold"
+                sx={{ display: 'inline' }}
+                variant="body2"
+                color="info"
+              >
+                푸시 발송 테스트
+              </Typography>
+            }
+          />
+        </ListItem>
+        <Divider />
         <ListItem button onClick={onLogout}>
           <ListItemText
             primary={
@@ -221,41 +245,6 @@ const Navbar: React.FC<NavbarProps> = () => {
                   >
                     인증하기
                   </Button>
-                  {/* Push Test */}
-                  {/* <Button
-                    size="medium"
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => {
-                      notification.notification();
-                      console.log('test');
-                    }}
-                  >
-                    푸시
-                  </Button>
-                  <Button
-                    size="medium"
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => {
-                      notification.subscribe();
-                      console.log('test');
-                    }}
-                  >
-                    구독
-                  </Button>
-                  <Button
-                    size="medium"
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => {
-                      notification.unsubscribe();
-                      console.log('test');
-                    }}
-                  >
-                    구독취소
-                  </Button> */}
-                  {/* Push Test */}
                 </>
               )}
             </div>

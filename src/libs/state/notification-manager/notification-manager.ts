@@ -36,23 +36,20 @@ class NotificationManager {
             typeof window.workbox !== 'undefined'
           ) {
             const reg = await navigator.serviceWorker.ready;
+            // getSubscription()은 구독이 있는 경우 현재 구독으로 확인되는
+            // 프라미스를 반환하고 그렇지 않으면 null을 반환하는 메서드
             const sub = await reg.pushManager.getSubscription();
+            this._isSubscribed = !(sub === null);
+            // 사용자가 이미 구독한 상태인지 확인하고 몇 가지 상태를 설정
             if (sub) {
-              console.warn(
+              console.info(
                 '[NotificationManager] Subscription is already exist.',
               );
-              const { expirationTime } = sub.toJSON();
-              if (
-                expirationTime &&
-                Date.now() > expirationTime - 5 * 60 * 1000
-              ) {
-                this._subscription = sub;
-                this._isSubscribed = true;
-                console.warn('[NotificationManager] subscription expired');
-              }
+              this._subscription = sub;
             } else {
-              console.warn('[NotificationManager] subscription is not exist');
+              console.info('[NotificationManager] subscription is not exist');
             }
+            // 서비스 워크 등록
             this._registration = reg;
           }
 
@@ -65,54 +62,114 @@ class NotificationManager {
     });
   }
 
+  get id(): string {
+    return this._id;
+  }
+
+  get token(): string | undefined {
+    return this._token;
+  }
+
+  get isSubscribed(): boolean {
+    return this._isSubscribed;
+  }
+
+  get subscription(): PushSubscription | undefined {
+    return this._subscription;
+  }
+
+  get registration(): ServiceWorkerRegistration | undefined {
+    return this._registration;
+  }
+
+  refreshNotification = async () => {
+    const { data } = await api.getResponse<string>({
+      url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
+    });
+
+    const { result } = data;
+    if (!result) return;
+
+    // 토큰이 다르면 새로 설정
+    if (this._token !== result) {
+      this._token = result;
+
+      const sub = await this._registration?.pushManager.getSubscription();
+      // 구독이 있는 경우 구독 해제
+      if (sub) {
+        await this.unsubscribe();
+      }
+      // 구독이 없는 경우 구독 신청
+      await this.subscribe();
+    }
+  };
+
   unsubscribe = async () => {
-    if (!this._token) {
-      const error = new Error();
-      error.name = 'NotificationManagerError';
-      error.message = '[NotificationManager] token is not exist';
-      throw error;
+    try {
+      if (!this._token) {
+        const error = new Error();
+        error.name = 'NotificationManagerError';
+        error.message = '[NotificationManager] token is not exist';
+        throw error;
+      }
+
+      if (!this._subscription) {
+        const error = new Error();
+        error.name = 'NotificationManagerError';
+        error.message = '[NotificationManager] subscription is not exist';
+        throw error;
+      }
+
+      await this._subscription.unsubscribe();
+
+      this._isSubscribed = false;
+      this._subscription = undefined;
+      console.info('[NotificationManager] unsubscribe success');
+    } catch (e) {
+      if (e instanceof Error) {
+        if (e.name === 'NotificationManagerError') {
+          this._isSubscribed = false;
+        }
+      }
+      console.error(e);
     }
-
-    if (!this._subscription) {
-      const error = new Error();
-      error.name = 'NotificationManagerError';
-      error.message = '[NotificationManager] subscription is not exist';
-      throw error;
-    }
-
-    await this._subscription.unsubscribe();
-
-    this._isSubscribed = false;
-    this._subscription = undefined;
-    console.warn('[NotificationManager] unsubscribe success');
   };
 
   subscribe = async () => {
-    if (!this._token) {
-      const error = new Error();
-      error.name = 'NotificationManagerError';
-      error.message = '[NotificationManager] token is not exist';
-      throw error;
+    try {
+      if (!this._token) {
+        const error = new Error();
+        error.name = 'NotificationManagerError';
+        error.message = '[NotificationManager] token is not exist';
+        throw error;
+      }
+
+      if (!this._registration) {
+        const error = new Error();
+        error.name = 'NotificationManagerError';
+        error.message = '[NotificationManager] registration is not exist';
+        throw error;
+      }
+
+      const sub = await this._registration.pushManager.subscribe({
+        // 매개변수는 기본적으로 푸시가 전송될 때마다 알림을 표시하도록 허용하는 것입니다.
+        // 작성 시점에서는 이 값이 필수이고 true여야 합니다.
+        userVisibleOnly: true,
+        // 브라우저가 PushSubscription 생성을 위한 세부 정보를 얻기 위해 푸시 서비스로 네트워크 요청을 보냈습니다.
+        applicationServerKey: this.base64ToUint8Array(this._token),
+      });
+
+      this._subscription = sub;
+      this._isSubscribed = true;
+      console.info('[NotificationManager] subscribe success', sub);
+    } catch (e) {
+      if (e instanceof Error) {
+        if (e.name === 'NotificationManagerError') {
+          this._isSubscribed = false;
+        }
+      }
+      console.error(e);
     }
-
-    if (!this._registration) {
-      const error = new Error();
-      error.name = 'NotificationManagerError';
-      error.message = '[NotificationManager] registration is not exist';
-      throw error;
-    }
-
-    const sub = await this._registration.pushManager.subscribe({
-      // 매개변수는 기본적으로 푸시가 전송될 때마다 알림을 표시하도록 허용하는 것입니다.
-      // 작성 시점에서는 이 값이 필수이고 true여야 합니다.
-      userVisibleOnly: true,
-      // 브라우저가 PushSubscription 생성을 위한 세부 정보를 얻기 위해 푸시 서비스로 네트워크 요청을 보냈습니다.
-      applicationServerKey: this.base64ToUint8Array(this._token),
-    });
-
-    this._subscription = sub;
-    this._isSubscribed = true;
-    console.warn('[NotificationManager] subscribe success', sub);
   };
 
   base64ToUint8Array = (base64: string) => {
@@ -128,22 +185,32 @@ class NotificationManager {
     return outputArray;
   };
 
-  notification = async () => {
-    if (!this._subscription) {
-      const error = new Error();
-      error.name = 'NotificationManagerError';
-      error.message = '[NotificationManager] subscription is not exist';
-      throw error;
-    }
+  notification = async (title: string, message: string, linkUrl?: string) => {
+    try {
+      if (!this._subscription) {
+        const error = new Error();
+        error.name = 'NotificationManagerError';
+        error.message = '[NotificationManager] subscription is not exist';
+        throw error;
+      }
 
-    await api.postResponse({
-      url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.PUSH,
-      body: {
-        title: '알림',
-        message: '알림 메시지',
-        subscription: JSON.stringify(this._subscription),
-      },
-    });
+      await api.postResponse({
+        url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.PUSH,
+        body: {
+          title,
+          message,
+          linkUrl,
+          subscription: JSON.stringify(this._subscription),
+        },
+      });
+    } catch (e) {
+      if (e instanceof Error) {
+        if (e.name === 'NotificationManagerError') {
+          this._isSubscribed = false;
+        }
+      }
+      console.error(e);
+    }
   };
 }
 

@@ -109,6 +109,7 @@ export interface ProfileModel {
   profileUrl?: string | null;
   avatarSvg: string;
   defaultProfile: boolean;
+  canNotification: boolean;
   gender: GenderType;
   bio?: string | null;
 }
@@ -129,6 +130,7 @@ export interface ProfileInput {
   profileUrl?: string;
   bio?: string;
   gender?: GenderType;
+  canNotification?: boolean;
 }
 
 // ================== Login ================== //
