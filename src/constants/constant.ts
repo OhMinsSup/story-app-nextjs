@@ -48,10 +48,10 @@ export const API_ENDPOINTS = {
     TAGS: {
       ROOT: '/tags',
     },
-    MESSAGES: {
-      ROOT: '/messages',
-      TOKEN: '/messages/token',
-      PUSH: '/messages/push',
+    NOTIFICATIONS: {
+      ROOT: '/notifications',
+      TOKEN: '/notifications/token',
+      PUSH: '/notifications/push',
     },
     STORY: {
       ROOT: '/stories',

@@ -22,7 +22,7 @@ class NotificationManager {
     this.ready = new Promise((resolve) => {
       api
         .getResponse<string>({
-          url: API_ENDPOINTS.LOCAL.MESSAGES.TOKEN,
+          url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
         })
         .then(async (res) => {
           const { ok, result } = res.data;
@@ -137,7 +137,7 @@ class NotificationManager {
     }
 
     await api.postResponse({
-      url: API_ENDPOINTS.LOCAL.MESSAGES.PUSH,
+      url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.PUSH,
       body: {
         title: '알림',
         message: '알림 메시지',
