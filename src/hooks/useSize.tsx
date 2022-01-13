@@ -17,6 +17,7 @@ function useSize(target: BasicTarget): Size {
   useLayoutEffect(() => {
     const el = getTargetElement(target);
     if (!el) {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       return () => {};
     }
 
@@ -33,7 +34,7 @@ function useSize(target: BasicTarget): Size {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [target]);
+  }, [setState, target]);
 
   return state;
 }

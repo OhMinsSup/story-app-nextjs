@@ -28,7 +28,7 @@ import {
 
 // common
 import { isAxiosError, generateKey } from '@utils/utils';
-import { PAGE_ENDPOINTS, RESULT_CODE, STATUS_CODE } from '@constants/constant';
+import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 
 // types
 import type {
@@ -132,10 +132,13 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
       });
 
       const {
-        data: { result, resultCode },
+        data: { result, resultCode, message },
       } = await mutate.mutateAsync(body);
       if (resultCode !== RESULT_CODE.OK) {
-        return;
+        const error = new Error();
+        error.name = 'ApiError';
+        error.message = JSON.stringify({ resultCode, message });
+        throw error;
       }
 
       showAlert({
@@ -150,22 +153,25 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
 
       return result;
     } catch (error) {
-      console.error(error);
       if (isAxiosError(error)) {
         const { response } = error;
         let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
-        switch (response.status) {
-          case STATUS_CODE.NOT_FOUND:
-          case STATUS_CODE.BAD_REQUEST:
-            message = response.data.message || message;
-            break;
-        }
+        message = response.data.message || message;
         showAlert({
           content: {
             text: message,
           },
         });
-        return;
+        throw error;
+      }
+
+      if (error instanceof Error && error.name === 'ApiError') {
+        const { message } = JSON.parse(error.message);
+        showAlert({
+          content: {
+            text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
+          },
+        });
       }
     }
   };

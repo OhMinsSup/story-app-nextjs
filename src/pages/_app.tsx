@@ -12,13 +12,14 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { blueGrey, red, blue } from '@mui/material/colors';
 import Core from '@components/common/Core';
+import SeoHead from '@components/common/SEO';
 
 // type
 import type { AppProps } from 'next/app';
 
 // store
 import { useCreateStore, ZustandProvider } from '@store/store';
-import SeoHead from '@components/common/SEO';
+import Provider from '@contexts/provider';
 
 const theme = createTheme({
   palette: {
@@ -65,7 +66,7 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
           <ZustandProvider createStore={createStore}>
             <ThemeProvider theme={theme}>
               <CssBaseline />
-              {children}
+              <Provider>{children}</Provider>
             </ThemeProvider>
           </ZustandProvider>
         </Hydrate>

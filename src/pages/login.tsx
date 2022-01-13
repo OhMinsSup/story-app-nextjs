@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
@@ -41,7 +41,6 @@ const LoginPage: React.FC = () => {
   const {
     control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<LoginInput>({
     mode: 'onSubmit',

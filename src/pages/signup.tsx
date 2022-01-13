@@ -72,7 +72,6 @@ const SignupPage: React.FC = () => {
   const {
     handleSubmit,
     control,
-    watch,
     formState: { errors, isValid, isDirty },
   } = useForm<FormFieldValues>({
     mode: 'onSubmit',
@@ -87,6 +86,7 @@ const SignupPage: React.FC = () => {
 
   // 회원가입
   const onSubmit: SubmitHandler<FormFieldValues> = async ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     confirmPassword,
     ...input
   }) => {
@@ -113,17 +113,28 @@ const SignupPage: React.FC = () => {
         return;
       }
 
-      showAlert({
-        content: {
-          text: message ?? '에러가 발생했습니다.\n다시 시도해주세요.',
-        },
-      });
-    } catch (exception) {
-      if (isAxiosError(exception)) {
-        const { response } = exception;
+      const error = new Error();
+      error.name = 'ApiError';
+      error.message = JSON.stringify({ resultCode, message });
+      throw error;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const { response } = error;
+        let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
+        message = response.data.message || message;
         showAlert({
           content: {
-            text: response?.data.message ?? '',
+            text: message,
+          },
+        });
+        throw error;
+      }
+
+      if (error instanceof Error && error.name === 'ApiError') {
+        const { message } = JSON.parse(error.message);
+        showAlert({
+          content: {
+            text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
           },
         });
       }

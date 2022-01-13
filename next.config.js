@@ -1,8 +1,13 @@
-const withNextEnv = require('next-env');
 const { withPlugins } = require('next-compose-plugins');
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+
+const withNextEnv = require('next-env');
+
+const withPWA = require('next-pwa');
+const runtimeCaching = require('next-pwa/cache');
 
 const IS_PROD = process.env.NODE_ENV === 'production';
 
@@ -19,11 +24,11 @@ const nextConfig = {
   // serverComponents: true,
   // },
   // * 리액트 개발 중 사용할 환경변수들을 설정
-  env: {
-    // * 여기에 웹팩에 주입될 환경변수들을 입력
-    // DEPLOYED_ADDRESS,
-    // DEPLOYED_ABI
-  },
+  // env: {
+  // * 여기에 웹팩에 주입될 환경변수들을 입력
+  // DEPLOYED_ADDRESS,
+  // DEPLOYED_ABI
+  // },
 
   // * 이용자에게 제공되는 헤더에 nextjs 로 개발되었음을 노출하지 않습니다.
   poweredByHeader: false,
@@ -83,6 +88,19 @@ const nextConfig = {
   },
 };
 
-const composeEnhancers = [withNextEnv, withBundleAnalyzer];
+const composeEnhancers = [
+  withNextEnv,
+  withBundleAnalyzer,
+  [
+    withPWA,
+    {
+      pwa: {
+        dest: 'public',
+        runtimeCaching,
+        buildExcludes: [/middleware-manifest\.json$/],
+      },
+    },
+  ],
+];
 
 module.exports = withPlugins(composeEnhancers, nextConfig);

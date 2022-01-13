@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { useIsomorphicLayoutEffect } from 'react-use';
 
 interface SEOProps {
@@ -15,7 +14,6 @@ const SeoHead: React.FC<Partial<SEOProps>> = ({
   type,
   image,
 }) => {
-  const router = useRouter();
   const [siteUrl, setSiteUrl] = useState('');
 
   useIsomorphicLayoutEffect(() => {
@@ -28,6 +26,7 @@ const SeoHead: React.FC<Partial<SEOProps>> = ({
     <Head>
       <title>{title}</title>
       <link rel="canonical" href={siteUrl} />
+      <link rel="manifest" href="/site.webmanifest" />
       <meta name="description" content={description} />
       <meta property="og:image" content={image} />
       <link

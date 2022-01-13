@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { QueryClient, dehydrate } from 'react-query';
 
 import Tab from '@mui/material/Tab';
@@ -9,7 +9,6 @@ import Box from '@mui/material/Box';
 
 // hooks
 import { useRouter } from 'next/router';
-import { useAlert } from '@hooks/useAlert';
 import { useUserProfileQuery, fetcherProfile } from '@api/story/user';
 
 import { client } from '@api/client';
@@ -62,9 +61,8 @@ function ProfilePage({}: InferGetServerSidePropsType<
 >) {
   const router = useRouter();
   const id = router.query.id?.toString();
-  const { showAlert, Alert } = useAlert();
 
-  const { data, isError, error } = useUserProfileQuery(id);
+  const { data } = useUserProfileQuery(id);
 
   const [value, setValue] = React.useState<'story' | 'likes'>('story');
 
@@ -74,19 +72,6 @@ function ProfilePage({}: InferGetServerSidePropsType<
   ) => {
     setValue(newValue);
   };
-
-  useEffect(() => {
-    if (isError && error) {
-      showAlert({
-        content: {
-          text: error.response?.data.message ?? '네트워크 오류가 발생했습니다.',
-        },
-        okHandler: () => router.back(),
-        closeHandler: () => router.back(),
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isError, error]);
 
   return (
     <>
@@ -115,7 +100,6 @@ function ProfilePage({}: InferGetServerSidePropsType<
           </TabContext>
         </div>
       </div>
-      <Alert />
       <style jsx>{`
         @media (min-width: 768px) {
           .container-large {

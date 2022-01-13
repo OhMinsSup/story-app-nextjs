@@ -30,22 +30,17 @@ export const useMeQuery = () => {
     shallow,
   );
 
-  // Parse
-  const cookies = parseCookies();
-  // accessToken
-  const token = cookies?.access_token ?? null;
-
   const { data, ...fields } = useQuery<UserModel, StoryErrorApi<Schema>>(
     [API_ENDPOINTS.LOCAL.USER.ME],
     fetcherMe,
     {
-      enabled: !userInfo && !!token,
+      enabled: !userInfo,
       initialData: userInfo ?? undefined,
       onSuccess: (data) => setAuth?.(data),
       onError: (error) => {
         if (isAxiosError(error)) {
           const { response } = error;
-          if (response.status === STATUS_CODE.FORBIDDEN) {
+          if (response?.status === STATUS_CODE.FORBIDDEN) {
             setAuth?.(null);
           }
         }
@@ -54,7 +49,7 @@ export const useMeQuery = () => {
   );
 
   return {
-    userInfo: data,
+    userInfo: userInfo ?? data,
     ...fields,
   };
 };

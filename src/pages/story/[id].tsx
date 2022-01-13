@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import { QueryClient, dehydrate } from 'react-query';
 
@@ -8,9 +8,7 @@ import { client } from '@api/client';
 
 // common
 import { API_ENDPOINTS } from '@constants/constant';
-
-// hooks
-import { useAlert } from '@hooks/useAlert';
+import { isAxiosError } from '@utils/utils';
 
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
@@ -25,13 +23,16 @@ import ImageViewer from '@components/story/detail/ImageViewer';
 import PostHead from '@components/story/detail/PostHead';
 import StickyHistoryTable from '@components/story/detail/StickyHistoryTable';
 import OwnerUser from '@components/story/detail/OwnerUser';
+import AnotherStories from '@components/story/detail/AnotherStories';
 
 import type {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from 'next';
-import AnotherStories from '@components/story/detail/AnotherStories';
+
+// hooks
 import { useStore } from '@store/store';
+import { useAlert } from '@hooks/useAlert';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.query.id?.toString();
@@ -62,41 +63,56 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
 >) {
   const router = useRouter();
   const id = router.query.id?.toString();
-  const { showAlert, Alert } = useAlert();
 
   const userInfo = useStore((store) => store.userInfo);
-  const { data, isLoading, isError, error } = useStoryQuery(id);
+
+  const { data, isLoading } = useStoryQuery(id);
   const mutate = useMutationLike();
+  const { Alert, showAlert } = useAlert();
 
   const isLike = !!data?.likes.find((like) => like.userId === userInfo?.id);
-
-  useEffect(() => {
-    if (isError && error) {
-      showAlert({
-        content: {
-          text: error.response?.data.message ?? '네트워크 오류가 발생했습니다.',
-        },
-        okHandler: () => router.back(),
-        closeHandler: () => router.back(),
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isError, error]);
 
   const onClickLike = async () => {
     if (!id) return;
     const dataId = id;
 
-    if (isLike) {
-      await mutate.mutateAsync({
+    try {
+      const { data } = await mutate.mutateAsync({
         dataId,
-        action: 'unlike',
+        action: isLike ? 'unlike' : 'like',
       });
-    } else {
-      await mutate.mutateAsync({
-        dataId,
-        action: 'like',
-      });
+
+      if (!data.ok) {
+        const error = new Error();
+        error.name = 'ApiError';
+        error.message = JSON.stringify({
+          resultCode: data.resultCode,
+          message: data.message,
+        });
+        throw error;
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const { response } = error;
+        console.log(response);
+        let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
+        message = response.data.message || message;
+        showAlert({
+          content: {
+            text: message,
+          },
+        });
+        throw error;
+      }
+
+      if (error instanceof Error && error.name === 'ApiError') {
+        const { message } = JSON.parse(error.message);
+        showAlert({
+          content: {
+            text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
+          },
+        });
+      }
     }
   };
 
