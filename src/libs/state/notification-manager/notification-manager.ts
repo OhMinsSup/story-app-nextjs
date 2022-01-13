@@ -20,45 +20,53 @@ class NotificationManager {
     this._id = uniqueId('notification-manager-');
 
     this.ready = new Promise((resolve) => {
-      api
-        .getResponse<string>({
-          url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
-        })
-        .then(async (res) => {
-          const { ok, result } = res.data;
-          if (!ok) return;
+      if (isBrowser && 'Notification' in window) {
+        Notification.requestPermission((status) => {
+          if (status === 'granted') {
+            api
+              .getResponse<string>({
+                url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
+              })
+              .then(async (res) => {
+                const { ok, result } = res.data;
+                if (!ok) return;
 
-          this._token = result;
+                this._token = result;
 
-          if (
-            isBrowser &&
-            'serviceWorker' in navigator &&
-            typeof window.workbox !== 'undefined'
-          ) {
-            const reg = await navigator.serviceWorker.ready;
-            // getSubscription()은 구독이 있는 경우 현재 구독으로 확인되는
-            // 프라미스를 반환하고 그렇지 않으면 null을 반환하는 메서드
-            const sub = await reg.pushManager.getSubscription();
-            this._isSubscribed = !(sub === null);
-            // 사용자가 이미 구독한 상태인지 확인하고 몇 가지 상태를 설정
-            if (sub) {
-              console.info(
-                '[NotificationManager] Subscription is already exist.',
-              );
-              this._subscription = sub;
-            } else {
-              console.info('[NotificationManager] subscription is not exist');
-            }
-            // 서비스 워크 등록
-            this._registration = reg;
+                if (
+                  isBrowser &&
+                  'serviceWorker' in navigator &&
+                  typeof window.workbox !== 'undefined'
+                ) {
+                  const reg = await navigator.serviceWorker.ready;
+                  // getSubscription()은 구독이 있는 경우 현재 구독으로 확인되는
+                  // 프라미스를 반환하고 그렇지 않으면 null을 반환하는 메서드
+                  const sub = await reg.pushManager.getSubscription();
+                  this._isSubscribed = !(sub === null);
+                  // 사용자가 이미 구독한 상태인지 확인하고 몇 가지 상태를 설정
+                  if (sub) {
+                    console.info(
+                      '[NotificationManager] Subscription is already exist.',
+                    );
+                    this._subscription = sub;
+                  } else {
+                    console.info(
+                      '[NotificationManager] subscription is not exist',
+                    );
+                  }
+                  // 서비스 워크 등록
+                  this._registration = reg;
+                }
+
+                resolve(true);
+              })
+              .catch((e) => {
+                console.error(e);
+                resolve(false);
+              });
           }
-
-          resolve(true);
-        })
-        .catch((e) => {
-          console.error(e);
-          resolve(false);
         });
+      }
     });
   }
 
@@ -81,6 +89,22 @@ class NotificationManager {
   get registration(): ServiceWorkerRegistration | undefined {
     return this._registration;
   }
+
+  premission = () => {
+    return new Promise<PushPermissionState | 'default'>((resolve) => {
+      if (isBrowser && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then((reg) => {
+          reg.pushManager
+            .permissionState({ userVisibleOnly: true })
+            .then((permissionState) => {
+              resolve(permissionState);
+            });
+        });
+      } else {
+        resolve('default');
+      }
+    });
+  };
 
   refreshNotification = async () => {
     const { data } = await api.getResponse<string>({
@@ -187,12 +211,7 @@ class NotificationManager {
 
   notification = async (title: string, message: string, linkUrl?: string) => {
     try {
-      if (!this._subscription) {
-        const error = new Error();
-        error.name = 'NotificationManagerError';
-        error.message = '[NotificationManager] subscription is not exist';
-        throw error;
-      }
+      await this.refreshNotification();
 
       await api.postResponse({
         url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.PUSH,

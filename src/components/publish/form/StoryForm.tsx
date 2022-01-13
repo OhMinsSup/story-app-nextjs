@@ -28,7 +28,7 @@ import {
 
 // common
 import { isAxiosError, generateKey } from '@utils/utils';
-import { PAGE_ENDPOINTS, RESULT_CODE, STATUS_CODE } from '@constants/constant';
+import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 
 // types
 import type {

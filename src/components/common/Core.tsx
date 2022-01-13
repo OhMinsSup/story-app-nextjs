@@ -6,6 +6,7 @@ import { useNotificationContext } from '@contexts/notification/context';
 
 // hoos
 import { useAlert } from '@hooks/useAlert';
+import { isBrowser } from '@utils/utils';
 
 const Core: React.FC = ({ children }) => {
   const { userInfo } = useMeQuery();
@@ -29,8 +30,12 @@ const Core: React.FC = ({ children }) => {
       const {
         profile: { canNotification },
       } = userInfo;
-      if (canNotification) {
-        notification.subscribe();
+      if (isBrowser && 'Notification' in window && canNotification) {
+        Notification.requestPermission((status) => {
+          if (status === 'granted') {
+            notification.subscribe();
+          }
+        });
       }
     }
   }, [userInfo, notification]);

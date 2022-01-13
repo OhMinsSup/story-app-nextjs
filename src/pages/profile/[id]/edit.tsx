@@ -34,7 +34,7 @@ import SettingUserProfile from '@components/profile/edit/SettingUserProfile';
 import SettingRow from '@components/profile/edit/SettingRow';
 
 import { PAGE_ENDPOINTS } from '@constants/constant';
-import { isAxiosError } from '@utils/utils';
+import { isAxiosError, isBrowser } from '@utils/utils';
 
 const ProfileEditPage = () => {
   const router = useRouter();
@@ -62,52 +62,56 @@ const ProfileEditPage = () => {
   const onChangeNotification = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    try {
-      const canNotification = e.target.checked;
-      const { data } = await modifyMutate({
-        dataId: Number(id),
-        canNotification,
-      });
+    Notification.requestPermission(async (status) => {
+      if (status === 'granted') {
+        try {
+          const canNotification = e.target.checked;
+          const { data } = await modifyMutate({
+            dataId: Number(id),
+            canNotification,
+          });
 
-      if (!data.ok) {
-        const error = new Error();
-        error.name = 'ApiError';
-        error.message = JSON.stringify({
-          resultCode: data.resultCode,
-          message: data.message,
-        });
-        throw error;
-      }
+          if (!data.ok) {
+            const error = new Error();
+            error.name = 'ApiError';
+            error.message = JSON.stringify({
+              resultCode: data.resultCode,
+              message: data.message,
+            });
+            throw error;
+          }
 
-      if (canNotification) {
-        await Promise.all([notification.refreshNotification(), refetch()]);
-      } else {
-        notification.unsubscribe();
-      }
-      setCanNotification(canNotification);
-    } catch (error) {
-      if (isAxiosError(error)) {
-        const { response } = error;
-        console.log(response);
-        let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
-        message = response.data.message || message;
-        showAlert({
-          content: {
-            text: message,
-          },
-        });
-        throw error;
-      }
+          if (canNotification) {
+            await Promise.all([notification.refreshNotification(), refetch()]);
+          } else {
+            notification.unsubscribe();
+          }
+          setCanNotification(canNotification);
+        } catch (error) {
+          if (isAxiosError(error)) {
+            const { response } = error;
+            console.log(response);
+            let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
+            message = response.data.message || message;
+            showAlert({
+              content: {
+                text: message,
+              },
+            });
+            throw error;
+          }
 
-      if (error instanceof Error && error.name === 'ApiError') {
-        const { message } = JSON.parse(error.message);
-        showAlert({
-          content: {
-            text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
-          },
-        });
+          if (error instanceof Error && error.name === 'ApiError') {
+            const { message } = JSON.parse(error.message);
+            showAlert({
+              content: {
+                text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
+              },
+            });
+          }
+        }
       }
-    }
+    });
   };
 
   const onChangeGender = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,6 +227,7 @@ const ProfileEditPage = () => {
               <SettingRow title="알림 수신 설정">
                 <FormGroup>
                   <FormControlLabel
+                    disabled={!isBrowser || !('Notification' in window)}
                     control={
                       <Switch
                         checked={canNotification}
