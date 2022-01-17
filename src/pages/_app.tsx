@@ -61,16 +61,18 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
 
   const WrapperProvider: React.FC = ({ children }) => {
     return (
-      <QueryClientProvider client={queryClientRef.current as QueryClient}>
-        <Hydrate state={pageProps.dehydratedState}>
-          <ZustandProvider createStore={createStore}>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <Provider>{children}</Provider>
-            </ThemeProvider>
-          </ZustandProvider>
-        </Hydrate>
-      </QueryClientProvider>
+      <>
+        <QueryClientProvider client={queryClientRef.current as QueryClient}>
+          <Hydrate state={pageProps.dehydratedState}>
+            <ZustandProvider createStore={createStore}>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Provider>{children}</Provider>
+              </ThemeProvider>
+            </ZustandProvider>
+          </Hydrate>
+        </QueryClientProvider>
+      </>
     );
   };
 
