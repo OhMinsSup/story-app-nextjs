@@ -9,7 +9,6 @@ import {
 } from '@api/story/user';
 import { useAlert } from '@hooks/useAlert';
 import { useTheme } from '@mui/material/styles';
-import { useNotificationContext } from '@contexts/notification/context';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 // component
@@ -47,7 +46,6 @@ const ProfileEditPage = () => {
   const { showAlert, Alert } = useAlert();
   const { mutateAsync: modifyMutate } = useMutationProfileModify();
   const { mutateAsync: unRegisterMutate } = useMutationUnRegister();
-  const { notification } = useNotificationContext();
 
   const [gender, setGender] = useState<'M' | 'F'>('M');
   const [canNotification, setCanNotification] = useState(false);
@@ -82,9 +80,9 @@ const ProfileEditPage = () => {
           }
 
           if (canNotification) {
-            await Promise.all([notification.refreshNotification(), refetch()]);
+            // await Promise.all([notification.refreshNotification(), refetch()]);
           } else {
-            notification.unsubscribe();
+            // notification.unsubscribe();
           }
           setCanNotification(canNotification);
         } catch (error) {

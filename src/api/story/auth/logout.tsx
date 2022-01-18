@@ -19,17 +19,21 @@ const fetcherLogout = () =>
   });
 
 export function useMutationLogout() {
-  const { setAuth } = useStore(
+  const { setAuth, setLoggedIn } = useStore(
     ({ actions }) => ({
       setAuth: actions?.setAuth,
+      setLoggedIn: actions?.setLoggedIn,
     }),
     shallow,
   );
 
+  const onSuccess = () => {
+    setLoggedIn?.(false);
+    setAuth?.(null);
+  };
+
   const mutation = useMutation<StoryApi, StoryErrorApi>(fetcherLogout, {
-    onSuccess: () => {
-      setAuth?.(null);
-    },
+    onSuccess,
   });
 
   return mutation;

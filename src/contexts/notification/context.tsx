@@ -1,9 +1,9 @@
 import React, { useMemo, useReducer } from 'react';
 import { createContext } from '@libs/react-utils';
-import { NotificationManager } from '@libs/state/notification-manager';
+import { FireBaseManager } from '@libs/state/firebase-manager';
 
 interface NotificationState {
-  notification: NotificationManager;
+  notification: FireBaseManager;
 }
 
 interface NotificationContext extends NotificationState {
@@ -29,7 +29,7 @@ function reducer(state: NotificationState, action: any) {
 
 function NotificationProvider({ children }: NotificationProps) {
   const [state, dispatch] = useReducer(reducer, {
-    notification: new NotificationManager(),
+    notification: new FireBaseManager(),
   });
 
   const actions = useMemo(

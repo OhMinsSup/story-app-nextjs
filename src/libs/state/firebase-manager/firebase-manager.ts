@@ -1,15 +1,17 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
-import { getMessaging, getToken } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
 import { FIREBASE_VAPID_KEY } from '@constants/env';
 import { api } from '@api/module';
-import { API_ENDPOINTS } from '@constants/constant';
+import { API_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
 import { isBrowser } from '@utils/utils';
+import { StoryStorage } from '@libs/storage';
 
 import type { FirebaseApp } from 'firebase/app';
 import type { Analytics } from 'firebase/analytics';
 import type { Messaging } from 'firebase/messaging';
+import type { DeviceSchema } from '@api/schema/story-api';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAcpUGHqIAup5_2iAogflpfmwNyoZSrfv4',
@@ -32,11 +34,7 @@ class FireBaseManager {
   private _messaging: Messaging | undefined;
 
   constructor() {
-    this._app = initializeApp(firebaseConfig);
-    this._analytics = getAnalytics(this._app);
-    this._messaging = getMessaging(this._app);
-
-    this.intializeMessaging(this._messaging);
+    this.initialize();
   }
 
   premission() {
@@ -65,10 +63,26 @@ class FireBaseManager {
     return this._messaging;
   }
 
+  async initialize() {
+    const hasPremeission = await this.premission();
+    console.log('hasPremeission', hasPremeission);
+    if (!hasPremeission) return;
+
+    this._app = initializeApp(firebaseConfig);
+    this._analytics = getAnalytics(this._app);
+    this._messaging = getMessaging(this._app);
+
+    this.intializeMessaging(this._messaging);
+  }
+
   async intializeMessaging(messaging: Messaging) {
     try {
-      const hasPremeission = await this.premission();
-      if (!hasPremeission) return;
+      onMessage(messaging, (payload) => {
+        console.log('Message received. ', payload);
+      });
+
+      const device = await StoryStorage.getItem(STORAGE_KEY.DEVICE_KEY);
+      if (device && device.id && device.deviceHash) return;
 
       const currentToken = await getToken(messaging, {
         vapidKey: FIREBASE_VAPID_KEY,
@@ -83,21 +97,20 @@ class FireBaseManager {
   }
 
   async savePushToken(pushToken: string) {
-    try {
-      const { data } = await api.postResponse({
-        url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
-        body: {
-          pushToken,
-        },
-      });
+    const { data } = await api.postResponse<DeviceSchema>({
+      url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
+      body: {
+        pushToken,
+      },
+    });
 
-      if (data.ok) {
-        return;
-      }
-      return;
-    } catch (error) {
-      console.log(error);
-    }
+    if (!data.ok) return;
+    const { id, deviceHash } = data.result;
+    const device = {
+      id,
+      deviceHash,
+    };
+    await StoryStorage.setItem(STORAGE_KEY.DEVICE_KEY, device);
   }
 }
 

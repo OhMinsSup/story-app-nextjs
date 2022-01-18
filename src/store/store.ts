@@ -7,11 +7,13 @@ import type { SetState, UseBoundStore, StoreApi } from 'zustand';
 
 export interface Actions {
   setAuth: (userInfo: UserModel | null) => void;
+  setLoggedIn: (isLoggedIn: boolean) => void;
 }
 
 export interface State {
   actions?: Actions;
   userInfo: UserModel | null;
+  isLoggedIn: boolean;
 }
 
 let store: UseBoundStore<State, StoreApi<State>> | null = null;
@@ -19,6 +21,7 @@ let store: UseBoundStore<State, StoreApi<State>> | null = null;
 const initialState: State = {
   actions: undefined,
   userInfo: null,
+  isLoggedIn: false,
 };
 
 const zustandContext = createContext<State>();
@@ -35,6 +38,7 @@ export const initializeStore = (preloadedState = {} as State) => {
         set({
           userInfo,
         }),
+      setLoggedIn: (isLoggedIn: boolean) => set({ isLoggedIn }),
     };
     return {
       ...initialState,

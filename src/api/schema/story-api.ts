@@ -121,6 +121,18 @@ export interface TagSchema {
   updatedAt: string;
 }
 
+export interface DeviceSchema {
+  id: number;
+  os: string;
+  clientType: string;
+  deviceType: string;
+  deviceHash: string;
+  token: string | null;
+  userId: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // ================== User  ================== //
 
 export interface ProfileInput {
@@ -138,6 +150,8 @@ export interface ProfileInput {
 export interface LoginInput {
   email: string;
   password: string;
+  deviceId?: number;
+  deviceHash?: string;
 }
 
 export interface LoginSchema extends UserModel {

@@ -25,29 +25,30 @@ const fetcherLogin = (input: LoginInput) =>
   });
 
 export function useMutationLogin() {
-  const { setAuth } = useStore(
+  const { setAuth, setLoggedIn } = useStore(
     ({ actions }) => ({
       setAuth: actions?.setAuth,
+      setLoggedIn: actions?.setLoggedIn,
     }),
     shallow,
   );
 
-  const onSuccess = (data: StoryApi<LoginSchema>, variable: LoginInput) => {
+  const onSuccess = (data: StoryApi<LoginSchema>) => {
     const {
       data: { result, resultCode },
     } = data;
 
     if (RESULT_CODE.OK === resultCode && typeof result === 'object') {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { accessToken, ...user } = result;
-      // 로그인 성공
-      localStorage.setItem(STORAGE_KEY.TOKEN_KEY, accessToken);
+      setLoggedIn?.(true);
       setAuth?.(user);
     }
   };
 
   const mutation = useMutation<
     StoryApi<LoginSchema>,
-    StoryErrorApi<null>,
+    StoryErrorApi,
     LoginInput
   >(fetcherLogin, {
     onSuccess,

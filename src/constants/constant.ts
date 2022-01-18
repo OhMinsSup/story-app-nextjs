@@ -69,6 +69,7 @@ export const WEB_APP = '@@StoryFront';
 export const STORAGE_KEY = {
   TOKEN_KEY: `${WEB_APP}/authToken`,
   USER_KEY: `${WEB_APP}/userInfo`,
+  DEVICE_KEY: 'device',
 };
 
 export const STATUS_CODE = {

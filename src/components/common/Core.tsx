@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { useIsomorphicLayoutEffect } from 'react-use';
 import { useMeQuery } from '@api/story/user';
 import { useErrorContext } from '@contexts/error/context';
 // import { useNotificationContext } from '@contexts/notification/context';
