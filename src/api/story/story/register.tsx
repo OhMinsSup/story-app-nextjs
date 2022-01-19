@@ -17,7 +17,7 @@ export function useMutationStoryRegister() {
   const queryClient = useQueryClient();
 
   const fetcherRegister = (input: PublishInput) =>
-    api.postResponse({
+    api.post({
       url: API_ENDPOINTS.LOCAL.STORY.ROOT,
       body: input,
     });

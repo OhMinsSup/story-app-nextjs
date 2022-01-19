@@ -23,7 +23,7 @@ export const fetcherStories = async ({
     pageSize: SIZE,
     ...safeParams,
   });
-  const response = await api.getResponse<ListSchema<StorySchema>>({
+  const response = await api.get<ListSchema<StorySchema>>({
     url: `${API_ENDPOINTS.LOCAL.STORY.ROOT}${query}`,
   });
   return response.data.result;

@@ -21,7 +21,7 @@ export type Input = ProfileInput & {
 export function useMutationProfileModify() {
   const fetcherModify = (input: Input) => {
     const id = input.dataId ?? '';
-    return api.putResponse({
+    return api.put({
       url: API_ENDPOINTS.LOCAL.USER.DETAIL(id),
       body: input,
     });

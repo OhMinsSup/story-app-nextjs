@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 
 // validation
 import { schema } from '@libs/validation/schema';
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm, FormProvider } from 'react-hook-form';
 
 // components
@@ -122,7 +122,7 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
   }, [data, reset]);
 
   // 등록
-  const onSubmit: SubmitHandler<Required<FormFieldValues>> = async (input) => {
+  const onSubmit: SubmitHandler<FormFieldValues> = async (input) => {
     const mutate = data ? mutateModify : mutateRegister;
 
     try {

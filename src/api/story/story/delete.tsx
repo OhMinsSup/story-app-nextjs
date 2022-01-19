@@ -18,7 +18,7 @@ export function useMutationStoryDelete() {
   const queryClient = useQueryClient();
 
   const fetcherDelete = (data: DataIdSchema) =>
-    api.deleteResponse({
+    api.delete({
       url: API_ENDPOINTS.LOCAL.STORY.DETAIL(data.dataId),
     });
 

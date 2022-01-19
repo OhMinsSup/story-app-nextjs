@@ -13,10 +13,10 @@ import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 // validation
-import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 import { schema } from '@libs/validation/schema';
-import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
+import { PAGE_ENDPOINTS, RESULT_CODE, STORAGE_KEY } from '@constants/constant';
 
 // components
 import AuthLayout from '@components/auth/common/AuthLayout';
@@ -26,6 +26,7 @@ import { useMutationLogin } from '@api/story/auth';
 
 import type { LoginInput } from '@api/schema/story-api';
 import type { SubmitHandler } from 'react-hook-form';
+import { StoryStorage } from '@libs/storage';
 
 const initialState = {
   email: '',
@@ -57,7 +58,17 @@ const LoginPage: React.FC = () => {
   const { mutateAsync, isLoading } = useMutationLogin();
 
   const onSubmit: SubmitHandler<LoginInput> = async (input) => {
-    const result = await mutateAsync(input);
+    const deviceInfo = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
+    const body = {
+      ...input,
+    };
+
+    if (deviceInfo && typeof deviceInfo === 'object') {
+      const { deviceId } = deviceInfo;
+      Object.assign(body, { deviceId });
+    }
+
+    const result = await mutateAsync(body);
 
     const {
       data: { resultCode },

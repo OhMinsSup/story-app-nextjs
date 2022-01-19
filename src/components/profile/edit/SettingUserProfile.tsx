@@ -60,7 +60,7 @@ const SettingUserProfile: React.FC<SettingUserProfileProps> = ({
 
   const upload = async (file: File) => {
     try {
-      const response = await api.uploadResponse({
+      const response = await api.upload({
         file,
         storyType: StoryUploadTypeEnum.PROFILE,
       });

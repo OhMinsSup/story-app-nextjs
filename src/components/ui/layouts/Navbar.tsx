@@ -29,14 +29,19 @@ import { useStore } from '@store/store';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 import { getUserThumbnail } from '@utils/utils';
 import { useMutationLogout } from '@api/story/auth';
-import { useNotificationContext } from '@contexts/notification/context';
 
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
   const router = useRouter();
-  const userInfo = useStore((store) => store.userInfo, shallow);
+  const { userInfo, setAuth } = useStore(
+    (store) => ({
+      userInfo: store.userInfo,
+      setAuth: store?.actions?.setAuth,
+    }),
+    shallow,
+  );
+
   const mutate = useMutationLogout();
-  const { notification } = useNotificationContext();
   const [isOpen, setOpen] = useState(false);
 
   const onAuthPage = () => {
@@ -61,6 +66,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   };
 
   const onLogout = async () => {
+    setAuth?.(null);
     await mutate.mutateAsync();
     router.push(PAGE_ENDPOINTS.INDEX);
   };
@@ -130,28 +136,6 @@ const Navbar: React.FC<NavbarProps> = () => {
         </ListItem>
         <Divider />
 
-        <ListItem
-          button
-          onClick={() => {
-            notification.notification(
-              '푸시 발송 테스트',
-              '푸시 발송 테스트 내용',
-            );
-          }}
-        >
-          <ListItemText
-            primary={
-              <Typography
-                className="font-bold"
-                sx={{ display: 'inline' }}
-                variant="body2"
-                color="info"
-              >
-                푸시 발송 테스트
-              </Typography>
-            }
-          />
-        </ListItem>
         <Divider />
         <ListItem button onClick={onLogout}>
           <ListItemText

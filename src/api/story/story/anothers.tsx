@@ -11,7 +11,7 @@ export const fetcherAnothers = async ({
 }: QueryFunctionContext<QueryKey, any>) => {
   const [_key, _params] = queryKey;
   const { userId, storyId } = _params as Record<string, number>;
-  const response = await api.getResponse({
+  const response = await api.get({
     url: API_ENDPOINTS.LOCAL.STORY.ANOTHERS(storyId, userId),
   });
   return response.data;

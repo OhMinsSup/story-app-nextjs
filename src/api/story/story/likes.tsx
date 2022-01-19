@@ -15,14 +15,14 @@ import type {
 
 const fetcherUnlike = (dataId: DataIdParams) => {
   const id = dataId ?? '';
-  return api.deleteResponse({
+  return api.delete({
     url: API_ENDPOINTS.LOCAL.STORY.LIKE(id),
   });
 };
 
 const fetcherLike = (dataId: DataIdParams) => {
   const id = dataId ?? '';
-  return api.postResponse({
+  return api.post({
     url: API_ENDPOINTS.LOCAL.STORY.LIKE(id),
     body: {},
   });

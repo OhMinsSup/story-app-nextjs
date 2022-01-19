@@ -14,22 +14,26 @@ import { useStore } from '@store/store';
 import type { StoryErrorApi, StoryApi } from '@api/schema/story-api';
 
 const fetcherLogout = () =>
-  api.postResponse({
+  api.post({
     url: API_ENDPOINTS.LOCAL.AUTH.LOGOUT,
   });
 
 export function useMutationLogout() {
-  const { setAuth } = useStore(
+  const { setAuth, setLoggedIn } = useStore(
     ({ actions }) => ({
       setAuth: actions?.setAuth,
+      setLoggedIn: actions?.setLoggedIn,
     }),
     shallow,
   );
 
+  const onSuccess = () => {
+    setLoggedIn?.(false);
+    setAuth?.(null);
+  };
+
   const mutation = useMutation<StoryApi, StoryErrorApi>(fetcherLogout, {
-    onSuccess: () => {
-      setAuth?.(null);
-    },
+    onSuccess,
   });
 
   return mutation;

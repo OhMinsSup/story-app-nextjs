@@ -5,7 +5,7 @@ import shallow from 'zustand/shallow';
 import { api } from '@api/module';
 
 // no components
-import { API_ENDPOINTS, RESULT_CODE, STORAGE_KEY } from '@constants/constant';
+import { API_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 
 // store
 import { useStore } from '@store/store';
@@ -19,35 +19,36 @@ import type {
 } from '@api/schema/story-api';
 
 const fetcherLogin = (input: LoginInput) =>
-  api.postResponse({
+  api.post({
     url: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
     body: input,
   });
 
 export function useMutationLogin() {
-  const { setAuth } = useStore(
+  const { setAuth, setLoggedIn } = useStore(
     ({ actions }) => ({
       setAuth: actions?.setAuth,
+      setLoggedIn: actions?.setLoggedIn,
     }),
     shallow,
   );
 
-  const onSuccess = (data: StoryApi<LoginSchema>, variable: LoginInput) => {
+  const onSuccess = async (data: StoryApi<LoginSchema>) => {
     const {
       data: { result, resultCode },
     } = data;
 
     if (RESULT_CODE.OK === resultCode && typeof result === 'object') {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { accessToken, ...user } = result;
-      // 로그인 성공
-      localStorage.setItem(STORAGE_KEY.TOKEN_KEY, accessToken);
+      setLoggedIn?.(true);
       setAuth?.(user);
     }
   };
 
   const mutation = useMutation<
     StoryApi<LoginSchema>,
-    StoryErrorApi<null>,
+    StoryErrorApi,
     LoginInput
   >(fetcherLogin, {
     onSuccess,

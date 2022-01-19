@@ -28,7 +28,7 @@ export const fetcherStoryLikes = async ({
     pageSize: SIZE,
     ...safeParams,
   });
-  const response = await api.getResponse<ListSchema<StorySchema>>({
+  const response = await api.get<ListSchema<StorySchema>>({
     url: `${_key}${query}`,
   });
   return response.data.result;

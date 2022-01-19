@@ -18,7 +18,7 @@ export const fetcherOne = async ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_key, _params] = queryKey;
   const id = _params as string | number;
-  const response = await api.getResponse({
+  const response = await api.get({
     url: API_ENDPOINTS.LOCAL.STORY.DETAIL(id),
   });
   return response.data;

@@ -96,6 +96,7 @@ const composeEnhancers = [
     {
       pwa: {
         dest: 'public',
+        disable: !IS_PROD,
         runtimeCaching,
         buildExcludes: [/middleware-manifest\.json$/],
       },
