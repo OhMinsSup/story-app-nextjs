@@ -16,7 +16,7 @@ import type {
 export function useMutationUnRegister() {
   const fetcherUnRegister = (dataId: DataIdParams) => {
     const id = dataId ?? '';
-    return api.putResponse({
+    return api.put({
       url: API_ENDPOINTS.LOCAL.USER.UNREGIISTER(id),
       body: {},
     });

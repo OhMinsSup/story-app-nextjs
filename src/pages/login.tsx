@@ -58,14 +58,14 @@ const LoginPage: React.FC = () => {
   const { mutateAsync, isLoading } = useMutationLogin();
 
   const onSubmit: SubmitHandler<LoginInput> = async (input) => {
-    const deviceInfo = await StoryStorage.getItem(STORAGE_KEY.DEVICE_KEY);
+    const deviceInfo = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
     const body = {
       ...input,
     };
 
     if (deviceInfo && typeof deviceInfo === 'object') {
-      const { id, deviceHash } = deviceInfo;
-      Object.assign(body, { deviceId: id, deviceHash });
+      const { deviceId } = deviceInfo;
+      Object.assign(body, { deviceId });
     }
 
     const result = await mutateAsync(body);

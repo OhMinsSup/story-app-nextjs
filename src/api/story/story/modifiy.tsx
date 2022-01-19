@@ -23,7 +23,7 @@ export function useMutationStoryModifiy() {
 
   const fetcherModify = (input: Input) => {
     const id = input.dataId ?? '';
-    return api.putResponse({
+    return api.put({
       url: API_ENDPOINTS.LOCAL.STORY.DETAIL(id),
       body: input,
     });

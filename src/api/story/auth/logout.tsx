@@ -14,7 +14,7 @@ import { useStore } from '@store/store';
 import type { StoryErrorApi, StoryApi } from '@api/schema/story-api';
 
 const fetcherLogout = () =>
-  api.postResponse({
+  api.post({
     url: API_ENDPOINTS.LOCAL.AUTH.LOGOUT,
   });
 

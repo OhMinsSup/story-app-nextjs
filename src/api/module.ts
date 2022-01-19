@@ -31,7 +31,7 @@ class APIMoudle {
     return authorization;
   };
 
-  deleteResponse = async <D = any>({
+  delete = async <D = any>({
     url,
     headers = {},
     options = { context: null },
@@ -49,7 +49,7 @@ class APIMoudle {
     return result;
   };
 
-  postResponse = async <D = any>({
+  post = async <D = any>({
     url,
     body = {},
     headers = {},
@@ -68,7 +68,7 @@ class APIMoudle {
     return result;
   };
 
-  putResponse = async <D = any>({
+  put = async <D = any>({
     url,
     body = {},
     headers = {},
@@ -87,7 +87,7 @@ class APIMoudle {
     return result;
   };
 
-  getResponse = async <D = any>({
+  get = async <D = any>({
     url,
     headers = {},
     options = { context: null },
@@ -105,7 +105,7 @@ class APIMoudle {
     return result;
   };
 
-  uploadResponse = async ({ file, storyType }: FileUploadParams) => {
+  upload = async ({ file, storyType }: FileUploadParams) => {
     const form = new FormData();
     form.append('file', file);
     form.append('storyType', storyType);
@@ -121,10 +121,6 @@ class APIMoudle {
           }),
           'Content-Type': 'multipart/form-data',
         },
-        // onUploadProgress: (progressEvent) => {
-        //   const { loaded, total } = progressEvent;
-        //   const percent = Math.floor((loaded * 100) / total);
-        // },
       },
     );
     return result;

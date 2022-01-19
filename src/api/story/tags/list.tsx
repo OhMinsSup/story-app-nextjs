@@ -23,7 +23,7 @@ export const fetcherTags = async ({
     pageSize: SIZE,
     ...safeParams,
   });
-  const response = await api.getResponse<ListSchema<TagSchema>>({
+  const response = await api.get<ListSchema<TagSchema>>({
     url: `${API_ENDPOINTS.LOCAL.TAGS.ROOT}${query}`,
   });
   return response.data.result;

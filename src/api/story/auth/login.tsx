@@ -5,7 +5,7 @@ import shallow from 'zustand/shallow';
 import { api } from '@api/module';
 
 // no components
-import { API_ENDPOINTS, RESULT_CODE, STORAGE_KEY } from '@constants/constant';
+import { API_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 
 // store
 import { useStore } from '@store/store';
@@ -19,7 +19,7 @@ import type {
 } from '@api/schema/story-api';
 
 const fetcherLogin = (input: LoginInput) =>
-  api.postResponse({
+  api.post({
     url: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
     body: input,
   });
@@ -33,7 +33,7 @@ export function useMutationLogin() {
     shallow,
   );
 
-  const onSuccess = (data: StoryApi<LoginSchema>) => {
+  const onSuccess = async (data: StoryApi<LoginSchema>) => {
     const {
       data: { result, resultCode },
     } = data;

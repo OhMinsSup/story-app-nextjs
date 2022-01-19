@@ -12,6 +12,7 @@ import Button from '@mui/material/Button';
 
 import { getColorHex } from '@libs/colors';
 import { getUniqueFilter } from '@utils/utils';
+import { driver } from 'localforage';
 
 const colors = getColorHex().sort(() => Math.random() - 0.5);
 
@@ -127,15 +128,17 @@ const ColorFilter = () => {
                     <Checkbox
                       checked={formState.includes(item.value) ?? false}
                     />
-                    <span className="flex items-center">
-                      <span
-                        className={`w-5 h-5 rounded-full block me-3 mt-0.5 border border-black border-opacity-20`}
-                        style={{ backgroundColor: item.value }}
-                      />
-                    </span>
                   </Stack>
                 }
-                label={item.value}
+                label={
+                  <div className="flex items-center space-x-2">
+                    <span
+                      className={`w-5 h-5 rounded-full block me-3 mt-0.5 border border-black border-opacity-20`}
+                      style={{ backgroundColor: item.value }}
+                    />
+                    <span className="text-sm">{item.value}</span>
+                  </div>
+                }
                 onChange={() => onItemClick(item)}
               />
             );

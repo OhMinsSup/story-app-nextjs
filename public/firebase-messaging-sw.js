@@ -18,6 +18,7 @@ if (!firebase.apps.length) {
 }
 
 firebase.messaging();
+
 //background notifications will be received here
 firebase.messaging().onBackgroundMessage(async message => {
     if (Notification.permission === 'granted') {
@@ -26,8 +27,29 @@ firebase.messaging().onBackgroundMessage(async message => {
                 if (reg)
                     await reg.showNotification(message.notification.title, {
                         body: message.notification.body,
-                        icon:  '/images/android-chrome-192x192.png',
+                        badge: '/images/android-chrome-192x192.png',
+                        icon: '/images/android-chrome-192x192.png',
                     });
             });
     }
 })
+
+self.addEventListener('notificationclick', function (event) {
+  event.notification.close();
+  event.waitUntil(
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then(function (clientList) {
+        if (clientList.length > 0) {
+          let client = clientList[0];
+          for (let i = 0; i < clientList.length; i++) {
+            if (clientList[i].focused) {
+              client = clientList[i];
+            }
+          }
+          return client.focus();
+        }
+        return clients.openWindow('/');
+      }),
+  );
+});

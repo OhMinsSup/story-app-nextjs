@@ -81,8 +81,8 @@ class FireBaseManager {
         console.log('Message received. ', payload);
       });
 
-      const device = await StoryStorage.getItem(STORAGE_KEY.DEVICE_KEY);
-      if (device && device.id && device.deviceHash) return;
+      const data = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
+      if (data && data.pushToken) return;
 
       const currentToken = await getToken(messaging, {
         vapidKey: FIREBASE_VAPID_KEY,
@@ -90,14 +90,14 @@ class FireBaseManager {
 
       if (!currentToken) return;
       // 토큰을 서버로 보내고 필요한 경우 UI를 업데이트합니다.
-      this.savePushToken(currentToken);
+      this.save(currentToken);
     } catch (error) {
       console.log(error);
     }
   }
 
-  async savePushToken(pushToken: string) {
-    const { data } = await api.postResponse<DeviceSchema>({
+  async save(pushToken: string) {
+    const { data } = await api.post<DeviceSchema>({
       url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
       body: {
         pushToken,
@@ -105,12 +105,11 @@ class FireBaseManager {
     });
 
     if (!data.ok) return;
-    const { id, deviceHash } = data.result;
-    const device = {
-      id,
-      deviceHash,
+    const record = {
+      deviceId: data.result.id,
+      pushToken,
     };
-    await StoryStorage.setItem(STORAGE_KEY.DEVICE_KEY, device);
+    await StoryStorage.setItem(STORAGE_KEY.PUSH_TOKEN_KEY, record);
   }
 }
 

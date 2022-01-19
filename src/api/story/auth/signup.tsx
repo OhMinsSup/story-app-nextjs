@@ -13,7 +13,7 @@ import type {
 } from '@api/schema/story-api';
 
 const fetcherSignup = (input: SignupInput) =>
-  api.postResponse({
+  api.post({
     url: API_ENDPOINTS.LOCAL.AUTH.SIGNUP,
     body: input,
   });

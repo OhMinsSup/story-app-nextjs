@@ -151,7 +151,6 @@ export interface LoginInput {
   email: string;
   password: string;
   deviceId?: number;
-  deviceHash?: string;
 }
 
 export interface LoginSchema extends UserModel {

@@ -1,7 +1,6 @@
 import { useQuery } from 'react-query';
 import shallow from 'zustand/shallow';
 import { useStore } from '@store/store';
-import { parseCookies } from 'nookies';
 
 import { api } from '@api/module';
 
@@ -11,11 +10,10 @@ import { isAxiosError } from '@utils/utils';
 import type { QueryFunctionContext, QueryKey } from 'react-query';
 import type { Schema, StoryErrorApi, UserModel } from '@api/schema/story-api';
 
-export const fetcherMe = async ({
-  queryKey,
-}: QueryFunctionContext<QueryKey, any>) => {
-  const [_key, _params] = queryKey;
-  const response = await api.getResponse({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const fetcherMe = async (_: QueryFunctionContext<QueryKey, any>) => {
+  // const [_key, _params] = queryKey;
+  const response = await api.get({
     url: API_ENDPOINTS.LOCAL.USER.ME,
   });
   return response.data.result;

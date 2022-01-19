@@ -61,7 +61,7 @@ const Thumbnail: React.FC = () => {
 
   const upload = async (file: File) => {
     try {
-      const response = await api.uploadResponse({
+      const response = await api.upload({
         file,
         storyType: StoryUploadTypeEnum.STORY,
       });
