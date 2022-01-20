@@ -27,8 +27,7 @@ firebase.messaging().onBackgroundMessage(async message => {
                 if (reg)
                     await reg.showNotification(message.notification.title, {
                         body: message.notification.body,
-                        badge: '/images/android-chrome-192x192.png',
-                        icon: '/images/android-chrome-192x192.png',
+                        icon: message.notification.icon
                     });
             });
     }
