@@ -1,11 +1,12 @@
 import axios from 'axios';
+import omit from 'lodash-es/omit';
 import { client } from './client';
 
 // common
 import { API_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
-import { SITE_URL } from '@constants/env';
 
 // types
+import type { AxiosRequestConfig } from 'axios';
 import type {
   Schema,
   Options,
@@ -13,6 +14,7 @@ import type {
   FileUploadParams,
   StoryUploadApi,
 } from '@api/schema/story-api';
+import { API_HOST } from '@constants/env';
 
 class APIMoudle {
   withCredentials: boolean;
@@ -24,6 +26,7 @@ class APIMoudle {
     this.withCredentials = withCredentials;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   authorized = (options?: Partial<Options>) => {
     if (typeof window === 'undefined') return null;
     const authorization = localStorage.getItem(STORAGE_KEY.TOKEN_KEY);
@@ -31,78 +34,44 @@ class APIMoudle {
     return authorization;
   };
 
-  delete = async <D = any>({
-    url,
-    headers = {},
-    options = { context: null },
-  }: Params) => {
+  baseConfig = (config: AxiosRequestConfig | undefined) => {
     const authorization = this.authorized();
-    const result = await client.delete<Schema<D>>(url, {
+    return {
+      ...(config && omit(config, ['headers'])),
       headers: {
         'Content-Type': 'application/json',
         ...([authorization, !this.withCredentials].every(Boolean) && {
           Authorization: `Bearer ${authorization}`,
         }),
-        ...headers,
+        ...(config && config.headers),
       },
-    });
-    return result;
+    };
   };
 
-  post = async <D = any>({
-    url,
-    body = {},
-    headers = {},
-    options = { context: null },
-  }: Params) => {
-    const authorization = this.authorized();
-    const result = await client.post<Schema<D>>(url, body, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...([authorization, !this.withCredentials].every(Boolean) && {
-          Authorization: `Bearer ${authorization}`,
-        }),
-        ...headers,
-      },
-    });
-    return result;
+  delete = <D = any>({ url, config = {} }: Params) => {
+    return client.delete<Schema<D>>(url, this.baseConfig(config));
   };
 
-  put = async <D = any>({
-    url,
-    body = {},
-    headers = {},
-    options = { context: null },
-  }: Params) => {
-    const authorization = this.authorized();
-    const result = await client.put<Schema<D>>(url, body, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...([authorization, !this.withCredentials].every(Boolean) && {
-          Authorization: `Bearer ${authorization}`,
-        }),
-        ...headers,
-      },
-    });
-    return result;
+  post = <D = any>({ url, body = {}, config = {} }: Params) => {
+    return client.post<Schema<D>>(url, body, this.baseConfig(config));
   };
 
-  get = async <D = any>({
-    url,
-    headers = {},
-    options = { context: null },
-  }: Params) => {
-    const authorization = this.authorized();
-    const result = await client.get<Schema<D>>(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...([authorization, !this.withCredentials].every(Boolean) && {
-          Authorization: `Bearer ${authorization}`,
-        }),
-        ...headers,
+  put = <D = any>({ url, body = {}, config = {} }: Params) => {
+    return client.put<Schema<D>>(url, body, this.baseConfig(config));
+  };
+
+  get = <D = any>({ url, config = {} }: Params) => {
+    return client.get<Schema<D>>(url, this.baseConfig(config));
+  };
+
+  logout = () => {
+    return axios.post(
+      API_ENDPOINTS.LOCAL.AUTH.LOGOUT,
+      {},
+      {
+        baseURL: API_HOST,
       },
-    });
-    return result;
+    );
   };
 
   upload = async ({ file, storyType }: FileUploadParams) => {
@@ -110,7 +79,6 @@ class APIMoudle {
     form.append('file', file);
     form.append('storyType', storyType);
     const authorization = this.authorized();
-
     const result: StoryUploadApi = await client.post(
       API_ENDPOINTS.LOCAL.FILE.ROOT,
       form,
@@ -125,13 +93,6 @@ class APIMoudle {
     );
     return result;
   };
-
-  async getMockResponse(url: string) {
-    const result = await axios(url, {
-      baseURL: SITE_URL + '/api',
-    });
-    return result;
-  }
 }
 
 export const api = new APIMoudle();

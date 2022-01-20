@@ -20,7 +20,7 @@ export const fetcherMe = async (_: QueryFunctionContext<QueryKey, any>) => {
 };
 
 export const useMeQuery = () => {
-  const { setAuth, userInfo, isLoggedIn, setLoggedIn } = useStore(
+  const { setAuth, userInfo, setLoggedIn } = useStore(
     (store) => ({
       userInfo: store.userInfo,
       isLoggedIn: store.isLoggedIn,
@@ -30,7 +30,7 @@ export const useMeQuery = () => {
     shallow,
   );
 
-  const enabled = !userInfo && isLoggedIn;
+  const enabled = !userInfo;
 
   const { data, ...fields } = useQuery<UserModel, StoryErrorApi<Schema>>(
     [API_ENDPOINTS.LOCAL.USER.ME],

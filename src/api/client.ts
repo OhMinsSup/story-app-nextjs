@@ -1,6 +1,9 @@
 import axios from 'axios';
-import { PAGE_ENDPOINTS, STATUS_CODE, STORAGE_KEY } from '@constants/constant';
+import * as Sentry from '@sentry/browser';
+import { PAGE_ENDPOINTS, STATUS_CODE } from '@constants/constant';
 import { API_HOST, IS_PROD } from '@constants/env';
+import { api } from './module';
+import { isBrowser } from '@utils/utils';
 
 export const client = axios.create({
   baseURL: API_HOST,
@@ -39,7 +42,7 @@ client.interceptors.response.use(
 
     return response;
   },
-  (error) => {
+  async (error) => {
     // 전역으로 에러팝업이 필요
     // 401 -> login page
     // 400, 403, 404 -> 잘못된호출
@@ -47,15 +50,15 @@ client.interceptors.response.use(
     if (error.response) {
       const { response } = error;
       if (response.status >= 500) {
-        // TODO: Sentry
+        Sentry.captureException(error);
       }
 
-      if (response.status === STATUS_CODE.UNAUTHORIZED) {
-        if (typeof window !== 'undefined') {
-          [STORAGE_KEY.TOKEN_KEY, STORAGE_KEY.USER_KEY].forEach((key) => {
-            localStorage.removeItem(key);
+      if (response.status === STATUS_CODE.FORBIDDEN) {
+        if (isBrowser) {
+          // 로그아웃 처리
+          await api.logout().then(() => {
+            location.href = PAGE_ENDPOINTS.INDEX;
           });
-          location.href = PAGE_ENDPOINTS.INDEX;
         }
       } else {
         // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
