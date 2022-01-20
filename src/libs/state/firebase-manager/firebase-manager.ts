@@ -72,15 +72,29 @@ class FireBaseManager {
     this._analytics = getAnalytics(this._app);
     this._messaging = getMessaging(this._app);
 
+    onMessage(this._messaging, (payload) => {
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.getRegistration().then(async function (reg) {
+          if (reg) {
+            const { notification } = payload;
+            if (notification?.body && notification?.title) {
+              await reg.showNotification(notification.title, {
+                body: notification.body,
+                icon:
+                  (notification as any).icon ??
+                  './images/android-chrome-192x192.png',
+              });
+            }
+          }
+        });
+      }
+    });
+
     this.intializeMessaging(this._messaging);
   }
 
   async intializeMessaging(messaging: Messaging) {
     try {
-      onMessage(messaging, (payload) => {
-        console.log('Message received. ', payload);
-      });
-
       const data = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
       if (data && data.pushToken) return;
 
