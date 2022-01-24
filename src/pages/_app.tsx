@@ -21,9 +21,14 @@ import SeoHead from '@components/common/SEO';
 import type { AppProps } from 'next/app';
 
 // store
-import { useCreateStore, ZustandProvider } from '@store/store';
+import { useCreateStore, useStore, ZustandProvider } from '@store/store';
 import Provider from '@contexts/provider';
 import { IS_DEPLOY_GROUP_PROD, IS_PROD, SENTRY_DSN } from '@constants/env';
+import { isAxiosError } from '@utils/utils';
+import { STATUS_CODE, STORAGE_KEY } from '@constants/constant';
+import { api } from '@api/module';
+import { useIsomorphicLayoutEffect } from 'react-use';
+import { StoryStorage } from '@libs/storage';
 
 const theme = createTheme({
   palette: {
@@ -63,8 +68,15 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-const AppPage = ({ Component, pageProps }: AppProps) => {
-  const Layout = (Component as any).Layout || Noop;
+const ClientProvider: React.FC<{ pageProps: any }> = ({
+  pageProps,
+  children,
+}) => {
+  const { setAuth, setLoggedIn, isLoggedIn } = useStore((store) => ({
+    isLoggedIn: store.isLoggedIn,
+    setAuth: store.actions?.setAuth,
+    setLoggedIn: store.actions?.setLoggedIn,
+  }));
   const queryClientRef = useRef<QueryClient>();
 
   if (!queryClientRef.current) {
@@ -73,44 +85,78 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
         queries: {
           retry: false,
           retryOnMount: false,
-          useErrorBoundary: true,
-          onError: (error) => {
-            console.log(error);
+          // useErrorBoundary: true,
+          onError: async (error) => {
+            if (isAxiosError(error)) {
+              const { status } = error.response;
+              switch (status) {
+                case STATUS_CODE.UNAUTHORIZED:
+                  await StoryStorage.removeItem(STORAGE_KEY.IS_LOGGED_IN_KEY);
+                  await api.logout().then(() => {
+                    setAuth?.(null);
+                    setLoggedIn?.(false);
+                  });
+                  break;
+                default:
+                  break;
+              }
+            }
           },
         },
       },
     });
   }
 
+  useIsomorphicLayoutEffect(() => {
+    const promises = async () => {
+      if (!isLoggedIn) {
+        const value: boolean = await StoryStorage.getItem(
+          STORAGE_KEY.IS_LOGGED_IN_KEY,
+        );
+        setLoggedIn?.(value);
+      }
+    };
+    promises();
+  }, [isLoggedIn]);
+
+  return (
+    <QueryClientProvider client={queryClientRef.current as QueryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <Provider>{children}</Provider>
+      </Hydrate>
+    </QueryClientProvider>
+  );
+};
+
+const RootProvider: React.FC<{ pageProps: any }> = ({
+  pageProps,
+  children,
+}) => {
   const createStore = useCreateStore(pageProps.initialZustandState);
 
-  const WrapperProvider: React.FC = ({ children }) => {
-    return (
-      <>
-        <QueryClientProvider client={queryClientRef.current as QueryClient}>
-          <Hydrate state={pageProps.dehydratedState}>
-            <ZustandProvider createStore={createStore}>
-              <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <Provider>{children}</Provider>
-              </ThemeProvider>
-            </ZustandProvider>
-          </Hydrate>
-        </QueryClientProvider>
-      </>
-    );
-  };
+  return (
+    <ZustandProvider createStore={createStore}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <ClientProvider pageProps={pageProps}>{children}</ClientProvider>
+      </ThemeProvider>
+    </ZustandProvider>
+  );
+};
+
+const AppPage = ({ Component, pageProps }: AppProps) => {
+  const Layout = (Component as any).Layout || Noop;
 
   return (
     <>
       <SeoHead />
-      <WrapperProvider>
+      <RootProvider pageProps={pageProps}>
         <Core>
           <Layout>
             <Component {...pageProps} />
           </Layout>
         </Core>
-      </WrapperProvider>
+      </RootProvider>
     </>
   );
 };

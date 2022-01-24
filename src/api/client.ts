@@ -53,25 +53,35 @@ client.interceptors.response.use(
         Sentry.captureException(error);
       }
 
-      if (response.status === STATUS_CODE.FORBIDDEN) {
-        if (isBrowser) {
-          // 로그아웃 처리
-          await api.logout().then(() => {
-            location.href = PAGE_ENDPOINTS.INDEX;
-          });
-        }
-      } else {
-        // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
-        console.log(
-          `%c🚫 HTTP Error 응답 수신 주소:${
-            response.config.url
-          } 유형:${response.config.method?.toUpperCase()} \n상태코드:${
-            response.status
-          }`,
-          'color: #e03131;',
-          response,
-        );
-      }
+      console.log(
+        `%c🚫 HTTP Error 응답 수신 주소:${
+          response.config.url
+        } 유형:${response.config.method?.toUpperCase()} \n상태코드:${
+          response.status
+        }`,
+        'color: #e03131;',
+        response,
+      );
+
+      // if (response.status === STATUS_CODE.FORBIDDEN) {
+      //   if (isBrowser) {
+      //     // 로그아웃 처리
+      //     await api.logout().then(() => {
+      //       location.href = PAGE_ENDPOINTS.INDEX;
+      //     });
+      //   }
+      // } else {
+      //   // 요청이 이루어졌으며 서버가 2xx의 범위를 벗어나는 상태 코드로 응답했습니다.
+      //   console.log(
+      //     `%c🚫 HTTP Error 응답 수신 주소:${
+      //       response.config.url
+      //     } 유형:${response.config.method?.toUpperCase()} \n상태코드:${
+      //       response.status
+      //     }`,
+      //     'color: #e03131;',
+      //     response,
+      //   );
+      // }
     }
 
     throw error;

@@ -79,11 +79,7 @@ const ProfileEditPage = () => {
             throw error;
           }
 
-          if (canNotification) {
-            // await Promise.all([notification.refreshNotification(), refetch()]);
-          } else {
-            // notification.unsubscribe();
-          }
+          await refetch();
           setCanNotification(canNotification);
         } catch (error) {
           if (isAxiosError(error)) {

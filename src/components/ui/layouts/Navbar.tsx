@@ -33,10 +33,9 @@ import { useMutationLogout } from '@api/story/auth';
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
   const router = useRouter();
-  const { userInfo, setAuth } = useStore(
+  const { userInfo } = useStore(
     (store) => ({
       userInfo: store.userInfo,
-      setAuth: store?.actions?.setAuth,
     }),
     shallow,
   );
@@ -66,7 +65,7 @@ const Navbar: React.FC<NavbarProps> = () => {
   };
 
   const onLogout = async () => {
-    setAuth?.(null);
+    setOpen(false);
     await mutate.mutateAsync();
     router.push(PAGE_ENDPOINTS.INDEX);
   };

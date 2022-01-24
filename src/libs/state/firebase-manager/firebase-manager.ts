@@ -1,6 +1,11 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+  isSupported,
+} from 'firebase/messaging';
 
 import { FIREBASE_VAPID_KEY } from '@constants/env';
 import { api } from '@api/module';
@@ -65,11 +70,14 @@ class FireBaseManager {
 
   async initialize() {
     const hasPremeission = await this.premission();
-    console.log('hasPremeission', hasPremeission);
-    if (!hasPremeission) return;
 
     this._app = initializeApp(firebaseConfig);
     this._analytics = getAnalytics(this._app);
+
+    const supported = await isSupported();
+
+    if (!hasPremeission && !supported) return;
+
     this._messaging = getMessaging(this._app);
 
     onMessage(this._messaging, (payload) => {
@@ -96,7 +104,9 @@ class FireBaseManager {
   async intializeMessaging(messaging: Messaging) {
     try {
       const data = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
-      if (data && data.pushToken) return;
+      if (data && data.pushToken) {
+        return;
+      }
 
       const currentToken = await getToken(messaging, {
         vapidKey: FIREBASE_VAPID_KEY,
@@ -123,6 +133,7 @@ class FireBaseManager {
       deviceId: data.result.id,
       pushToken,
     };
+
     await StoryStorage.setItem(STORAGE_KEY.PUSH_TOKEN_KEY, record);
   }
 }
