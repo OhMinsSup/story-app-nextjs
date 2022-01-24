@@ -1,9 +1,6 @@
 import axios from 'axios';
 import * as Sentry from '@sentry/browser';
-import { PAGE_ENDPOINTS, STATUS_CODE } from '@constants/constant';
 import { API_HOST, IS_PROD } from '@constants/env';
-import { api } from './module';
-import { isBrowser } from '@utils/utils';
 
 export const client = axios.create({
   baseURL: API_HOST,
