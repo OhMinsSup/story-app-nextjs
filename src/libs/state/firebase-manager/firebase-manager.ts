@@ -15,7 +15,7 @@ import { StoryStorage } from '@libs/storage';
 
 import type { FirebaseApp } from 'firebase/app';
 import type { Analytics } from 'firebase/analytics';
-import type { Messaging } from 'firebase/messaging';
+import type { Messaging, Unsubscribe } from 'firebase/messaging';
 import type { DeviceSchema } from '@api/schema/story-api';
 
 const firebaseConfig = {
@@ -37,6 +37,9 @@ class FireBaseManager {
 
   // firebase messaging
   private _messaging: Messaging | undefined;
+
+  // 앱이 종료되면 이벤트를 제거합니다.
+  private _unsubscribe: Unsubscribe | undefined;
 
   constructor() {
     this.initialize();
@@ -69,6 +72,8 @@ class FireBaseManager {
   }
 
   async initialize() {
+    console.log('Firebase initialized');
+
     const hasPremeission = await this.premission();
 
     this._app = initializeApp(firebaseConfig);
@@ -80,7 +85,80 @@ class FireBaseManager {
 
     this._messaging = getMessaging(this._app);
 
-    onMessage(this._messaging, (payload) => {
+    this.forgroundMessaging(this._messaging);
+
+    this.intializeMessaging(this._messaging);
+  }
+
+  async getPushToken(messaging: Messaging) {
+    const data = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
+    if (data && data.pushToken) {
+      return data.pushToken;
+    }
+
+    if (!messaging) {
+      return null;
+    }
+
+    const pushToken = await getToken(messaging, {
+      vapidKey: FIREBASE_VAPID_KEY,
+    });
+
+    if (!pushToken) return null;
+
+    return pushToken;
+  }
+
+  async refreshMessaging() {
+    const hasPremeission = await this.premission();
+    const supported = await isSupported();
+
+    if (!hasPremeission && !supported) return;
+
+    if (!this._app) {
+      const error = new Error('Firebase App is not initialized');
+      throw error;
+    }
+
+    if (!this._messaging) {
+      this._messaging = getMessaging(this._app);
+    }
+
+    this.forgroundMessaging(this._messaging);
+
+    this.intializeMessaging(this._messaging);
+  }
+
+  private async intializeMessaging(messaging: Messaging) {
+    const pushToken = await this.getPushToken(messaging);
+    if (!pushToken) return;
+    // 토큰을 서버로 보내고 필요한 경우 UI를 업데이트합니다.
+    await this.save(pushToken);
+  }
+
+  private async save(pushToken: string) {
+    const { data } = await api.post<DeviceSchema>({
+      url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
+      body: {
+        pushToken,
+      },
+    });
+
+    if (!data.ok) return;
+    const record = {
+      deviceId: data.result.id,
+      pushToken,
+    };
+
+    await StoryStorage.setItem(STORAGE_KEY.PUSH_TOKEN_KEY, record);
+  }
+
+  private forgroundMessaging(messaging: Messaging) {
+    if (this._unsubscribe && typeof this._unsubscribe === 'function') {
+      this._unsubscribe();
+    }
+
+    this._unsubscribe = onMessage(messaging, (payload) => {
       if (navigator.serviceWorker) {
         navigator.serviceWorker.getRegistration().then(async function (reg) {
           if (reg) {
@@ -97,45 +175,18 @@ class FireBaseManager {
         });
       }
     });
-
-    this.intializeMessaging(this._messaging);
   }
+}
 
-  async intializeMessaging(messaging: Messaging) {
-    try {
-      const data = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
-      if (data && data.pushToken) {
-        return;
-      }
+let firebaseManager: FireBaseManager;
 
-      const currentToken = await getToken(messaging, {
-        vapidKey: FIREBASE_VAPID_KEY,
-      });
+export async function hydrateFirebase() {
+  firebaseManager = new FireBaseManager();
+  (window as any).firebaseManager = firebaseManager;
+}
 
-      if (!currentToken) return;
-      // 토큰을 서버로 보내고 필요한 경우 UI를 업데이트합니다.
-      this.save(currentToken);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async save(pushToken: string) {
-    const { data } = await api.post<DeviceSchema>({
-      url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
-      body: {
-        pushToken,
-      },
-    });
-
-    if (!data.ok) return;
-    const record = {
-      deviceId: data.result.id,
-      pushToken,
-    };
-
-    await StoryStorage.setItem(STORAGE_KEY.PUSH_TOKEN_KEY, record);
-  }
+export function useFireBaseManager() {
+  return firebaseManager;
 }
 
 export default FireBaseManager;

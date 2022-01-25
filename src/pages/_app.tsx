@@ -1,7 +1,7 @@
 import '@assets/main.css';
 import 'swiper/css';
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import NProgress from 'nprogress';
 import { Router } from 'next/router';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -29,6 +29,7 @@ import { STATUS_CODE, STORAGE_KEY } from '@constants/constant';
 import { api } from '@api/module';
 import { useIsomorphicLayoutEffect } from 'react-use';
 import { StoryStorage } from '@libs/storage';
+import { hydrateFirebase } from '@libs/state/firebase-manager/firebase-manager';
 
 const theme = createTheme({
   palette: {
@@ -113,7 +114,7 @@ const ClientProvider: React.FC<{ pageProps: any }> = ({
         const value: boolean = await StoryStorage.getItem(
           STORAGE_KEY.IS_LOGGED_IN_KEY,
         );
-        setLoggedIn?.(value);
+        setLoggedIn?.(!!value);
       }
     };
     promises();
@@ -146,6 +147,10 @@ const RootProvider: React.FC<{ pageProps: any }> = ({
 
 const AppPage = ({ Component, pageProps }: AppProps) => {
   const Layout = (Component as any).Layout || Noop;
+
+  useEffect(() => {
+    hydrateFirebase();
+  }, []);
 
   return (
     <>
