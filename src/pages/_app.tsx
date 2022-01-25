@@ -86,7 +86,6 @@ const ClientProvider: React.FC<{ pageProps: any }> = ({
         queries: {
           retry: false,
           retryOnMount: false,
-          // useErrorBoundary: true,
           onError: async (error) => {
             if (isAxiosError(error)) {
               const { status } = error.response;
@@ -147,6 +146,7 @@ const RootProvider: React.FC<{ pageProps: any }> = ({
 
 const AppPage = ({ Component, pageProps }: AppProps) => {
   const Layout = (Component as any).Layout || Noop;
+  const ErrorBoundary = (Component as any).ErrorBoundary || Noop;
 
   useEffect(() => {
     hydrateFirebase();
@@ -156,11 +156,13 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
     <>
       <SeoHead />
       <RootProvider pageProps={pageProps}>
-        <Core>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </Core>
+        <ErrorBoundary>
+          <Core>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </Core>
+        </ErrorBoundary>
       </RootProvider>
     </>
   );

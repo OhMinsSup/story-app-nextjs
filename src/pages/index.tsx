@@ -11,6 +11,7 @@ import Grid from '@mui/material/Grid';
 
 import AppLayout from '@components/ui/layouts/AppLayout';
 import StoriesGridItem from '@components/common/StoriesGridItem';
+import ErrorBoundary from '@components/error/ErrorBoundary';
 
 import { fetcherStories, useStoriesQuery } from '@api/story/story';
 import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
@@ -43,7 +44,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   };
 };
 
-function IndexPage({}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function IndexPage(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
   const { data, fetchNextPage, hasNextPage } = useStoriesQuery();
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -91,3 +95,5 @@ function IndexPage({}: InferGetServerSidePropsType<typeof getServerSideProps>) {
 export default IndexPage;
 
 IndexPage.Layout = AppLayout;
+
+IndexPage.ErrorBoundary = ErrorBoundary;

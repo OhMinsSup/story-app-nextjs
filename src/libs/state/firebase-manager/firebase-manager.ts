@@ -72,8 +72,6 @@ class FireBaseManager {
   }
 
   async initialize() {
-    console.log('Firebase initialized');
-
     const hasPremeission = await this.premission();
 
     this._app = initializeApp(firebaseConfig);
