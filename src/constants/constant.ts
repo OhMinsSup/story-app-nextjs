@@ -69,7 +69,7 @@ export const WEB_APP = '@@StoryFront';
 export const STORAGE_KEY = {
   TOKEN_KEY: `${WEB_APP}/authToken`,
   USER_KEY: `${WEB_APP}/userInfo`,
-  AUTH_TOKEN_KEY: 'authToken',
+  IS_LOGGED_IN_KEY: 'isLoggedIn',
   PUSH_TOKEN_KEY: 'pushToken',
 };
 

@@ -4,8 +4,7 @@ import { useStore } from '@store/store';
 
 import { api } from '@api/module';
 
-import { API_ENDPOINTS, STATUS_CODE } from '@constants/constant';
-import { isAxiosError } from '@utils/utils';
+import { API_ENDPOINTS } from '@constants/constant';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
 import type { Schema, StoryErrorApi, UserModel } from '@api/schema/story-api';
@@ -20,12 +19,11 @@ export const fetcherMe = async (_: QueryFunctionContext<QueryKey, any>) => {
 };
 
 export const useMeQuery = () => {
-  const { setAuth, userInfo, isLoggedIn, setLoggedIn } = useStore(
+  const { setAuth, userInfo, isLoggedIn } = useStore(
     (store) => ({
       userInfo: store.userInfo,
       isLoggedIn: store.isLoggedIn,
       setAuth: store.actions?.setAuth,
-      setLoggedIn: store.actions?.setLoggedIn,
     }),
     shallow,
   );
@@ -39,15 +37,6 @@ export const useMeQuery = () => {
       enabled,
       initialData: userInfo ?? undefined,
       onSuccess: (data) => setAuth?.(data),
-      onError: (error) => {
-        if (isAxiosError(error)) {
-          const { response } = error;
-          if (response?.status === STATUS_CODE.FORBIDDEN) {
-            setLoggedIn?.(false);
-            setAuth?.(null);
-          }
-        }
-      },
     },
   );
 

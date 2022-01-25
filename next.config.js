@@ -7,7 +7,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const withNextEnv = require('next-env');
 
 const withPWA = require('next-pwa');
-const runtimeCaching = require('next-pwa/cache');
+// const runtimeCaching = require('next-pwa/cache');
 
 const IS_PROD = process.env.NODE_ENV === 'production';
 
@@ -97,8 +97,6 @@ const composeEnhancers = [
       pwa: {
         dest: 'public',
         disable: !IS_PROD,
-        runtimeCaching,
-        buildExcludes: [/middleware-manifest\.json$/],
       },
     },
   ],

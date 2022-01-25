@@ -79,16 +79,11 @@ const ProfileEditPage = () => {
             throw error;
           }
 
-          if (canNotification) {
-            // await Promise.all([notification.refreshNotification(), refetch()]);
-          } else {
-            // notification.unsubscribe();
-          }
+          await refetch();
           setCanNotification(canNotification);
         } catch (error) {
           if (isAxiosError(error)) {
             const { response } = error;
-            console.log(response);
             let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
             message = response.data.message || message;
             showAlert({
@@ -137,7 +132,6 @@ const ProfileEditPage = () => {
     } catch (error) {
       if (isAxiosError(error)) {
         const { response } = error;
-        console.log(response);
         let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
         message = response.data.message || message;
         showAlert({
@@ -167,7 +161,6 @@ const ProfileEditPage = () => {
     } catch (error) {
       if (isAxiosError(error)) {
         const { response } = error;
-        console.log(response);
         let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
         message = response.data.message || message;
         showAlert({

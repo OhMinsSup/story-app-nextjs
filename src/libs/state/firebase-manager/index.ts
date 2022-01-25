@@ -1,1 +1,4 @@
-export { default as FireBaseManager } from './firebase-manager';
+export {
+  default as FireBaseManager,
+  useFireBaseManager,
+} from './firebase-manager';

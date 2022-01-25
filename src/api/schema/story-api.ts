@@ -1,4 +1,4 @@
-import type { AxiosResponse, AxiosError } from 'axios';
+import type { AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios';
 import type {
   GetServerSidePropsContext,
   GetStaticPathsContext,
@@ -51,7 +51,7 @@ export interface Options {
 export interface Params<Body = any> {
   url: string;
   body?: Body;
-  headers?: Record<string, string>;
+  config?: AxiosRequestConfig | undefined;
   options?: Options;
 }
 

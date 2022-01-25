@@ -8,22 +8,17 @@
     "node": ">=14.15.0"
   },
   "scripts": {
-    "sitemap": "node --experimental-modules scripts/sitemap.mjs",
-    "env": "node --experimental-modules scripts/env.mjs",
-    "dev": "cross-env LOAD_ENV=local yarn env && next dev",
-    "dev:debug": "cross-env LOAD_ENV=debug yarn env && next dev",
     "build": "next build",
-    "start": "cross-env NODE_ENV=production DEPLOY_GROUP=development next start -p 3000",
-    "build:analyze": "cross-env LOAD_ENV=analyze yarn env && yarn build",
-    "build:dev": "cross-env LOAD_ENV=development yarn env && next build && next export",
-    "build:prod": "cross-env LOAD_ENV=production yarn env && next build && next export",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "sitemap": "node --experimental-modules scripts/functions/sitemap.mjs",
+    "load": "node scripts/functions/environment.js",
+    "dev": "cross-env LOCAL=local yarn load && next dev",
     "lint-types": "tsc --noEmit",
     "lint": "next lint",
     "lint-fix": "next lint --fix",
     "prettier": "prettier --list-different '**/*.{js,jsx,md,ts,tsx}'",
     "prettier-fix": "prettier --write '**/*.{js,jsx,md,ts,tsx}'",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -45,6 +40,8 @@
     "@mui/lab": "^5.0.0-alpha.60",
     "@mui/material": "^5.2.4",
     "@multiavatar/multiavatar": "^1.0.7",
+    "@sentry/browser": "^6.16.1",
+    "@sentry/tracing": "^6.16.1",
     "autoprefixer": "^10.4.0",
     "axios": "^0.24.0",
     "classnames": "^2.3.1",

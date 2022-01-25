@@ -1,11 +1,14 @@
 import '@assets/main.css';
 import 'swiper/css';
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import NProgress from 'nprogress';
 import { Router } from 'next/router';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Hydrate } from 'react-query/hydration';
+
+import * as Sentry from '@sentry/browser';
+import { Integrations } from '@sentry/tracing';
 
 // components
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -18,8 +21,15 @@ import SeoHead from '@components/common/SEO';
 import type { AppProps } from 'next/app';
 
 // store
-import { useCreateStore, ZustandProvider } from '@store/store';
+import { useCreateStore, useStore, ZustandProvider } from '@store/store';
 import Provider from '@contexts/provider';
+import { IS_DEPLOY_GROUP_PROD, IS_PROD, SENTRY_DSN } from '@constants/env';
+import { isAxiosError } from '@utils/utils';
+import { STATUS_CODE, STORAGE_KEY } from '@constants/constant';
+import { api } from '@api/module';
+import { useIsomorphicLayoutEffect } from 'react-use';
+import { StoryStorage } from '@libs/storage';
+import { hydrateFirebase } from '@libs/state/firebase-manager/firebase-manager';
 
 const theme = createTheme({
   palette: {
@@ -49,43 +59,111 @@ Router.events.on('routeChangeStart', start);
 Router.events.on('routeChangeComplete', done);
 Router.events.on('routeChangeError', done);
 
-const AppPage = ({ Component, pageProps }: AppProps) => {
-  const Layout = (Component as any).Layout || Noop;
+Sentry.init({
+  enabled: [SENTRY_DSN, IS_PROD, IS_DEPLOY_GROUP_PROD].every(Boolean),
+  dsn: SENTRY_DSN,
+  integrations: [new Integrations.BrowserTracing()],
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
+
+const ClientProvider: React.FC<{ pageProps: any }> = ({
+  pageProps,
+  children,
+}) => {
+  const { setAuth, setLoggedIn, isLoggedIn } = useStore((store) => ({
+    isLoggedIn: store.isLoggedIn,
+    setAuth: store.actions?.setAuth,
+    setLoggedIn: store.actions?.setLoggedIn,
+  }));
   const queryClientRef = useRef<QueryClient>();
 
   if (!queryClientRef.current) {
-    queryClientRef.current = new QueryClient();
+    queryClientRef.current = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          retryOnMount: false,
+          onError: async (error) => {
+            if (isAxiosError(error)) {
+              const { status } = error.response;
+              switch (status) {
+                case STATUS_CODE.UNAUTHORIZED:
+                  await StoryStorage.removeItem(STORAGE_KEY.IS_LOGGED_IN_KEY);
+                  await api.logout().then(() => {
+                    setAuth?.(null);
+                    setLoggedIn?.(false);
+                  });
+                  break;
+                default:
+                  break;
+              }
+            }
+          },
+        },
+      },
+    });
   }
 
+  useIsomorphicLayoutEffect(() => {
+    const promises = async () => {
+      if (!isLoggedIn) {
+        const value: boolean = await StoryStorage.getItem(
+          STORAGE_KEY.IS_LOGGED_IN_KEY,
+        );
+        setLoggedIn?.(!!value);
+      }
+    };
+    promises();
+  }, [isLoggedIn]);
+
+  return (
+    <QueryClientProvider client={queryClientRef.current as QueryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <Provider>{children}</Provider>
+      </Hydrate>
+    </QueryClientProvider>
+  );
+};
+
+const RootProvider: React.FC<{ pageProps: any }> = ({
+  pageProps,
+  children,
+}) => {
   const createStore = useCreateStore(pageProps.initialZustandState);
 
-  const WrapperProvider: React.FC = ({ children }) => {
-    return (
-      <>
-        <QueryClientProvider client={queryClientRef.current as QueryClient}>
-          <Hydrate state={pageProps.dehydratedState}>
-            <ZustandProvider createStore={createStore}>
-              <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <Provider>{children}</Provider>
-              </ThemeProvider>
-            </ZustandProvider>
-          </Hydrate>
-        </QueryClientProvider>
-      </>
-    );
-  };
+  return (
+    <ZustandProvider createStore={createStore}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <ClientProvider pageProps={pageProps}>{children}</ClientProvider>
+      </ThemeProvider>
+    </ZustandProvider>
+  );
+};
+
+const AppPage = ({ Component, pageProps }: AppProps) => {
+  const Layout = (Component as any).Layout || Noop;
+  const ErrorBoundary = (Component as any).ErrorBoundary || Noop;
+
+  useEffect(() => {
+    hydrateFirebase();
+  }, []);
 
   return (
     <>
       <SeoHead />
-      <WrapperProvider>
-        <Core>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </Core>
-      </WrapperProvider>
+      <RootProvider pageProps={pageProps}>
+        <ErrorBoundary>
+          <Core>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </Core>
+        </ErrorBoundary>
+      </RootProvider>
     </>
   );
 };
