@@ -26,6 +26,8 @@ export const useAnothersQuery = (
     [API_ENDPOINTS.LOCAL.STORY.ROOT, { storyId, userId }, 'ANOTHERS'],
     fetcherAnothers,
     {
+      useErrorBoundary: true,
+      retry: false,
       enabled: !!userId && !!storyId,
       onError: (error: any) => {
         setGlobalError(error);

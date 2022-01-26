@@ -33,6 +33,7 @@ export const useStoryQuery = (id: DataIdParams) => {
     {
       retry: false,
       enabled: !!id,
+      useErrorBoundary: true,
       onError: (error: Error | AxiosError<Schema<any>>) => {
         setGlobalError(error);
       },

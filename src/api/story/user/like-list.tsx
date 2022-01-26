@@ -58,6 +58,7 @@ export function useStoryLikesQuery(
   return useInfiniteQuery(getKey(), fetcherStoryLikes, {
     retry: false,
     enabled: enabled && !!id,
+    useErrorBoundary: true,
     getNextPageParam: (lastPage) => {
       const { total, pageNo } = lastPage;
       const size = params?.pageSize ?? SIZE;

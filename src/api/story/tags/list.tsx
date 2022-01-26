@@ -51,6 +51,7 @@ export function useTagsQuery(
   return useInfiniteQuery(getKey(), fetcherTags, {
     retry: false,
     enabled,
+    useErrorBoundary: true,
     getNextPageParam: (lastPage) => {
       const { total, pageNo } = lastPage;
       const size = params?.pageSize ?? SIZE;

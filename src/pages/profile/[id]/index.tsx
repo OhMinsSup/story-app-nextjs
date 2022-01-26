@@ -20,6 +20,7 @@ import AppLayout from '@components/ui/layouts/AppLayout';
 import ProfileMasthead from '@components/profile/detail/ProfileMasthead';
 import UserStoriesTabList from '@components/profile/detail/UserStoriesTabList';
 import UserStoriesLikesTabList from '@components/profile/detail/UserStoriesLikesTabList';
+import ErrorBoundary from '@components/error/ErrorBoundary';
 
 import type {
   GetServerSidePropsContext,
@@ -128,3 +129,5 @@ function ProfilePage({}: InferGetServerSidePropsType<
 export default ProfilePage;
 
 ProfilePage.Layout = AppLayout;
+
+ProfilePage.ErrorBoundary = ErrorBoundary;

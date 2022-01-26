@@ -20,6 +20,7 @@ import FormLabel from '@mui/material/FormLabel';
 import LoadingButton from '@mui/lab/LoadingButton';
 import AuthLayout from '@components/auth/common/AuthLayout';
 import VpnKey from '@mui/icons-material/VpnKey';
+import ErrorBoundary from '@components/error/ErrorBoundary';
 
 // hooks
 import { useAlert } from '@hooks/useAlert';
@@ -61,7 +62,7 @@ const initialState = {
   gender: GenderEnum.M,
 };
 
-const SignupPage: React.FC = () => {
+function SignupPage() {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement | null>(null);
   const { showAlert, Alert } = useAlert();
@@ -325,6 +326,8 @@ const SignupPage: React.FC = () => {
       <KeystoreLoginDialog visible={isOpen} close={() => setIsOpen(false)} />
     </>
   );
-};
+}
 
 export default SignupPage;
+
+SignupPage.ErrorBoundary = ErrorBoundary;

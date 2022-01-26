@@ -24,6 +24,7 @@ import PostHead from '@components/story/detail/PostHead';
 import StickyHistoryTable from '@components/story/detail/StickyHistoryTable';
 import OwnerUser from '@components/story/detail/OwnerUser';
 import AnotherStories from '@components/story/detail/AnotherStories';
+import ErrorBoundary from '@components/error/ErrorBoundary';
 
 import type {
   GetServerSidePropsContext,
@@ -175,3 +176,5 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
 export default StoryDetailPage;
 
 StoryDetailPage.Layout = AppLayout;
+
+StoryDetailPage.ErrorBoundary = ErrorBoundary;

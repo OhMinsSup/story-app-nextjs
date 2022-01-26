@@ -29,6 +29,8 @@ export const useHistoriesQuery = (id: DataIdParams) => {
     Schema
   >([API_ENDPOINTS.LOCAL.STORY.ROOT, id, 'HISTORIES'], fetcherHistories, {
     enabled: !!id,
+    useErrorBoundary: true,
+    retry: false,
     onError: (error: any) => {
       setGlobalError(error);
     },

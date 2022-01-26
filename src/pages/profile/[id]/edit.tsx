@@ -31,6 +31,7 @@ import AppLayout from '@components/ui/layouts/AppLayout';
 import ProfileEditTitle from '@components/profile/edit/ProfileEditTitle';
 import SettingUserProfile from '@components/profile/edit/SettingUserProfile';
 import SettingRow from '@components/profile/edit/SettingRow';
+import ErrorBoundary from '@components/error/ErrorBoundary';
 
 import { PAGE_ENDPOINTS } from '@constants/constant';
 import { isAxiosError, isBrowser } from '@utils/utils';
@@ -277,3 +278,5 @@ const ProfileEditPage = () => {
 export default ProfileEditPage;
 
 ProfileEditPage.Layout = AppLayout;
+
+ProfileEditPage.ErrorBoundary = ErrorBoundary;

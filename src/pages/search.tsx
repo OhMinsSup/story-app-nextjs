@@ -18,8 +18,9 @@ import { useSearchQuery } from '@api/story/search';
 import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
 import { useRouter } from 'next/router';
 import SearchDrawer from '@components/search/common/SearchDrawer';
+import ErrorBoundary from '@components/error/ErrorBoundary';
 
-const SearchPage = () => {
+function SearchPage() {
   const router = useRouter();
   const query = router.query as Record<string, any>;
   const parsedQuery: Record<string, any> | undefined = qs.parse(query, {
@@ -149,8 +150,10 @@ const SearchPage = () => {
       <SearchDrawer open={open} toggleDrawer={toggleDrawer} />
     </div>
   );
-};
+}
 
 export default SearchPage;
 
 SearchPage.Layout = AppLayout;
+
+SearchPage.ErrorBoundary = ErrorBoundary;

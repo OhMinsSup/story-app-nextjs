@@ -34,6 +34,8 @@ export const useUserProfileQuery = (id: DataIdParams) => {
     fetcherProfile,
     {
       enabled: !!id,
+      useErrorBoundary: true,
+      retry: false,
       onError: (error: Error | AxiosError<Schema<any>>) => {
         setGlobalError(error);
       },

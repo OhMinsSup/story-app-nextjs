@@ -8,6 +8,7 @@ import { useAlert } from '@hooks/useAlert';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import ErrorBoundary from '@components/error/ErrorBoundary';
 
 // icons
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -23,17 +24,17 @@ import AuthLayout from '@components/auth/common/AuthLayout';
 
 // api
 import { useMutationLogin } from '@api/story/auth';
+import { StoryStorage } from '@libs/storage';
 
 import type { LoginInput } from '@api/schema/story-api';
 import type { SubmitHandler } from 'react-hook-form';
-import { StoryStorage } from '@libs/storage';
 
 const initialState = {
   email: '',
   password: '',
 };
 
-const LoginPage: React.FC = () => {
+function LoginPage() {
   const router = useRouter();
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
@@ -200,6 +201,8 @@ const LoginPage: React.FC = () => {
       {/* <KeystoreLoginDialog /> */}
     </>
   );
-};
+}
 
 export default LoginPage;
+
+LoginPage.ErrorBoundary = ErrorBoundary;
