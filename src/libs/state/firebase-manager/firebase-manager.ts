@@ -5,11 +5,12 @@ import {
   getToken,
   onMessage,
   isSupported,
+  deleteToken,
 } from 'firebase/messaging';
 
 import { FIREBASE_VAPID_KEY } from '@constants/env';
 import { api } from '@api/module';
-import { API_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
+import { API_ENDPOINTS, RESULT_CODE, STORAGE_KEY } from '@constants/constant';
 import { isBrowser } from '@utils/utils';
 import { StoryStorage } from '@libs/storage';
 
@@ -124,7 +125,7 @@ class FireBaseManager {
 
     this.forgroundMessaging(this._messaging);
 
-    this.intializeMessaging(this._messaging);
+    await this.intializeMessaging(this._messaging);
   }
 
   private async intializeMessaging(messaging: Messaging) {
@@ -143,12 +144,26 @@ class FireBaseManager {
     });
 
     if (!data.ok) return;
-    const record = {
-      deviceId: data.result.id,
-      pushToken,
-    };
+    switch (data.resultCode) {
+      case RESULT_CODE.PUSH_TOKEN_EXPIRED:
+        if (this._messaging) {
+          const isDeleted = await deleteToken(this._messaging);
+          if (isDeleted) {
+            await this.refreshMessaging();
+          }
+        }
+        break;
+      case RESULT_CODE.OK:
+      default: {
+        const record = {
+          deviceId: data.result.id,
+          pushToken,
+        };
 
-    await StoryStorage.setItem(STORAGE_KEY.PUSH_TOKEN_KEY, record);
+        await StoryStorage.setItem(STORAGE_KEY.PUSH_TOKEN_KEY, record);
+        break;
+      }
+    }
   }
 
   private forgroundMessaging(messaging: Messaging) {
