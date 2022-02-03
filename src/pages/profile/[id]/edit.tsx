@@ -61,51 +61,49 @@ const ProfileEditPage = () => {
   const onChangeNotification = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    Notification.requestPermission(async (status) => {
-      if (status === 'granted') {
-        try {
-          const canNotification = e.target.checked;
-          const { data } = await modifyMutate({
-            dataId: Number(id),
-            canNotification,
-          });
+    if (!id) return;
 
-          if (!data.ok) {
-            const error = new Error();
-            error.name = 'ApiError';
-            error.message = JSON.stringify({
-              resultCode: data.resultCode,
-              message: data.message,
-            });
-            throw error;
-          }
+    try {
+      const canNotification = e.target.checked;
+      const { data } = await modifyMutate({
+        dataId: Number(id),
+        canNotification,
+      });
 
-          await refetch();
-          setCanNotification(canNotification);
-        } catch (error) {
-          if (isAxiosError(error)) {
-            const { response } = error;
-            let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
-            message = response.data.message || message;
-            showAlert({
-              content: {
-                text: message,
-              },
-            });
-            throw error;
-          }
-
-          if (error instanceof Error && error.name === 'ApiError') {
-            const { message } = JSON.parse(error.message);
-            showAlert({
-              content: {
-                text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
-              },
-            });
-          }
-        }
+      if (!data.ok) {
+        const error = new Error();
+        error.name = 'ApiError';
+        error.message = JSON.stringify({
+          resultCode: data.resultCode,
+          message: data.message,
+        });
+        throw error;
       }
-    });
+
+      await refetch();
+      setCanNotification(canNotification);
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const { response } = error;
+        let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
+        message = response.data.message || message;
+        showAlert({
+          content: {
+            text: message,
+          },
+        });
+        throw error;
+      }
+
+      if (error instanceof Error && error.name === 'ApiError') {
+        const { message } = JSON.parse(error.message);
+        showAlert({
+          content: {
+            text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
+          },
+        });
+      }
+    }
   };
 
   const onChangeGender = async (e: React.ChangeEvent<HTMLInputElement>) => {
