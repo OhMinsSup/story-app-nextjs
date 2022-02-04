@@ -1,10 +1,8 @@
 import { useQuery } from 'react-query';
 import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
-import { useErrorContext } from '@contexts/error/context';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
-import type { AxiosError } from 'axios';
 import type {
   DataIdParams,
   Schema,
@@ -25,8 +23,6 @@ export const fetcherOne = async ({
 };
 
 export const useStoryQuery = (id: DataIdParams) => {
-  const { setGlobalError, setResetError } = useErrorContext();
-
   const { data, ...fields } = useQuery<Schema<StorySchema>, StoryErrorApi>(
     [API_ENDPOINTS.LOCAL.STORY.ROOT, id],
     fetcherOne,
@@ -34,12 +30,6 @@ export const useStoryQuery = (id: DataIdParams) => {
       retry: false,
       enabled: !!id,
       useErrorBoundary: true,
-      onError: (error: Error | AxiosError<Schema<any>>) => {
-        setGlobalError(error);
-      },
-      onSuccess: () => {
-        setResetError();
-      },
     },
   );
   return {

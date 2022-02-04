@@ -1,14 +1,12 @@
 import { useInfiniteQuery } from 'react-query';
 import isEmpty from 'lodash-es/isEmpty';
-import { useErrorContext } from '@contexts/error/context';
 
 import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 import { makeQueryString } from '@utils/utils';
 
 import type { QueryFunctionContext, EnsuredQueryKey } from 'react-query';
-import type { ListSchema, TagSchema, Schema } from '@api/schema/story-api';
-import type { AxiosError } from 'axios';
+import type { ListSchema, TagSchema } from '@api/schema/story-api';
 
 const SIZE = 10;
 
@@ -37,8 +35,6 @@ export function useTagsQuery(
   params: Partial<SearchParams> = {},
   enabled = true,
 ) {
-  const { setGlobalError, setResetError } = useErrorContext();
-
   const getKey = () => {
     const keys: EnsuredQueryKey<any> = [API_ENDPOINTS.LOCAL.STORY.ROOT];
     if (isEmpty(params)) {
@@ -56,12 +52,6 @@ export function useTagsQuery(
       const { total, pageNo } = lastPage;
       const size = params?.pageSize ?? SIZE;
       return pageNo + 1 <= Math.ceil(total / size) ? pageNo + 1 : null;
-    },
-    onError: (error: Error | AxiosError<Schema<any>>) => {
-      setGlobalError(error);
-    },
-    onSuccess: () => {
-      setResetError();
     },
   });
 }
