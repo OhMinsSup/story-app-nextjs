@@ -4,14 +4,11 @@ import isEmpty from 'lodash-es/isEmpty';
 import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 import { makeQueryString } from '@utils/utils';
-import { useErrorContext } from '@contexts/error/context';
 
-import type { AxiosError } from 'axios';
 import type { QueryFunctionContext, EnsuredQueryKey } from 'react-query';
 import type {
   DataIdParams,
   ListSchema,
-  Schema,
   StorySchema,
 } from '@api/schema/story-api';
 
@@ -43,8 +40,6 @@ export function useStoryLikesQuery(
   params: Partial<SearchParams> = {},
   enabled = true,
 ) {
-  const { setGlobalError, setResetError } = useErrorContext();
-
   const getKey = () => {
     if (!id) return null;
     const keys: EnsuredQueryKey<any> = [API_ENDPOINTS.LOCAL.USER.LIKES(id)];
@@ -58,16 +53,11 @@ export function useStoryLikesQuery(
   return useInfiniteQuery(getKey(), fetcherStoryLikes, {
     retry: false,
     enabled: enabled && !!id,
+    useErrorBoundary: true,
     getNextPageParam: (lastPage) => {
       const { total, pageNo } = lastPage;
       const size = params?.pageSize ?? SIZE;
       return pageNo + 1 <= Math.ceil(total / size) ? pageNo + 1 : null;
-    },
-    onError: (error: Error | AxiosError<Schema<any>>) => {
-      setGlobalError(error);
-    },
-    onSuccess: () => {
-      setResetError();
     },
   });
 }

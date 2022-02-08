@@ -51,6 +51,7 @@ export function useSearchQuery(
   return useInfiniteQuery(getKey(), fetcherSearch, {
     retry: false,
     enabled,
+    useErrorBoundary: true,
     getNextPageParam: (lastPage, allPages) => {
       const { total, pageNo } = lastPage;
       const size = params?.pageSize ?? SIZE;

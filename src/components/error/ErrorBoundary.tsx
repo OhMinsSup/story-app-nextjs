@@ -11,7 +11,6 @@ class ErrorBoundary extends Component {
   };
 
   static getDerivedStateFromError(error: Error) {
-    console.log('[ErrorBoundary] getDerivedStateFromError =======>', error);
     if (error && error.message === 'Network Error') {
       return {
         networkError: true,
@@ -21,24 +20,23 @@ class ErrorBoundary extends Component {
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
-    console.log(
-      '[ErrorBoundary] componentDidCatch(errorInfo) =======>',
-      errorInfo,
-    );
-    console.log('[ErrorBoundary] componentDidCatch(error) =======>', error);
+  componentDidCatch(error: Error) {
     if (IS_PROD && IS_DEPLOY_GROUP_PROD) {
       Sentry.captureException(error);
     }
   }
 
+  handleClearError = () => {
+    this.setState({ hasError: false, networkError: false });
+  };
+
   render() {
     if (this.state.networkError) {
-      return <NetworkErrorScreen />;
+      return <NetworkErrorScreen handleClearError={this.handleClearError} />;
     }
 
     if (this.state.hasError) {
-      return <CrashErrorScreen />;
+      return <CrashErrorScreen handleClearError={this.handleClearError} />;
     }
 
     return <>{this.props.children}</>;

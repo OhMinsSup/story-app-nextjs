@@ -1,7 +1,6 @@
 import { useQuery } from 'react-query';
 import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
-import { useErrorContext } from '@contexts/error/context';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
 import type {
@@ -10,7 +9,6 @@ import type {
   Schema,
   StoryErrorApi,
 } from '@api/schema/story-api';
-import type { AxiosError } from 'axios';
 
 export const fetcherProfile = async ({
   queryKey,
@@ -25,8 +23,6 @@ export const fetcherProfile = async ({
 };
 
 export const useUserProfileQuery = (id: DataIdParams) => {
-  const { setGlobalError, setResetError } = useErrorContext();
-
   const queryKey = [API_ENDPOINTS.LOCAL.USER.ROOT, id];
 
   const { data, ...fields } = useQuery<Schema<UserModel>, StoryErrorApi>(
@@ -34,12 +30,8 @@ export const useUserProfileQuery = (id: DataIdParams) => {
     fetcherProfile,
     {
       enabled: !!id,
-      onError: (error: Error | AxiosError<Schema<any>>) => {
-        setGlobalError(error);
-      },
-      onSuccess: () => {
-        setResetError();
-      },
+      useErrorBoundary: true,
+      retry: false,
     },
   );
   return {

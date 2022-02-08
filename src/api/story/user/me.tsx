@@ -35,6 +35,7 @@ export const useMeQuery = () => {
     fetcherMe,
     {
       enabled,
+      retry: false,
       initialData: userInfo ?? undefined,
       onSuccess: (data) => setAuth?.(data),
     },

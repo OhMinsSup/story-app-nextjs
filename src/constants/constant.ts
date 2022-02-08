@@ -123,4 +123,6 @@ export const RESULT_CODE = {
   NO_PERMISSION_ACTION: 4005,
   // NFT 발생 실패
   NFT_FAIL: 4006,
+  // PUSH_TOKEN 만료
+  PUSH_TOKEN_EXPIRED: 4007,
 };

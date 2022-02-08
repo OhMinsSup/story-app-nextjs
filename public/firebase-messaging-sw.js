@@ -2,8 +2,7 @@
 importScripts('https://www.gstatic.com/firebasejs/8.5.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.5.0/firebase-messaging.js');
 
-console.log("load by firebase-messaging-sw.js");
-// if (!firebase.apps.length) {
+if (!firebase.apps.length) {
   firebase.initializeApp({
     apiKey: 'AIzaSyAcpUGHqIAup5_2iAogflpfmwNyoZSrfv4',
     authDomain: 'story-push-message.firebaseapp.com',
@@ -13,7 +12,7 @@ console.log("load by firebase-messaging-sw.js");
     appId: '1:753509563937:web:14b67d913f2947095d2d60',
     measurementId: 'G-N69G0M8781',
   });
-// }
+}
 
 firebase.messaging();
 

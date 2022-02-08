@@ -7,8 +7,9 @@ import { useStoryQuery } from '@api/story/story';
 import AppLayout from '@components/ui/layouts/AppLayout';
 import StoryForm from '@components/publish/form/StoryForm';
 import StoryLayout from '@components/ui/layouts/StoryLayout';
+import ErrorBoundary from '@components/error/ErrorBoundary';
 
-const PublishModifyPage = () => {
+function PublishModifyPage() {
   const router = useRouter();
   const id = router.query.id?.toString();
   const { data } = useStoryQuery(id);
@@ -20,8 +21,10 @@ const PublishModifyPage = () => {
       </StoryLayout>
     </>
   );
-};
+}
 
 export default PublishModifyPage;
 
 PublishModifyPage.Layout = AppLayout;
+
+PublishModifyPage.ErrorBoundary = ErrorBoundary;

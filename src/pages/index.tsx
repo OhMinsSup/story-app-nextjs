@@ -45,9 +45,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function IndexPage(
-  props: InferGetServerSidePropsType<typeof getServerSideProps>,
-) {
+function IndexPage(_: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data, fetchNextPage, hasNextPage } = useStoriesQuery();
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
