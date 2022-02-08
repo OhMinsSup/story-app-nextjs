@@ -33,12 +33,6 @@ const sortingOptions = [
     orderBy: 'asc',
   },
   {
-    label: '조회순',
-    value: 'views',
-    type: 'views',
-    orderBy: 'desc',
-  },
-  {
     label: '좋아요순',
     value: 'likes',
     type: 'likes',

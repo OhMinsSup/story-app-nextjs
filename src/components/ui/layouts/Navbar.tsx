@@ -26,9 +26,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useStore } from '@store/store';
 
 // utils
-import { PAGE_ENDPOINTS } from '@constants/constant';
+import { PAGE_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
 import { getUserThumbnail } from '@utils/utils';
 import { useMutationLogout } from '@api/story/auth';
+import { StoryStorage } from '@libs/storage';
 
 interface NavbarProps {}
 const Navbar: React.FC<NavbarProps> = () => {
@@ -66,6 +67,7 @@ const Navbar: React.FC<NavbarProps> = () => {
 
   const onLogout = async () => {
     setOpen(false);
+    await StoryStorage.removeItem(STORAGE_KEY.IS_LOGGED_IN_KEY);
     await mutate.mutateAsync();
     router.push(PAGE_ENDPOINTS.INDEX);
   };

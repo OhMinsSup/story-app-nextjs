@@ -102,10 +102,6 @@ const ClientProvider: React.FC<{ pageProps: any }> = ({
               typeSafeData.data &&
               !typeSafeData.data.ok
             ) {
-              console.log(
-                'success result code error data =====>',
-                typeSafeData,
-              );
               setError(typeSafeData.data);
             } else {
               setError(undefined);

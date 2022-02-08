@@ -89,8 +89,8 @@ export type StoryDataIdApi = AxiosResponse<Schema<DataIdSchema>>;
 export interface MediaModel {
   id: number;
   contentUrl: string;
-  originUrl: string;
-  type: StoryUploadType;
+  publidId: string;
+  version: string;
 }
 
 export interface UserModel {
