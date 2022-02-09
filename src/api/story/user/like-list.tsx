@@ -42,7 +42,7 @@ export function useStoryLikesQuery(
 ) {
   const getKey = () => {
     if (!id) return null;
-    const keys: EnsuredQueryKey<any> = [API_ENDPOINTS.LOCAL.USER.LIKES(id)];
+    const keys: EnsuredQueryKey<any> = [API_ENDPOINTS.LOCAL.STORY.LIKES(id)];
     if (isEmpty(params)) {
       return keys;
     }
