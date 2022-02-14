@@ -15,7 +15,7 @@ export const fetcherHistories = async ({
   const [_key, _params] = queryKey;
   const id = _params as string | number;
   const response = await api.get({
-    url: API_ENDPOINTS.LOCAL.STORY.HISTORIES(id),
+    url: API_ENDPOINTS.LOCAL.STORY.NFT.HISTORIES(id),
   });
   return response.data;
 };

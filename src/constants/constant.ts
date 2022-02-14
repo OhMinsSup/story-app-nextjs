@@ -37,7 +37,6 @@ export const API_ENDPOINTS = {
       ME: '/users/me',
       DETAIL: (id: string | number) => `/users/${id}`,
       UNREGIISTER: (id: string | number) => `/users/${id}/unregister`,
-      LIKES: (id: string | number) => `/users/${id}/likes/stories`,
     },
     FILE: {
       ROOT: '/files/upload',
@@ -60,6 +59,11 @@ export const API_ENDPOINTS = {
       ANOTHERS: (id: string | number, userId: string | number) =>
         `/stories/${id}/anothers/${userId}`,
       LIKE: (id: string | number) => `/stories/${id}/like`,
+      LIKES: (id: string | number) => `/stories/${id}/likes`,
+      NFT: {
+        ROOT: '/stories/nft',
+        HISTORIES: (id: string | number) => `/stories/${id}/nfts/histories`,
+      },
     },
   },
 };
