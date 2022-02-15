@@ -1,3 +1,4 @@
+import { klayUnits } from '@utils/utils';
 import * as yup from 'yup';
 
 export const common = {
@@ -66,5 +67,17 @@ export const schema = {
       .url('외부 URL형식으로 입력해주세요.')
       .notRequired(),
     tags: yup.array().of(yup.mixed()).notRequired(),
+    unit: yup.string().oneOf(klayUnits).required('단위를 입력해주세요.'),
+    price: yup
+      .string()
+      .test('price', '숫자만 입력이 가능합니다', (price) => {
+        if (!price) return true;
+        const regex = /^[0-9]+$/;
+        if (price.match(regex)) {
+          return true;
+        }
+        return false;
+      })
+      .required('가격을 입력해주세요.'),
   }),
 };

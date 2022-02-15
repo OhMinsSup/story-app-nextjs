@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm, FormProvider } from 'react-hook-form';
 
 // components
+import Grid from '@mui/material/Grid';
 import BackgroundPalette from './BackgroundPalette';
 import Thumbnail from './Thumbnail';
 import TagInput from './TagInput';
@@ -17,6 +18,7 @@ import FormLabel from '@mui/material/FormLabel';
 import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
 import LoadingButton from '@mui/lab/LoadingButton';
+import MenuItem from '@mui/material/MenuItem';
 
 // hooks
 import { useRouter } from 'next/router';
@@ -27,7 +29,7 @@ import {
 } from '@api/story/story';
 
 // common
-import { isAxiosError, generateKey } from '@utils/utils';
+import { isAxiosError, generateKey, klayUnits } from '@utils/utils';
 import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 
 // types
@@ -49,6 +51,8 @@ interface FormFieldValues {
   backgroundColor?: string;
   externalUrl?: string;
   tags: Tag[];
+  price: string;
+  unit: string;
 }
 
 const serialize = (
@@ -287,6 +291,64 @@ const StoriesForm: React.FC<StoriesFormProps> = ({ data }) => {
               />
 
               <TagInput />
+
+              <Grid
+                container
+                rowSpacing={1}
+                columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+              >
+                <Grid item xs={6}>
+                  <Controller
+                    control={control}
+                    name="unit"
+                    render={({ field }) => (
+                      <TextField
+                        id="standard-select-currency"
+                        select
+                        fullWidth
+                        label="단위"
+                        error={!!errors?.unit?.message}
+                        helperText={
+                          !!errors?.unit?.message ? errors?.unit?.message : ''
+                        }
+                        variant="standard"
+                        {...field}
+                      >
+                        {klayUnits.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={6}>
+                  <Controller
+                    control={control}
+                    name="price"
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="가격"
+                        fullWidth
+                        size="medium"
+                        color="info"
+                        placeholder="가격을 입력하세요."
+                        variant="standard"
+                        error={!!errors?.price?.message}
+                        helperText={
+                          !!errors?.price?.message ? errors?.price?.message : ''
+                        }
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
 
               <Controller
                 control={control}

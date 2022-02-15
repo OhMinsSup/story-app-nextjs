@@ -185,6 +185,7 @@ export interface StorySchema {
   name: string;
   description: string;
   backgroundColor?: string;
+  salesStatus: 'waiting' | 'sale' | 'complete' | 'end';
   externalUrl?: string;
   createdAt: string;
   updatedAt: string;
@@ -198,15 +199,8 @@ export interface StorySchema {
 export interface HistorySchema {
   id: number;
   status: string;
-  to: UserModel;
-  from: UserModel;
-  tokenId: number;
-  toHash: string;
-  fromHash: string;
   blockNumber: string;
   blockHash: string;
   transactionHash: string;
-  senderTxHash: string;
-  type: string;
   createdAt: string;
 }

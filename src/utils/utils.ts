@@ -157,3 +157,17 @@ export function canUseDOM(): boolean {
 }
 
 export const isBrowser = canUseDOM();
+
+export const klayUnits = [
+  'peb',
+  'kpeb',
+  'Mpeb',
+  'Gpeb',
+  'Ston',
+  'uKLAY',
+  'mKLAY',
+  'KLAY',
+  'kKLAY',
+  'MKLAY',
+  'GKLAY',
+];

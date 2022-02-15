@@ -18,24 +18,10 @@ import Snackbar from '@mui/material/Snackbar';
 
 import { useHistoriesQuery } from '@api/story/story';
 
-import {
-  generateAvatar,
-  getShortAddress,
-  getUserThumbnail,
-} from '@utils/utils';
-import { Avatar } from '@mui/material';
+import { getShortAddress } from '@utils/utils';
 
 interface Column {
-  id:
-    | 'status'
-    | 'to'
-    | 'from'
-    | 'type'
-    | 'blockNumber'
-    | 'transactionHash'
-    | 'senderTxHash'
-    | 'createdAt'
-    | 'blockHash';
+  id: 'status' | 'blockNumber' | 'transactionHash' | 'createdAt' | 'blockHash';
   label: string;
   minWidth?: number;
   align?: 'left';
@@ -43,96 +29,17 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
+  { id: 'status', label: '타입' },
   { id: 'blockNumber', label: 'BlockNo' },
   {
     id: 'blockHash',
     label: 'BlockHash',
     format: (value) => getShortAddress(value),
   },
-  { id: 'status', label: '타입' },
-  {
-    id: 'to',
-    label: '보낸사람',
-    align: 'left',
-    format: (value, row, copy) => {
-      return (
-        <div className="flex items-center">
-          <Avatar
-            src={getUserThumbnail(value.profile)}
-            alt={value.profile.nickname}
-          />
-          <div className="flex p-2 flex-col">
-            <p>{value.profile.nickname}</p>
-            <p>{getShortAddress(row.toHash)}</p>
-          </div>
-          <IconButton
-            color="primary"
-            aria-label="content copy"
-            component="span"
-            size="small"
-            onClick={() => copy(row.toHash)}
-          >
-            <ContentCopyIcon />
-          </IconButton>
-        </div>
-      );
-    },
-  },
-  {
-    id: 'from',
-    label: '받는사람',
-    align: 'left',
-    format: (value, row, copy) => {
-      let nickname = value.profile.nickname;
-      let thumbnail = getUserThumbnail(value.profile);
-      if (row.status === 'ISSUE') {
-        nickname = '컨트랙트';
-        thumbnail = `data:image/svg+xml;utf8,${encodeURIComponent(
-          generateAvatar('story_smart_contract_icon'),
-        )}`;
-      }
-      return (
-        <div className="flex items-center">
-          <Avatar src={thumbnail} alt={nickname} />
-          <div className="flex p-2 flex-col">
-            <p>{nickname}</p>
-            <p>{getShortAddress(row.fromHash)}</p>
-          </div>
-          <IconButton
-            color="primary"
-            aria-label="content copy"
-            component="span"
-            size="small"
-            onClick={() => copy(row.fromHash)}
-          >
-            <ContentCopyIcon />
-          </IconButton>
-        </div>
-      );
-    },
-  },
   {
     id: 'transactionHash',
-    label: 'transactionHash',
+    label: 'TransactionHash',
     format: (value: any, _, copy) => (
-      <div className="flex items-center">
-        {getShortAddress(value)}{' '}
-        <IconButton
-          color="primary"
-          aria-label="content copy"
-          component="span"
-          size="small"
-          onClick={() => copy(value)}
-        >
-          <ContentCopyIcon />
-        </IconButton>
-      </div>
-    ),
-  },
-  {
-    id: 'senderTxHash',
-    label: 'senderTxHash',
-    format: (value, _, copy) => (
       <div className="flex items-center">
         {getShortAddress(value)}{' '}
         <IconButton

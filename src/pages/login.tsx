@@ -133,7 +133,6 @@ function LoginPage() {
                   required
                   label="이메일"
                   placeholder="이메일"
-                  autoComplete="off"
                   color="info"
                   variant="standard"
                   fullWidth
@@ -157,7 +156,6 @@ function LoginPage() {
                   required
                   label="비밀번호"
                   placeholder="비밀번호"
-                  autoComplete="off"
                   color="info"
                   variant="standard"
                   fullWidth
