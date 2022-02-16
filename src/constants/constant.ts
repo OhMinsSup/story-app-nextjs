@@ -62,7 +62,10 @@ export const API_ENDPOINTS = {
       LIKES: (id: string | number) => `/stories/${id}/likes`,
       NFT: {
         ROOT: '/stories/nft',
+        BUYER: (id: string | number) => `/stories/nfts/${id}/buyer`,
+        SELLER: (id: string | number) => `/stories/nfts/${id}/seller`,
         HISTORIES: (id: string | number) => `/stories/${id}/nfts/histories`,
+        OFFERS: (id: string | number) => `/stories/${id}/nfts/offers`,
       },
     },
   },

@@ -15,21 +15,20 @@ import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 import Description from '@components/story/detail/Description';
 import AppLayout from '@components/ui/layouts/AppLayout';
 import NavigationTopbar from '@components/story/detail/NavigationTopbar';
 import ImageViewer from '@components/story/detail/ImageViewer';
 import PostHead from '@components/story/detail/PostHead';
-import StickyHistoryTable from '@components/story/detail/StickyHistoryTable';
+import HistoryTable from '@components/story/detail/HistoryTable';
 import OwnerUser from '@components/story/detail/OwnerUser';
 import AnotherStories from '@components/story/detail/AnotherStories';
 import ErrorBoundary from '@components/error/ErrorBoundary';
+import OfferTable from '@components/story/detail/OfferTable';
 
-import type {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-} from 'next';
+import type { GetServerSidePropsContext } from 'next';
 
 // hooks
 import { useStore } from '@store/store';
@@ -59,9 +58,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   };
 };
 
-function StoryDetailPage({}: InferGetServerSidePropsType<
-  typeof getServerSideProps
->) {
+function StoryDetailPage() {
   const router = useRouter();
   const id = router.query.id?.toString();
 
@@ -145,6 +142,11 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
                 name={data?.name}
               />
               <Stack direction="row-reverse" spacing={1}>
+                {data?.owner?.id !== userInfo?.id && (
+                  <Button variant="outlined" color="primary">
+                    구매하기
+                  </Button>
+                )}
                 <IconButton
                   aria-label="favorite-border"
                   color={isLike ? 'error' : 'secondary'}
@@ -164,7 +166,8 @@ function StoryDetailPage({}: InferGetServerSidePropsType<
               <Description description={data?.description ?? ''} />
             </>
           )}
-          <StickyHistoryTable />
+          <OfferTable />
+          <HistoryTable />
           <AnotherStories userId={data?.user.id} storyId={data?.id} />
         </Stack>
       </Container>

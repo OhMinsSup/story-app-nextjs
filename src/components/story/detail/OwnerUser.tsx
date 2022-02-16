@@ -12,11 +12,11 @@ import Skeleton from '@mui/material/Skeleton';
 import { getUserThumbnail } from '@utils/utils';
 
 // types
-import type { ProfileModel } from '@api/schema/story-api';
+import type { ProfileSchema } from '@api/schema/story-api';
 
 interface OwnerUserProps {
-  ownerProfile: ProfileModel;
-  creatorProfile: ProfileModel;
+  ownerProfile: ProfileSchema;
+  creatorProfile: ProfileSchema;
 }
 function OwnerUser({ ownerProfile, creatorProfile }: Partial<OwnerUserProps>) {
   return (

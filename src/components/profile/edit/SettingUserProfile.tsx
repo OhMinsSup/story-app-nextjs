@@ -12,10 +12,10 @@ import { useRouter } from 'next/router';
 import { api } from '@api/module';
 
 import { StoryUploadTypeEnum } from '@api/schema/enum';
-import type { ProfileModel } from '@api/schema/story-api';
+import type { ProfileSchema } from '@api/schema/story-api';
 
 interface SettingUserProfileProps {
-  profile?: ProfileModel;
+  profile?: ProfileSchema;
   onRefresh?: () => Promise<any>;
 }
 const SettingUserProfile: React.FC<SettingUserProfileProps> = ({

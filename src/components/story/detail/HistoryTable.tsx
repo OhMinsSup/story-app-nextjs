@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useCopyToClipboard } from 'react-use';
@@ -16,7 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Snackbar from '@mui/material/Snackbar';
 
-import { useHistoriesQuery } from '@api/story/story';
+import { useHistoriesQuery } from '@api/story/nft';
 
 import { getShortAddress } from '@utils/utils';
 
@@ -56,8 +55,7 @@ const columns: readonly Column[] = [
   },
 ];
 
-interface StickyHistoryTableProps {}
-const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({}) => {
+const HistoryTable: React.FC = ({}) => {
   const router = useRouter();
   const id = router.query.id?.toString();
   const { data } = useHistoriesQuery(id);
@@ -161,4 +159,4 @@ const StickyHistoryTable: React.FC<StickyHistoryTableProps> = ({}) => {
   );
 };
 
-export default StickyHistoryTable;
+export default HistoryTable;

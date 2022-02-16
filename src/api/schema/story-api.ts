@@ -86,7 +86,7 @@ export type StoryDataIdApi = AxiosResponse<Schema<DataIdSchema>>;
 
 // ================== Model =================== //
 
-export interface MediaModel {
+export interface MediaSchema {
   id: number;
   contentUrl: string;
   publidId: string;
@@ -96,15 +96,15 @@ export interface MediaModel {
 export interface UserModel {
   id: number;
   email: string;
-  profile: ProfileModel;
-  account: AccountModel;
+  profile: ProfileSchema;
+  account: AccountSchema;
 }
 
-export interface AccountModel {
+export interface AccountSchema {
   address: string;
 }
 
-export interface ProfileModel {
+export interface ProfileSchema {
   nickname: string;
   profileUrl?: string | null;
   avatarSvg: string;
@@ -131,6 +131,33 @@ export interface DeviceSchema {
   userId: number | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface HistorySchema {
+  id: number;
+  status: string;
+  blockNumber: string;
+  blockHash: string;
+  transactionHash: string;
+  createdAt: string;
+}
+
+export interface OfferSchema {
+  id: number;
+  buyer: {
+    profile: Pick<
+      ProfileSchema,
+      'nickname' | 'avatarSvg' | 'defaultProfile' | 'profileUrl'
+    >;
+  };
+  seller: {
+    profile: Pick<
+      ProfileSchema,
+      'nickname' | 'avatarSvg' | 'defaultProfile' | 'profileUrl'
+    >;
+  };
+  price: string;
+  unit: string;
 }
 
 // ================== User  ================== //
@@ -189,18 +216,9 @@ export interface StorySchema {
   externalUrl?: string;
   createdAt: string;
   updatedAt: string;
-  media: MediaModel;
+  media: MediaSchema;
   likes: { userId: number }[];
   user: UserModel;
   owner: UserModel;
   tags: TagSchema[];
-}
-
-export interface HistorySchema {
-  id: number;
-  status: string;
-  blockNumber: string;
-  blockHash: string;
-  transactionHash: string;
-  createdAt: string;
 }
