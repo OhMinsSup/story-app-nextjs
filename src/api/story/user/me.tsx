@@ -36,6 +36,7 @@ export const useMeQuery = () => {
     {
       enabled,
       retry: false,
+      refetchOnWindowFocus: true,
       initialData: userInfo ?? undefined,
       onSuccess: (data) => setAuth?.(data),
     },

@@ -18,7 +18,7 @@ export const fetcherOffers = async ({
 
 export const useOffersQuery = (id: DataIdParams) => {
   const { data, ...fields } = useQuery<Schema<{ list: OfferSchema[] }>, Schema>(
-    [API_ENDPOINTS.LOCAL.STORY.ROOT, id, 'OFFERS'],
+    [API_ENDPOINTS.LOCAL.STORY.ROOT, Number(id), 'OFFERS'],
     fetcherOffers,
     {
       enabled: !!id,

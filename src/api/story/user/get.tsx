@@ -23,7 +23,7 @@ export const fetcherProfile = async ({
 };
 
 export const useUserProfileQuery = (id: DataIdParams) => {
-  const queryKey = [API_ENDPOINTS.LOCAL.USER.ROOT, id];
+  const queryKey = [API_ENDPOINTS.LOCAL.USER.ROOT, Number(id)];
 
   const { data, ...fields } = useQuery<Schema<UserModel>, StoryErrorApi>(
     queryKey,

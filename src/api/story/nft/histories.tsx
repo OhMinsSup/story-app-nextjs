@@ -24,11 +24,15 @@ export const useHistoriesQuery = (id: DataIdParams) => {
   const { data, ...fields } = useQuery<
     Schema<{ list: HistorySchema[] }>,
     Schema
-  >([API_ENDPOINTS.LOCAL.STORY.ROOT, id, 'HISTORIES'], fetcherHistories, {
-    enabled: !!id,
-    useErrorBoundary: true,
-    retry: false,
-  });
+  >(
+    [API_ENDPOINTS.LOCAL.STORY.ROOT, Number(id), 'HISTORIES'],
+    fetcherHistories,
+    {
+      enabled: !!id,
+      useErrorBoundary: true,
+      retry: false,
+    },
+  );
   return {
     data: data?.result,
     originData: data,

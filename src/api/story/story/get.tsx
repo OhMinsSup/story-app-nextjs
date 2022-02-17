@@ -24,7 +24,7 @@ export const fetcherOne = async ({
 
 export const useStoryQuery = (id: DataIdParams) => {
   const { data, ...fields } = useQuery<Schema<StorySchema>, StoryErrorApi>(
-    [API_ENDPOINTS.LOCAL.STORY.ROOT, id],
+    [API_ENDPOINTS.LOCAL.STORY.ROOT, Number(id)],
     fetcherOne,
     {
       retry: false,

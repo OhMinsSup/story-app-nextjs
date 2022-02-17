@@ -95,6 +95,7 @@ const ClientProvider: React.FC<{ pageProps: any }> = ({
         queries: {
           retry: false,
           retryOnMount: false,
+          refetchOnWindowFocus: false,
           onSuccess: (data: unknown) => {
             const typeSafeData = data as StoryApi;
             if (

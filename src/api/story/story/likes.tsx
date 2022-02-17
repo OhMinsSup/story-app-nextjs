@@ -49,9 +49,9 @@ export function useMutationLike() {
       data: { resultCode },
     } = data;
     if (resultCode === RESULT_CODE.OK) {
-      await queryClient.prefetchQuery([
+      await queryClient.invalidateQueries([
         API_ENDPOINTS.LOCAL.STORY.ROOT,
-        variables.dataId,
+        Number(variables.dataId),
       ]);
     }
   };

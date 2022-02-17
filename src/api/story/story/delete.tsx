@@ -27,9 +27,10 @@ export function useMutationStoryDelete() {
       data: { resultCode },
     } = data;
     if (resultCode === RESULT_CODE.OK) {
-      queryClient.invalidateQueries(
-        API_ENDPOINTS.LOCAL.STORY.DETAIL(variables.dataId),
-      );
+      queryClient.removeQueries([
+        API_ENDPOINTS.LOCAL.STORY.ROOT,
+        Number(variables.dataId),
+      ]);
     }
   };
 

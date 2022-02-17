@@ -22,10 +22,7 @@ import UserStoriesTabList from '@components/profile/detail/UserStoriesTabList';
 import UserStoriesLikesTabList from '@components/profile/detail/UserStoriesLikesTabList';
 import ErrorBoundary from '@components/error/ErrorBoundary';
 
-import type {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-} from 'next';
+import type { GetServerSidePropsContext } from 'next';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const id = ctx.query.id?.toString();
@@ -57,9 +54,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   };
 };
 
-function ProfilePage({}: InferGetServerSidePropsType<
-  typeof getServerSideProps
->) {
+function ProfilePage() {
   const router = useRouter();
   const id = router.query.id?.toString();
 

@@ -8,41 +8,34 @@ import { API_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 
 // types
 import type {
-  DataIdParams,
-  PublishInput,
+  DataIdSchema,
+  StoryApi,
   StoryDataIdApi,
   StoryErrorApi,
 } from '@api/schema/story-api';
 
-export type Input = PublishInput & {
-  dataId: DataIdParams;
-};
-
-export function useMutationStoryModifiy() {
+export function useMutationStatusUpdate() {
   const queryClient = useQueryClient();
 
-  const fetcherModify = (input: Input) => {
-    const id = input.dataId ?? '';
-    return api.put({
-      url: API_ENDPOINTS.LOCAL.STORY.DETAIL(id),
-      body: input,
+  const fetcherStatusUpdate = (data: DataIdSchema) =>
+    api.put({
+      url: API_ENDPOINTS.LOCAL.STORY.STATUS(data.dataId),
     });
-  };
 
-  const onSuccess = async (data: StoryDataIdApi, variables: Input) => {
+  const onSuccess = async (data: StoryDataIdApi, variables: DataIdSchema) => {
     const {
       data: { resultCode },
     } = data;
     if (resultCode === RESULT_CODE.OK) {
       await queryClient.invalidateQueries([
         API_ENDPOINTS.LOCAL.STORY.ROOT,
-        Number(variables.dataId),
+        variables.dataId,
       ]);
     }
   };
 
-  const mutation = useMutation<StoryDataIdApi, StoryErrorApi, Input>(
-    fetcherModify,
+  const mutation = useMutation<StoryApi, StoryErrorApi, DataIdSchema>(
+    fetcherStatusUpdate,
     {
       onSuccess,
     },

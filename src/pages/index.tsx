@@ -16,10 +16,7 @@ import ErrorBoundary from '@components/error/ErrorBoundary';
 import { fetcherStories, useStoriesQuery } from '@api/story/story';
 import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
 
-import type {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-} from 'next';
+import type { GetServerSidePropsContext } from 'next';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const queryClient = new QueryClient();
@@ -44,8 +41,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function IndexPage(_: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function IndexPage() {
   const { data, fetchNextPage, hasNextPage } = useStoriesQuery();
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);

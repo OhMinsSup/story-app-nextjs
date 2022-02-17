@@ -30,7 +30,7 @@ export function useMutationStoryRegister() {
     if (resultCode === RESULT_CODE.OK) {
       await queryClient.prefetchQuery([
         API_ENDPOINTS.LOCAL.STORY.ROOT,
-        result.dataId,
+        Number(result.dataId),
       ]);
     }
   };

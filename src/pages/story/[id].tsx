@@ -3,7 +3,13 @@ import { useRouter } from 'next/router';
 import { QueryClient, dehydrate } from 'react-query';
 
 // api
-import { fetcherOne, useMutationLike, useStoryQuery } from '@api/story/story';
+import {
+  fetcherOne,
+  useMutationLike,
+  useMutationStatusUpdate,
+  useStoryQuery,
+} from '@api/story/story';
+import { fetcherOffers, fetcherHistories } from '@api/story/nft';
 import { client } from '@api/client';
 
 // common
@@ -16,6 +22,7 @@ import IconButton from '@mui/material/IconButton';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 import Description from '@components/story/detail/Description';
 import AppLayout from '@components/ui/layouts/AppLayout';
@@ -46,10 +53,20 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     }
   }
 
-  await queryClient.prefetchQuery(
-    [API_ENDPOINTS.LOCAL.STORY.ROOT, id],
-    fetcherOne,
-  );
+  await Promise.all([
+    queryClient.prefetchQuery(
+      [API_ENDPOINTS.LOCAL.STORY.ROOT, Number(id)],
+      fetcherOne,
+    ),
+    queryClient.prefetchQuery(
+      [API_ENDPOINTS.LOCAL.STORY.ROOT, Number(id), 'OFFERS'],
+      fetcherOffers,
+    ),
+    queryClient.prefetchQuery(
+      [API_ENDPOINTS.LOCAL.STORY.ROOT, Number(id), 'HISTORIES'],
+      fetcherHistories,
+    ),
+  ]);
 
   return {
     props: {
@@ -65,7 +82,8 @@ function StoryDetailPage() {
   const userInfo = useStore((store) => store.userInfo);
 
   const { data, isLoading } = useStoryQuery(id);
-  const mutate = useMutationLike();
+  const like = useMutationLike();
+  const status = useMutationStatusUpdate();
   const { Alert, showAlert } = useAlert();
 
   const isLike = !!data?.likes.find((like) => like.userId === userInfo?.id);
@@ -75,9 +93,51 @@ function StoryDetailPage() {
     const dataId = id;
 
     try {
-      const { data } = await mutate.mutateAsync({
+      const { data } = await like.mutateAsync({
         dataId,
         action: isLike ? 'unlike' : 'like',
+      });
+
+      if (!data.ok) {
+        const error = new Error();
+        error.name = 'ApiError';
+        error.message = JSON.stringify({
+          resultCode: data.resultCode,
+          message: data.message,
+        });
+        throw error;
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const { response } = error;
+        let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
+        message = response.data.message || message;
+        showAlert({
+          content: {
+            text: message,
+          },
+        });
+        throw error;
+      }
+
+      if (error instanceof Error && error.name === 'ApiError') {
+        const { message } = JSON.parse(error.message);
+        showAlert({
+          content: {
+            text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
+          },
+        });
+      }
+    }
+  };
+
+  const onClickStatus = async () => {
+    if (!id) return;
+    const dataId = Number(id);
+
+    try {
+      const { data } = await status.mutateAsync({
+        dataId,
       });
 
       if (!data.ok) {
@@ -142,11 +202,23 @@ function StoryDetailPage() {
                 name={data?.name}
               />
               <Stack direction="row-reverse" spacing={1}>
-                {data?.owner?.id !== userInfo?.id && (
-                  <Button variant="outlined" color="primary">
-                    구매하기
-                  </Button>
-                )}
+                {data?.owner?.id !== userInfo?.id &&
+                  data?.salesStatus === 'sale' && (
+                    <Button variant="outlined" color="primary">
+                      구매하기
+                    </Button>
+                  )}
+                {data?.owner?.id === userInfo?.id &&
+                  data?.salesStatus === 'waiting' && (
+                    <LoadingButton
+                      variant="outlined"
+                      color="primary"
+                      loading={status.isLoading}
+                      onClick={onClickStatus}
+                    >
+                      판매하기
+                    </LoadingButton>
+                  )}
                 <IconButton
                   aria-label="favorite-border"
                   color={isLike ? 'error' : 'secondary'}

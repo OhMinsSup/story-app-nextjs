@@ -60,6 +60,7 @@ export const API_ENDPOINTS = {
         `/stories/${id}/anothers/${userId}`,
       LIKE: (id: string | number) => `/stories/${id}/like`,
       LIKES: (id: string | number) => `/stories/${id}/likes`,
+      STATUS: (id: string | number) => `/stories/${id}/status`,
       NFT: {
         ROOT: '/stories/nft',
         BUYER: (id: string | number) => `/stories/nfts/${id}/buyer`,
