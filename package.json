@@ -53,7 +53,7 @@
     "firebase": "^9.6.5",
     "localforage": "^1.10.0",
     "lodash-es": "^4.17.21",
-    "next": "^12.0.10",
+    "next": "^12.1.0",
     "next-compose-plugins": "^2.2.1",
     "next-env": "^1.1.1",
     "next-pwa": "^5.4.4",
