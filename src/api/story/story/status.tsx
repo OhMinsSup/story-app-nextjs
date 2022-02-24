@@ -14,15 +14,22 @@ import type {
   StoryErrorApi,
 } from '@api/schema/story-api';
 
+interface Input extends DataIdSchema {
+  status: string;
+}
+
 export function useMutationStatusUpdate() {
   const queryClient = useQueryClient();
 
-  const fetcherStatusUpdate = (data: DataIdSchema) =>
+  const fetcherStatusUpdate = (data: Input) =>
     api.put({
       url: API_ENDPOINTS.LOCAL.STORY.STATUS(data.dataId),
+      body: {
+        status: data.status,
+      },
     });
 
-  const onSuccess = async (data: StoryDataIdApi, variables: DataIdSchema) => {
+  const onSuccess = async (data: StoryDataIdApi, variables: Input) => {
     const {
       data: { resultCode },
     } = data;
@@ -34,7 +41,7 @@ export function useMutationStatusUpdate() {
     }
   };
 
-  const mutation = useMutation<StoryApi, StoryErrorApi, DataIdSchema>(
+  const mutation = useMutation<StoryApi, StoryErrorApi, Input>(
     fetcherStatusUpdate,
     {
       onSuccess,

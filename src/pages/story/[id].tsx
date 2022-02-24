@@ -131,13 +131,14 @@ function StoryDetailPage() {
     }
   };
 
-  const onClickStatus = async () => {
+  const onClickStatus = async (value: string) => {
     if (!id) return;
     const dataId = Number(id);
 
     try {
       const { data } = await status.mutateAsync({
         dataId,
+        status: value,
       });
 
       if (!data.ok) {
@@ -205,7 +206,7 @@ function StoryDetailPage() {
                 {data?.owner?.id !== userInfo?.id &&
                   data?.salesStatus === 'sale' && (
                     <Button variant="outlined" color="primary">
-                      구매하기
+                      구매
                     </Button>
                   )}
                 {data?.owner?.id === userInfo?.id &&
@@ -214,9 +215,20 @@ function StoryDetailPage() {
                       variant="outlined"
                       color="primary"
                       loading={status.isLoading}
-                      onClick={onClickStatus}
+                      onClick={() => onClickStatus('sale')}
                     >
-                      판매하기
+                      판매
+                    </LoadingButton>
+                  )}
+                {data?.owner?.id === userInfo?.id &&
+                  data?.salesStatus === 'sale' && (
+                    <LoadingButton
+                      variant="outlined"
+                      color="primary"
+                      loading={status.isLoading}
+                      onClick={() => onClickStatus('waiting')}
+                    >
+                      판매취소
                     </LoadingButton>
                   )}
                 <IconButton
