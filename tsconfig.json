@@ -37,5 +37,5 @@
     "**/*.tsx",
     "**/*.js"
   ],
-  "exclude": ["node_modules", ".next", "out", "scripts"]
+  "exclude": ["node_modules", ".next", "out", "scripts", "legacy_pages"]
 }

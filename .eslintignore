@@ -18,3 +18,5 @@ truffle-config.js
 
 # scripts
 scripts/
+
+legacy_pages/

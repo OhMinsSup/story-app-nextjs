@@ -1,17 +1,21 @@
-import { useQuery } from 'react-query';
 import shallow from 'zustand/shallow';
+
+// hooks
+import { useQuery } from 'react-query';
 import { useStore } from '@store/store';
 
+// api
 import { api } from '@api/module';
 
+// constants
 import { API_ENDPOINTS } from '@constants/constant';
 
+// types
 import type { QueryFunctionContext, QueryKey } from 'react-query';
 import type { Schema, StoryErrorApi, UserModel } from '@api/schema/story-api';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const fetcherMe = async (_: QueryFunctionContext<QueryKey, any>) => {
-  // const [_key, _params] = queryKey;
   const response = await api.get({
     url: API_ENDPOINTS.LOCAL.USER.ME,
   });
@@ -44,6 +48,7 @@ export const useMeQuery = () => {
 
   return {
     userInfo: userInfo ?? data,
+    fetcherMe,
     ...fields,
   };
 };

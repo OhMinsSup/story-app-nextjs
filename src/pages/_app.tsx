@@ -1,191 +1,112 @@
 import '@assets/main.css';
 import 'swiper/css';
 
-import React, { useEffect, useRef } from 'react';
-import NProgress from 'nprogress';
-import { Router } from 'next/router';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { Hydrate } from 'react-query/hydration';
-
-import * as Sentry from '@sentry/browser';
-import { Integrations } from '@sentry/tracing';
+import React, { useEffect } from 'react';
 
 // components
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { blueGrey, red, blue } from '@mui/material/colors';
-import CssBaseline from '@mui/material/CssBaseline';
-import Core from '@components/common/Core';
-import SeoHead from '@components/common/SEO';
+import { Core } from '@components/common/Core';
+import { MantineProvider } from '@mantine/core';
+import { Noop } from '@components/ui/Noop';
+import { Provider } from '@contexts/index';
+import { SEO } from '@components/common/SEO';
 
 // type
 import type { AppProps } from 'next/app';
-import type { StoryApi } from '@api/schema/story-api';
 
 // store
-import Provider from '@contexts/provider';
-import { useCreateStore, useStore, ZustandProvider } from '@store/store';
+import { useCreateStore, ZustandProvider } from '@store/store';
+import {
+  useAsyncFn,
+  useIsomorphicLayoutEffect,
+  usePermission,
+} from 'react-use';
 
 // utils
-import { isAxiosError } from '@utils/utils';
-import { hydrateFirebase } from '@libs/state/firebase-manager/firebase-manager';
-import { IS_DEPLOY_GROUP_PROD, IS_PROD, SENTRY_DSN } from '@constants/env';
-import { STATUS_CODE, STORAGE_KEY } from '@constants/constant';
-
-// hooks
-import { useIsomorphicLayoutEffect } from 'react-use';
-import { useErrorContext } from '@contexts/error/context';
-
-// api
-import { api } from '@api/module';
-import { StoryStorage } from '@libs/storage';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: blue[600],
-    },
-    secondary: {
-      main: blueGrey[700],
-    },
-    error: {
-      main: red.A400,
-    },
-  },
-});
-
-const Noop: React.FC = ({ children }) => <>{children}</>;
-
-const start = () => {
-  NProgress.start();
-};
-
-const done = () => {
-  NProgress.done();
-};
-
-Router.events.on('routeChangeStart', start);
-Router.events.on('routeChangeComplete', done);
-Router.events.on('routeChangeError', done);
-
-Sentry.init({
-  enabled: [SENTRY_DSN, IS_PROD, IS_DEPLOY_GROUP_PROD].every(Boolean),
-  dsn: SENTRY_DSN,
-  integrations: [new Integrations.BrowserTracing()],
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
-
-const ClientProvider: React.FC<{ pageProps: any }> = ({
-  pageProps,
-  children,
-}) => {
-  const { setError } = useErrorContext();
-  const { setAuth, setLoggedIn, isLoggedIn } = useStore((store) => ({
-    isLoggedIn: store.isLoggedIn,
-    setAuth: store.actions?.setAuth,
-    setLoggedIn: store.actions?.setLoggedIn,
-  }));
-  const queryClientRef = useRef<QueryClient>();
-
-  if (!queryClientRef.current) {
-    queryClientRef.current = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-          retryOnMount: false,
-          refetchOnWindowFocus: false,
-          onSuccess: (data: unknown) => {
-            const typeSafeData = data as StoryApi;
-            if (
-              typeof typeSafeData.data === 'object' &&
-              typeSafeData.data &&
-              !typeSafeData.data.ok
-            ) {
-              setError(typeSafeData.data);
-            } else {
-              setError(undefined);
-            }
-          },
-          onError: async (error) => {
-            if (isAxiosError(error)) {
-              const { status } = error.response;
-              switch (status) {
-                case STATUS_CODE.UNAUTHORIZED:
-                  await StoryStorage.removeItem(STORAGE_KEY.IS_LOGGED_IN_KEY);
-                  await api.logout().then(() => {
-                    setAuth?.(null);
-                    setLoggedIn?.(false);
-                  });
-                  break;
-                default:
-                  break;
-              }
-            }
-          },
-        },
-      },
-    });
-  }
-
-  useIsomorphicLayoutEffect(() => {
-    const promises = async () => {
-      if (!isLoggedIn) {
-        const value: boolean = await StoryStorage.getItem(
-          STORAGE_KEY.IS_LOGGED_IN_KEY,
-        );
-        setLoggedIn?.(!!value);
-      }
-    };
-    promises();
-  }, [isLoggedIn]);
-
-  return (
-    <QueryClientProvider client={queryClientRef.current as QueryClient}>
-      <Hydrate state={pageProps.dehydratedState}>{children}</Hydrate>
-    </QueryClientProvider>
-  );
-};
-
-const RootProvider: React.FC<{ pageProps: any }> = ({
-  pageProps,
-  children,
-}) => {
-  const createStore = useCreateStore(pageProps.initialZustandState);
-
-  return (
-    <ZustandProvider createStore={createStore}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Provider>
-          <ClientProvider pageProps={pageProps}>{children}</ClientProvider>
-        </Provider>
-      </ThemeProvider>
-    </ZustandProvider>
-  );
-};
+import { hydrateFirebase } from '@libs/firebase-manager/firebase-manager';
+import { isEmpty } from '@utils/assertion';
 
 const AppPage = ({ Component, pageProps }: AppProps) => {
   const Layout = (Component as any).Layout || Noop;
   const ErrorBoundary = (Component as any).ErrorBoundary || Noop;
 
-  useEffect(() => {
-    hydrateFirebase();
+  const permission = usePermission({ name: 'notifications' });
+
+  const createStore = useCreateStore(pageProps.initialZustandState);
+
+  const [firebase, doFetch] = useAsyncFn(async () => {
+    const firebase = await hydrateFirebase();
+    return firebase;
   }, []);
+
+  useIsomorphicLayoutEffect(() => {
+    doFetch();
+  }, []);
+
+  useEffect(() => {
+    if (permission === 'granted' && firebase.value) {
+      if (isEmpty(firebase.value?.messaging)) {
+        firebase.value?.setMessaging();
+        const messaging = firebase.value?.messaging;
+        if (messaging) {
+          firebase.value?.forgroundMessaging(messaging);
+          firebase.value?.intializeMessaging(messaging);
+        }
+      }
+    }
+  }, [permission, firebase.value]);
 
   return (
     <>
-      <SeoHead />
-      <RootProvider pageProps={pageProps}>
-        <ErrorBoundary>
-          <Core>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </Core>
-        </ErrorBoundary>
-      </RootProvider>
+      <SEO />
+      <MantineProvider
+        withGlobalStyles
+        withNormalizeCSS
+        theme={{
+          fontFamily: 'Verdana, sans-serif',
+          fontFamilyMonospace: 'Monaco, Courier, monospace',
+          colorScheme: 'light',
+          // colorScheme: 'dark',
+          colors: {
+            // override dark colors to change them for all components
+            dark: [
+              '#d5d7e0',
+              '#acaebf',
+              '#8c8fa3',
+              '#666980',
+              '#4d4f66',
+              '#34354a',
+              '#2b2c3d',
+              '#1d1e30',
+              '#0c0d21',
+              '#01010a',
+            ],
+            brand: [
+              '#EDF2FF',
+              '#DBE4FF',
+              '#BAC8FF',
+              '#91A7FF',
+              '#748FFC',
+              '#5C7CFA',
+              '#4C6EF5',
+              '#4263EB',
+              '#3B5BDB',
+              '#364FC7',
+            ],
+          },
+          primaryColor: 'brand',
+        }}
+      >
+        <ZustandProvider createStore={createStore}>
+          <Provider pageProps={pageProps}>
+            <ErrorBoundary>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ErrorBoundary>
+            <Core />
+          </Provider>
+        </ZustandProvider>
+      </MantineProvider>
     </>
   );
 };

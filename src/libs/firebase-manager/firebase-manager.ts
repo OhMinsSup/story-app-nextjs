@@ -10,6 +10,7 @@ import {
 
 import { FIREBASE_VAPID_KEY } from '@constants/env';
 import { api } from '@api/module';
+import { isFunction } from '@utils/assertion';
 import { API_ENDPOINTS, RESULT_CODE, STORAGE_KEY } from '@constants/constant';
 import { isBrowser } from '@utils/utils';
 import { StoryStorage } from '@libs/storage';
@@ -60,6 +61,18 @@ class FireBaseManager {
     });
   }
 
+  setMessaging() {
+    if (this._app) {
+      this._messaging = getMessaging(this._app);
+    }
+  }
+
+  setAnalytics() {
+    if (this._app) {
+      this._analytics = getAnalytics(this._app);
+    }
+  }
+
   get app(): FirebaseApp | undefined {
     return this._app;
   }
@@ -76,36 +89,16 @@ class FireBaseManager {
     const hasPremeission = await this.premission();
 
     this._app = initializeApp(firebaseConfig);
+
     this._analytics = getAnalytics(this._app);
 
     const supported = await isSupported();
 
-    if (!hasPremeission && !supported) return;
+    if (!hasPremeission || !supported) return;
 
     this._messaging = getMessaging(this._app);
 
-    this.forgroundMessaging(this._messaging);
-
-    this.intializeMessaging(this._messaging);
-  }
-
-  async getPushToken(messaging: Messaging) {
-    const data = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
-    if (data && data.pushToken) {
-      return data.pushToken;
-    }
-
-    if (!messaging) {
-      return null;
-    }
-
-    const pushToken = await getToken(messaging, {
-      vapidKey: FIREBASE_VAPID_KEY,
-    });
-
-    if (!pushToken) return null;
-
-    return pushToken;
+    return this;
   }
 
   async refreshMessaging() {
@@ -128,14 +121,7 @@ class FireBaseManager {
     await this.intializeMessaging(this._messaging);
   }
 
-  private async intializeMessaging(messaging: Messaging) {
-    const pushToken = await this.getPushToken(messaging);
-    if (!pushToken) return;
-    // 토큰을 서버로 보내고 필요한 경우 UI를 업데이트합니다.
-    await this.save(pushToken);
-  }
-
-  private async save(pushToken: string) {
+  async save(pushToken: string) {
     const { data } = await api.post<DeviceSchema>({
       url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
       body: {
@@ -166,8 +152,31 @@ class FireBaseManager {
     }
   }
 
-  private forgroundMessaging(messaging: Messaging) {
-    if (this._unsubscribe && typeof this._unsubscribe === 'function') {
+  async getPushToken(messaging: Messaging) {
+    const data = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
+    if (data && data.pushToken) {
+      return data.pushToken;
+    }
+
+    if (!messaging) return null;
+
+    const pushToken = await getToken(messaging, {
+      vapidKey: FIREBASE_VAPID_KEY,
+    });
+
+    if (!pushToken) return null;
+    return pushToken;
+  }
+
+  async intializeMessaging(messaging: Messaging) {
+    const pushToken = await this.getPushToken(messaging);
+    if (!pushToken) return;
+    // 토큰을 서버로 보내고 필요한 경우 UI를 업데이트합니다.
+    await this.save(pushToken);
+  }
+
+  forgroundMessaging(messaging: Messaging) {
+    if (this._unsubscribe && isFunction(this._unsubscribe)) {
       this._unsubscribe();
     }
 
@@ -194,8 +203,12 @@ class FireBaseManager {
 let firebaseManager: FireBaseManager;
 
 export async function hydrateFirebase() {
+  if (firebaseManager && firebaseManager instanceof FireBaseManager) {
+    return firebaseManager;
+  }
   firebaseManager = new FireBaseManager();
   (window as any).firebaseManager = firebaseManager;
+  return firebaseManager;
 }
 
 export function useFireBaseManager() {

@@ -1,1 +1,1 @@
-export { StoryStorage, default as LocalforageStorage } from './local';
+export { StoryStorage, default as LocalforageStorage } from './storage';

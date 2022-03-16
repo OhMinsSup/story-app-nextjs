@@ -2,6 +2,9 @@ import { useLayoutEffect } from 'react';
 import create from 'zustand';
 import createContext from 'zustand/context';
 
+// utils
+import { isBrowser } from '@utils/utils';
+
 import type { UserModel } from '@api/schema/story-api';
 import type { SetState, UseBoundStore, StoreApi } from 'zustand';
 
@@ -50,7 +53,7 @@ export const initializeStore = (preloadedState = {} as State) => {
 
 export function useCreateStore(initialState: State) {
   // For SSR & SSG, always use a new store.
-  if (typeof window === 'undefined') {
+  if (!isBrowser) {
     return () => initializeStore(initialState);
   }
 
