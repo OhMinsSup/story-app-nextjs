@@ -15,6 +15,9 @@ export const PAGE_ENDPOINTS = {
   SEARCH: {
     ROOT: '/search/',
   },
+  TAGS: {
+    ROOT: '/tags/',
+  },
   PROFILE: {
     ROOT: '/profile/',
     DETAIL: (id: string | number) => `/profile/${id}/`,
