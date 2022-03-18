@@ -1,5 +1,32 @@
+/* eslint-disable @typescript-eslint/ban-types */
+import { isObject, isUndefined } from '@utils/assertion';
 import { klayUnits } from '@utils/utils';
 import * as yup from 'yup';
+
+function compact<T>(array: T[]): T[] {
+  return array.filter(Boolean);
+}
+
+const isNullOrUndefined = (value: unknown): value is null | undefined =>
+  value == null;
+
+export function getError<T>(obj: T, path: string, defaultValue?: unknown): any {
+  if (!path || !isObject(obj)) {
+    return defaultValue;
+  }
+
+  const result = compact(path.split(/[,[\].]+?/)).reduce(
+    (result, key) =>
+      isNullOrUndefined(result) ? result : result[key as keyof {}],
+    obj,
+  );
+
+  return isUndefined(result) || result === obj
+    ? isUndefined(obj[path as keyof T])
+      ? defaultValue
+      : obj[path as keyof T]
+    : result;
+}
 
 export const common = {
   email: yup

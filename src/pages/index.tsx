@@ -1,26 +1,29 @@
-import Header from '@components/ui/Header/Header';
+import { Header } from '@components/ui/Header';
 import { Sidebar } from '@components/ui/Sidebar';
 import { AppShell } from '@mantine/core';
+
+// hooks
+import { useMediaQuery } from '@mantine/hooks';
 
 import React from 'react';
 
 const IndexPage = () => {
+  const smallScreen = useMediaQuery('(max-width: 768px)');
   return (
     <AppShell
       padding="md"
       navbarOffsetBreakpoint="sm"
-      navbar={<Sidebar />}
+      navbar={smallScreen ? undefined : <Sidebar />}
       header={<Header />}
       styles={(theme) => ({
         main: {
           backgroundColor:
-            theme.colorScheme === 'dark'
-              ? theme.colors.dark[8]
-              : theme.colors.gray[0],
+            theme.colorScheme === 'dark' ? theme.colors.dark[8] : undefined,
         },
       })}
     >
       {/* Your application here */}
+      Hello
     </AppShell>
   );
 };

@@ -12,8 +12,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 
 // components
-import { Navbar, Center, Group } from '@mantine/core';
-import { MantineLogoSmall } from '@components/ui/Logo';
+import { Navbar, Group } from '@mantine/core';
 import NavbarLink from '@components/ui/Sidebar/components/NavbarLink';
 import UserMenu from '@components/ui/Sidebar/components/Menu';
 

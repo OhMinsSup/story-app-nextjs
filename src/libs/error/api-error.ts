@@ -3,6 +3,7 @@ import { isEmpty, isUndefined } from '@utils/assertion';
 import message from './message';
 
 import type { AxiosError } from 'axios';
+import type { Schema } from '@api/schema/story-api';
 
 // @ts-ignore
 type NestedKeyOf<ObjectType extends object> = {
@@ -12,15 +13,12 @@ type NestedKeyOf<ObjectType extends object> = {
     : `${Key}`;
 }[keyof ObjectType & (string | number)];
 
-type ErrorResultData = {
-  resultCode: number;
-  resultMessage: string;
-};
+interface ErrorResultData<S = any> extends Schema<S> {}
 
 type ErrorMessagePath = NestedKeyOf<typeof message>;
 
 class ApiError extends Error {
-  constructor(apiError: Record<string, string | number>, ...args: any[]) {
+  constructor(apiError: Record<string, any>, ...args: any[]) {
     super(...args);
     this.name = 'ApiError';
     if (!isEmpty(apiError)) {
@@ -65,8 +63,8 @@ class ApiError extends Error {
     return result as unknown as string;
   }
 
-  static toApiErrorJSON(error: string) {
-    let message: ErrorResultData | null = null;
+  static toApiErrorJSON<Schema = any>(error: string) {
+    let message: ErrorResultData<Schema> | null = null;
     try {
       message = error && typeof error === 'string' ? JSON.parse(error) : null;
     } catch (error) {
