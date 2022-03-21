@@ -85,13 +85,20 @@ class FireBaseManager {
     return this._messaging;
   }
 
+  /**
+   * @description notification (firebase) 설정을 한다.
+   * @date 2022-03-21
+   * @author veloss
+   */
   async initialize() {
+    // 알림 권한 설정
     const hasPremeission = await this.premission();
 
     this._app = initializeApp(firebaseConfig);
 
     this._analytics = getAnalytics(this._app);
 
+    // 현재 사용 할 수 있는지 체크
     const supported = await isSupported();
 
     if (!hasPremeission || !supported) return;
@@ -101,11 +108,19 @@ class FireBaseManager {
     return this;
   }
 
+  /**
+   * @description notification 토큰을 다시 재발급 받는 경우
+   * @date 2022-03-21
+   * @author veloss
+   */
   async refreshMessaging() {
+    // 알림 권한 설정
     const hasPremeission = await this.premission();
+
+    // 현재 사용 할 수 있는지 체크
     const supported = await isSupported();
 
-    if (!hasPremeission && !supported) return;
+    if (!hasPremeission || !supported) return;
 
     if (!this._app) {
       const error = new Error('Firebase App is not initialized');
@@ -117,13 +132,17 @@ class FireBaseManager {
     }
 
     this.forgroundMessaging(this._messaging);
-
-    await this.intializeMessaging(this._messaging);
+    this.intializeMessaging(this._messaging);
   }
 
-  async save(pushToken: string) {
+  /**
+   * @description api 서버쪽에 push token 정보를 전송합니다.
+   * @date 2022-03-21
+   * @author veloss
+   */
+  async device(pushToken: string) {
     const { data } = await api.post<DeviceSchema>({
-      url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.TOKEN,
+      url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.DEVICE,
       body: {
         pushToken,
       },
@@ -131,7 +150,7 @@ class FireBaseManager {
 
     if (!data.ok) return;
     switch (data.resultCode) {
-      case RESULT_CODE.PUSH_TOKEN_EXPIRED:
+      case RESULT_CODE.PUSH_TOKEN_EXPIRED: // 토큰이 만료된 경우
         if (this._messaging) {
           const isDeleted = await deleteToken(this._messaging);
           if (isDeleted) {
@@ -139,19 +158,22 @@ class FireBaseManager {
           }
         }
         break;
-      case RESULT_CODE.OK:
+      case RESULT_CODE.OK: // 정상적인 경우
       default: {
-        const record = {
+        await StoryStorage.setItem(STORAGE_KEY.PUSH_TOKEN_KEY, {
           deviceId: data.result.id,
           pushToken,
-        };
-
-        await StoryStorage.setItem(STORAGE_KEY.PUSH_TOKEN_KEY, record);
+        });
         break;
       }
     }
   }
 
+  /**
+   * @description 이미 사용중인 토큰이 존재하는 경우 해당 토큰을 사용 없는 경우 발급
+   * @date 2022-03-21
+   * @author veloss
+   */
   async getPushToken(messaging: Messaging) {
     const data = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
     if (data && data.pushToken) {
@@ -168,11 +190,16 @@ class FireBaseManager {
     return pushToken;
   }
 
+  /**
+   * @description 메세지 등록
+   * @date 2022-03-21
+   * @author veloss
+   */
   async intializeMessaging(messaging: Messaging) {
     const pushToken = await this.getPushToken(messaging);
     if (!pushToken) return;
     // 토큰을 서버로 보내고 필요한 경우 UI를 업데이트합니다.
-    await this.save(pushToken);
+    this.device(pushToken);
   }
 
   forgroundMessaging(messaging: Messaging) {

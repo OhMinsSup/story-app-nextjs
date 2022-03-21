@@ -124,9 +124,6 @@ export interface TagSchema {
 export interface DeviceSchema {
   id: number;
   os: string;
-  clientType: string;
-  deviceType: string;
-  deviceHash: string;
   token: string | null;
   userId: number | null;
   createdAt: string;

@@ -3,6 +3,7 @@ import React from 'react';
 // compoents
 import { Header } from '@components/ui/Header';
 import { GoogleButton, GithubButton } from '@components/ui/Button';
+import { SEO } from '@components/common/SEO';
 import {
   Anchor,
   AppShell,
@@ -13,7 +14,6 @@ import {
   PasswordInput,
   Text,
   TextInput,
-  Modal,
 } from '@mantine/core';
 
 // utils
@@ -118,8 +118,13 @@ const LoginPage = () => {
     }
   };
 
+  const onMoveToSignUp = () => {
+    router.push(PAGE_ENDPOINTS.SIGNUP);
+  };
+
   return (
     <>
+      <SEO title="Story - 로그인" url={PAGE_ENDPOINTS.LOGIN} />
       <AppShell
         padding="md"
         className="h-full"
@@ -151,6 +156,7 @@ const LoginPage = () => {
                     이메일
                   </Text>
                 }
+                id="email"
                 autoComplete="on"
                 placeholder="이메일"
                 {...form.getInputProps('email')}
@@ -174,6 +180,7 @@ const LoginPage = () => {
                   </div>
                 }
                 {...form.getInputProps('password')}
+                id="password"
                 autoComplete="on"
                 placeholder="비밀번호"
               />
@@ -189,6 +196,7 @@ const LoginPage = () => {
                 type="button"
                 color="primary"
                 size="md"
+                onClick={onMoveToSignUp}
               >
                 회원가입
               </Anchor>

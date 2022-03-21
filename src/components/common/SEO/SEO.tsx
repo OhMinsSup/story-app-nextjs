@@ -1,26 +1,31 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { useIsomorphicLayoutEffect } from 'react-use';
+import { isBrowser } from '@utils/utils';
 
 interface SEOProps {
   title: string;
   description: string;
   type: 'website' | 'article';
   image: string;
+  url: string;
 }
 const SeoHead: React.FC<Partial<SEOProps>> = ({
   title,
   description,
   type,
   image,
+  url,
 }) => {
   const [siteUrl, setSiteUrl] = useState('');
 
   useIsomorphicLayoutEffect(() => {
-    if (typeof window !== 'undefined') {
-      setSiteUrl(window.location.href);
+    if (isBrowser) {
+      setSiteUrl(url ?? window.location.href);
+    } else {
+      setSiteUrl(url || '/');
     }
-  }, []);
+  }, [url]);
 
   return (
     <Head>
@@ -66,4 +71,5 @@ SeoHead.defaultProps = {
   description: '나만의 Story를 만들어 보세요.',
   type: 'website',
   image: 'images/card.jpg',
+  url: '/',
 };
