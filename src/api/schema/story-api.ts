@@ -187,9 +187,10 @@ export interface SignupInput {
   nickname: string;
   email: string;
   password: string;
-  gender: GenderType;
   avatarSvg: string;
   profileUrl?: string | null;
+  defaultProfile: boolean;
+  gender: GenderType;
 }
 
 // =================== Story =================== //

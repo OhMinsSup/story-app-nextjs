@@ -1,17 +1,24 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 
 // constatns
-import { PAGE_ENDPOINTS } from '@constants/constant';
+import { PAGE_ENDPOINTS, RESULT_CODE, STATUS_CODE } from '@constants/constant';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
 import { schema } from '@libs/validation/schema';
+
+// hooks
+import { useAlert } from '@hooks/useAlert';
+import { useSignupMutation } from '@api/mutations';
+import { useRouter } from 'next/router';
 
 // utils
 import { generateKey } from '@utils/utils';
 
 // components
 import { SEO } from '@components/common/SEO';
+import { UserProfileUpload } from '@components/ui/Upload';
+import { Header } from '@components/ui/Header';
 import {
   AppShell,
   Button,
@@ -23,43 +30,152 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
-import { Header } from '@components/ui/Header';
+
+// error
+import { ApiError } from '@libs/error';
+
+// api
+import { api } from '@api/module';
 
 // enum
-import { GenderEnum } from '@api/schema/enum';
+import { GenderEnum, StoryUploadTypeEnum } from '@api/schema/enum';
 
 // types
 import type { GenderType } from '@api/schema/story-api';
-import { UserProfileUpload } from '@components/ui/Upload';
 
 interface FormFieldValues {
   nickname: string;
   email: string;
   password: string;
   confirmPassword: string;
-  key: string;
+  avatarSvg: string;
+  profileUrl?: string;
+  defaultProfile: boolean;
   gender: GenderType;
 }
 
 const SignupPage = () => {
+  const router = useRouter();
+  const { Alert, showAlert } = useAlert();
+
   const initialValues = useMemo(() => {
     return {
       nickname: '',
       email: '',
       password: '',
       confirmPassword: '',
-      key: generateKey(),
+      avatarSvg: generateKey(),
+      profileUrl: undefined,
+      defaultProfile: true,
       gender: GenderEnum.M as const,
     };
   }, []);
+
+  const [uploading, setUploading] = useState(false);
+
+  const { mutateAsync } = useSignupMutation();
 
   const form = useForm<FormFieldValues>({
     schema: yupResolver(schema.signup),
     initialValues,
   });
 
-  const onSubmit = async (input: FormFieldValues) => {
-    console.log(input);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const onSubmit = async ({ confirmPassword, ...input }: FormFieldValues) => {
+    try {
+      const result = await mutateAsync(input);
+
+      const {
+        data: { resultCode },
+      } = result;
+
+      if (RESULT_CODE.OK === resultCode) {
+        router.replace(PAGE_ENDPOINTS.LOGIN);
+        return;
+      }
+
+      throw new ApiError(result.data);
+    } catch (error) {
+      if (ApiError.isAxiosError(error)) {
+        if (ApiError.isAxiosError(error)) {
+          const { response } = error;
+          switch (response?.status) {
+            case STATUS_CODE.SERVER_ERROR:
+            case STATUS_CODE.BAD_GATEWAY:
+              throw error;
+            default:
+              break;
+          }
+        }
+      }
+
+      if (ApiError.isApiError(error)) {
+        const { message } = ApiError.toApiErrorJSON(error.message);
+        let msg = '에러가 발생했습니다.\n다시 시도해주세요.';
+        switch (message?.resultCode) {
+          case RESULT_CODE.INVALID: {
+            msg = message.message ?? msg;
+            break;
+          }
+        }
+        showAlert({
+          content: {
+            text: msg,
+          },
+        });
+      }
+    }
+  };
+
+  const onRemove = () => {
+    const currentUrl = form.values.profileUrl;
+    // 업로드한 이미지가 존재하는 경우
+    if (currentUrl) {
+      form.setFieldValue('profileUrl', undefined);
+      form.setFieldValue('defaultProfile', true);
+    }
+  };
+
+  const onUpload = async (file: File) => {
+    try {
+      setUploading(true);
+      const result = await api.upload({
+        file,
+        storyType: StoryUploadTypeEnum.PROFILE,
+      });
+
+      const {
+        data: { resultCode },
+      } = result;
+
+      if (RESULT_CODE.OK === resultCode) {
+        form.setFieldValue('profileUrl', result.data.result.path);
+        form.setFieldValue('defaultProfile', false);
+        setUploading(false);
+        return;
+      }
+
+      throw new ApiError(result.data);
+    } catch (error) {
+      setUploading(false);
+      if (ApiError.isAxiosError(error)) {
+        const text = '에러가 발생했습니다.\n다시 시도해주세요.';
+        const { response } = error;
+        showAlert({
+          content: {
+            text,
+          },
+        });
+
+        switch (response?.status) {
+          case STATUS_CODE.SERVER_ERROR:
+          case STATUS_CODE.BAD_GATEWAY:
+            throw error;
+          default:
+            break;
+        }
+      }
+    }
   };
 
   return (
@@ -68,6 +184,9 @@ const SignupPage = () => {
       <AppShell
         padding="md"
         className="h-full"
+        classNames={{
+          main: 'h-screen',
+        }}
         navbarOffsetBreakpoint="sm"
         header={<Header />}
         styles={(theme) => ({
@@ -86,7 +205,13 @@ const SignupPage = () => {
           </div>
 
           <form onSubmit={form.onSubmit(onSubmit)}>
-            <UserProfileUpload avatarkey={form.values.key} />
+            <UserProfileUpload
+              loading={uploading}
+              thumbnail={form.values.profileUrl}
+              avatarkey={form.values.avatarSvg}
+              onUpload={onUpload}
+              onRemove={onRemove}
+            />
             <Group direction="column" grow>
               <TextInput
                 label={
@@ -152,6 +277,7 @@ const SignupPage = () => {
             </Button>
           </form>
         </Container>
+        <Alert />
         <style jsx>{`
           .mantine-AppShell-body {
             height: 100%;
