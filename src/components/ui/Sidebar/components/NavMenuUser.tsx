@@ -3,6 +3,11 @@ import React from 'react';
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
 import { useMantineTheme } from '@mantine/core';
+import { useUserHook } from '@store/hook';
+
+// utils
+import { getUserThumbnail } from '@utils/utils';
+
 // icon
 import { Dots } from 'tabler-icons-react';
 
@@ -19,14 +24,12 @@ const NavMenuUser = (
 ) => {
   const theme = useMantineTheme();
   const smallScreen = useMediaQuery('(max-width: 768px)');
+  const { userInfo } = useUserHook();
+
+  const url = getUserThumbnail(userInfo?.profile);
 
   const renderUserAvatar = () => {
-    return (
-      <Avatar
-        src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80"
-        radius="xl"
-      />
-    );
+    return <Avatar src={url} radius="xl" />;
   };
 
   return (
@@ -59,14 +62,10 @@ const NavMenuUser = (
           <>
             {renderUserAvatar()}
             <Box sx={{ flex: 1 }}>
-              <Text size="sm" weight={600}>
-                Amy
-              </Text>
-              <Text color="gray" size="xs">
-                @Lalosses
+              <Text size="xs" color="gray" weight={600}>
+                {userInfo?.profile?.nickname}
               </Text>
             </Box>
-
             <Dots size={18} />
           </>
         )}

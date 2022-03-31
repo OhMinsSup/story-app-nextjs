@@ -1,11 +1,8 @@
 import React from 'react';
 
-// shallow
-import shallow from 'zustand/shallow';
-
 // hooks
 import { useRouter } from 'next/router';
-import { useStore } from '@store/store';
+import { useUserHook } from '@store/hook';
 
 // api
 import { api } from '@api/module';
@@ -17,22 +14,16 @@ import { StoryStorage } from '@libs/storage';
 import { STORAGE_KEY } from '@constants/constant';
 
 // components
-import { Text, Group, Menu, Divider, Avatar, Box } from '@mantine/core';
-import { Settings } from 'tabler-icons-react';
 import NavMenuUser from '@components/ui/Sidebar/components/NavMenuUser';
+import { Text, Group, Menu, Divider, Avatar, Box } from '@mantine/core';
+import { Settings, UserCircle } from 'tabler-icons-react';
+import { getUserThumbnail } from '@utils/utils';
 
 interface UserMenuProps {}
 
 const UserMenu: React.FC<UserMenuProps> = () => {
   const router = useRouter();
-  const { userInfo, setAuth, setLoggedIn } = useStore(
-    (store) => ({
-      userInfo: store.userInfo,
-      setAuth: store.actions?.setAuth,
-      setLoggedIn: store.actions?.setLoggedIn,
-    }),
-    shallow,
-  );
+  const { userInfo, setAuth, setLoggedIn } = useUserHook();
 
   const onLogout = async () => {
     await StoryStorage.removeItem(STORAGE_KEY.IS_LOGGED_IN_KEY);
@@ -42,9 +33,15 @@ const UserMenu: React.FC<UserMenuProps> = () => {
     });
   };
 
-  const onSetting = () => {
+  const onMoveToSetting = () => {
     console.log('onSetting');
   };
+
+  const onMoveToMyPage = () => {
+    console.log('onMoveToMyPage');
+  };
+
+  const url = getUserThumbnail(userInfo?.profile);
 
   return (
     <Menu
@@ -56,21 +53,25 @@ const UserMenu: React.FC<UserMenuProps> = () => {
       radius="md"
     >
       <Group align="center" p={12}>
-        <Avatar
-          src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80"
-          radius="xl"
-        />
+        <Avatar src={url} radius="xl" />
         <Box sx={{ flex: 1 }}>
           <Text size="sm" weight={600}>
-            Amy
+            {userInfo?.email}
           </Text>
           <Text color="gray" size="xs">
-            @Lalosses
+            @{userInfo?.profile?.nickname}
           </Text>
         </Box>
       </Group>
       <Divider />
-      <Menu.Item icon={<Settings size={14} />} p={12} onClick={onSetting}>
+      <Menu.Item
+        icon={<UserCircle size={14} />}
+        p={12}
+        onClick={onMoveToMyPage}
+      >
+        마이페이지
+      </Menu.Item>
+      <Menu.Item icon={<Settings size={14} />} p={12} onClick={onMoveToMyPage}>
         설정
       </Menu.Item>
       <Menu.Item p={12} onClick={onLogout}>
@@ -79,7 +80,7 @@ const UserMenu: React.FC<UserMenuProps> = () => {
           component="span"
           style={{ fontFamily: 'Greycliff CF, sans-serif' }}
         >
-          @Lalossol 계정에서 로그아웃
+          @{userInfo?.profile?.nickname} 계정에서 로그아웃
         </Text>
       </Menu.Item>
     </Menu>
