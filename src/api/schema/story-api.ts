@@ -188,9 +188,9 @@ export interface SignupInput {
   email: string;
   password: string;
   avatarSvg: string;
-  profileUrl?: string | null;
   defaultProfile: boolean;
   gender: GenderType;
+  profileUrl?: string | null;
 }
 
 // =================== Story =================== //
