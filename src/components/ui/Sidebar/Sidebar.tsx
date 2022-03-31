@@ -61,7 +61,7 @@ const Sidebar = () => {
   };
 
   return (
-    <Navbar height={'100vh'} width={{ base: 80, sm: 250 }} p="md">
+    <Navbar height={'calc(100vh - 60px)'} width={{ base: 80, sm: 250 }} p="md">
       <Navbar.Section grow mt={10}>
         <Group direction="column" align="center" spacing={0}>
           {smallScreen ? (

@@ -80,8 +80,7 @@ const SignupPage = () => {
     initialValues,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onSubmit = async ({ confirmPassword, ...input }: FormFieldValues) => {
+  const onSubmit = async (input: FormFieldValues) => {
     try {
       const result = await mutateAsync(input);
 
