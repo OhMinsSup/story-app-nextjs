@@ -1,6 +1,5 @@
 import { useInfiniteQuery } from 'react-query';
 import isEmpty from 'lodash-es/isEmpty';
-import { useErrorContext } from '@contexts/error/context';
 
 import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
