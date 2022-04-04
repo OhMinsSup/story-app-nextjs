@@ -16,7 +16,7 @@ import { useRouter } from 'next/router';
 import { generateKey } from '@utils/utils';
 
 // components
-import { SEO } from '@components/common/SEO';
+import { SEO } from '@components/ui/SEO';
 import { UserProfileUpload } from '@components/ui/Upload';
 import { Header } from '@components/ui/Header';
 import {

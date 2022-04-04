@@ -8,6 +8,10 @@ export const PAGE_ENDPOINTS = {
     DETAIL: (id: string | number) => `/publish/${id}/`,
     MODIFY: (id: string | number) => `/publish/${id}/modify/`,
   },
+  NFT: {
+    ROOT: '/nft/',
+    ID: (id: string | number) => `/nft/${id}/`,
+  },
   STORY: {
     ROOT: '/story/',
     DETAIL: (id: string | number) => `/story/${id}/`,
@@ -56,7 +60,10 @@ export const API_ENDPOINTS = {
       DEVICE: '/notifications/device',
     },
     STORY: {
+      // news
       ROOT: '/stories',
+      ID: (id: string | number) => `/stories/${id}`,
+      // old
       DETAIL: (id: string | number) => `/stories/${id}`,
       HISTORIES: (id: string | number) => `/stories/${id}/histories`,
       ANOTHERS: (id: string | number, userId: string | number) =>

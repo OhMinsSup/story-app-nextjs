@@ -4,11 +4,11 @@ import 'swiper/css';
 import React, { useEffect } from 'react';
 
 // components
-import { Core } from '@components/common/Core';
+import { Core } from '@components/ui/Core';
 import { MantineProvider } from '@mantine/core';
 import { Noop } from '@components/ui/Noop';
 import { Provider } from '@contexts/index';
-import { SEO } from '@components/common/SEO';
+import { SEO } from '@components/ui/SEO';
 
 // type
 import type { AppProps } from 'next/app';
@@ -64,8 +64,8 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
         theme={{
           fontFamily: 'Verdana, sans-serif',
           fontFamilyMonospace: 'Monaco, Courier, monospace',
-          colorScheme: 'light',
-          // colorScheme: 'dark',
+          // colorScheme: 'light',
+          colorScheme: 'dark',
           colors: {
             // override dark colors to change them for all components
             dark: [

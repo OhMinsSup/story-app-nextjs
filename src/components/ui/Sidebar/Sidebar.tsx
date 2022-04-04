@@ -21,7 +21,6 @@ import { Home2, User, Brush, Search, Login, Hash } from 'tabler-icons-react';
 
 const Sidebar = () => {
   const smallScreen = useMediaQuery('(max-width: 768px)');
-  console.log('largeScreen', smallScreen);
 
   const router = useRouter();
   const { userInfo } = useStore(

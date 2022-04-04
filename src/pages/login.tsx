@@ -3,7 +3,7 @@ import React from 'react';
 // compoents
 import { Header } from '@components/ui/Header';
 import { GoogleButton, GithubButton } from '@components/ui/Button';
-import { SEO } from '@components/common/SEO';
+import { SEO } from '@components/ui/SEO';
 import {
   Anchor,
   AppShell,

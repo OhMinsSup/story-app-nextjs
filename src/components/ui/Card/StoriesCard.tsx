@@ -1,23 +1,30 @@
 import React from 'react';
 import take from 'lodash-es/take';
-import { getUserThumbnail } from '@utils/utils';
-import {
-  createStyles,
-  Card,
-  ActionIcon,
-  Group,
-  Text,
-  Avatar,
-  Badge,
-} from '@mantine/core';
-import type { StorySchema } from '@api/schema/story-api';
-import { BlurImage } from '../Image';
 
+// icons
 import { Heart, Bookmark, Share } from 'tabler-icons-react';
+
+// hooks
+import { useRouter } from 'next/router';
+
+// constants
+import { PAGE_ENDPOINTS } from '@constants/constant';
+
+// utils
+import { getUserThumbnail } from '@utils/utils';
 import { isEmpty } from '@utils/assertion';
+import { createStyles } from '@mantine/core';
+
+// components
+import { BlurImage } from '@components/ui/Image';
+import { Card, ActionIcon, Group, Text, Avatar, Badge } from '@mantine/core';
+
+// types
+import type { StorySchema } from '@api/schema/story-api';
 
 const useStyles = createStyles((theme) => ({
   card: {
+    cursor: 'pointer',
     backgroundColor:
       theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
     minHeight: '380px',
@@ -42,11 +49,22 @@ interface StoriesCardProps {
 
 const StoriesCard: React.FC<StoriesCardProps> = ({ item }) => {
   const { classes, theme } = useStyles();
+  const router = useRouter();
 
   const tags = take(item.tags, 3);
 
+  const onMoveToNftDetail = () => {
+    router.push(PAGE_ENDPOINTS.NFT.ID(item.id));
+  };
+
   return (
-    <Card withBorder p="lg" radius="sm" className={classes.card}>
+    <Card
+      withBorder
+      p="lg"
+      radius="sm"
+      className={classes.card}
+      onClick={onMoveToNftDetail}
+    >
       <Card.Section mb="sm">
         <BlurImage
           layout="responsive"
