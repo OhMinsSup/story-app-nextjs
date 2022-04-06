@@ -184,9 +184,12 @@ const SignupPage = () => {
         navbarOffsetBreakpoint="sm"
         header={<Header />}
         styles={(theme) => ({
+          body: {
+            height: '100%',
+          },
           main: {
             backgroundColor:
-              theme.colorScheme === 'dark' ? theme.colors.dark[8] : undefined,
+              theme.colorScheme === 'dark' ? theme.colors.dark[9] : undefined,
           },
         })}
       >

@@ -13,8 +13,8 @@ import { PAGE_ENDPOINTS } from '@constants/constant';
 
 // components
 import { Navbar, Group } from '@mantine/core';
-import NavbarLink from '@components/ui/Sidebar/components/NavbarLink';
-import UserMenu from '@components/ui/Sidebar/components/Menu';
+import NavbarLink from '@components/ui/Header/components/NavbarLink';
+import UserMenu from '@components/ui/Header/components/Menu';
 
 // icons
 import { Home2, User, Brush, Search, Login, Hash } from 'tabler-icons-react';

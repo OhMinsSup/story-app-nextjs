@@ -1,7 +1,7 @@
 import React from 'react';
 
 // components
-import { Tooltip, UnstyledButton, Text, Group, ThemeIcon } from '@mantine/core';
+import { Tooltip, UnstyledButton, Text, Group } from '@mantine/core';
 
 // hooks
 import { useNavLinkStyles } from '@components/ui/Sidebar/styles';

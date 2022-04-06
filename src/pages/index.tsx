@@ -7,11 +7,7 @@ import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
 // compoments
 import { StoriesCard } from '@components/ui/Card';
 import { Header } from '@components/ui/Header';
-import { Sidebar } from '@components/ui/Sidebar';
 import { AppShell, SimpleGrid } from '@mantine/core';
-
-// hooks
-import { useMediaQuery } from '@mantine/hooks';
 
 // react-query
 import { dehydrate, QueryClient } from 'react-query';
@@ -49,7 +45,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 const IndexPage = () => {
-  const smallScreen = useMediaQuery('(max-width: 768px)');
   const { data, fetchNextPage, hasNextPage } = useNftListQuery();
 
   const ref = useRef<HTMLDivElement | null>(null);
@@ -63,23 +58,26 @@ const IndexPage = () => {
   return (
     <AppShell
       padding="md"
-      navbarOffsetBreakpoint="sm"
-      navbar={smallScreen ? undefined : <Sidebar />}
+      className="h-full"
       header={<Header />}
       styles={(theme) => ({
+        body: {
+          height: '100%',
+        },
         main: {
           backgroundColor:
-            theme.colorScheme === 'dark' ? theme.colors.dark[8] : undefined,
+            theme.colorScheme === 'dark' ? theme.colors.dark[9] : undefined,
         },
       })}
     >
       <SimpleGrid
-        cols={4}
+        cols={6}
         spacing="lg"
         breakpoints={[
-          { maxWidth: 980, cols: 3, spacing: 'md' },
-          { maxWidth: 755, cols: 2, spacing: 'sm' },
-          { maxWidth: 600, cols: 1, spacing: 'sm' },
+          { maxWidth: 1600, cols: 4, spacing: 'md' },
+          { maxWidth: 1024, cols: 3, spacing: 'md' },
+          { maxWidth: 768, cols: 2, spacing: 'sm' },
+          { maxWidth: 480, cols: 1, spacing: 'sm' },
         ]}
       >
         {data?.pages.map((item, i) => (

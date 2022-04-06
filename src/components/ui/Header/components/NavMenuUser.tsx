@@ -14,9 +14,7 @@ import { Dots } from 'tabler-icons-react';
 // components
 import { UnstyledButton, Group, Avatar, Text, Box } from '@mantine/core';
 
-import type { UnstyledButtonProps } from '@mantine/core';
-
-interface NavMenuUserProps extends UnstyledButtonProps {}
+interface NavMenuUserProps {}
 
 const NavMenuUser = (
   { ...others }: NavMenuUserProps,

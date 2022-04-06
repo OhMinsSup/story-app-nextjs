@@ -1,22 +1,65 @@
-import React from 'react';
-import { Header as MantineHeader, Group, Box } from '@mantine/core';
+import React, { useState } from 'react';
+
+// components
+import { MantineLogo } from '@components/ui/Logo';
+import { Header as MantineHeader, Group, Container } from '@mantine/core';
+import Link from 'next/link';
+import HeaderControls from './components/HeaderControls';
+
+// hooks
+import { useBooleanToggle } from '@mantine/hooks';
+import useStyles, { HEADER_HEIGHT } from './styles/Header.styles';
+
+const links = [
+  {
+    link: '/drops',
+    label: 'Drops',
+  },
+  {
+    link: '/community',
+    label: 'Marketplace',
+  },
+  {
+    link: '/search',
+    label: '검색',
+  },
+  {
+    link: '/tags',
+    label: '태그',
+  },
+];
 
 const Header = () => {
-  return (
-    <MantineHeader height={60} p="xs">
-      <Box
-        className="pt-1"
-        sx={(theme) => ({
-          paddingLeft: theme.spacing.xs,
-          paddingRight: theme.spacing.xs,
-          paddingBottom: theme.spacing.xs,
+  const [active, setActive] = useState(links[0].link);
+  const { classes, cx } = useStyles();
+
+  const items = links.map((link) => (
+    <Link href={link.link} key={link.label}>
+      <a
+        className={cx(classes.link, {
+          [classes.linkActive]: active === link.link,
         })}
       >
-        <Group position="apart">
-          {/* <Logo colorScheme={colorScheme} /> */}
-          Story
+        {link.label}
+      </a>
+    </Link>
+  ));
+
+  return (
+    <MantineHeader height={HEADER_HEIGHT} className={classes.root}>
+      <Container className={classes.header}>
+        <Group spacing={8} className={classes.links}>
+          <Link href="/">
+            <a className="p-3">
+              <MantineLogo />
+            </a>
+          </Link>
+          {items}
         </Group>
-      </Box>
+        <Group spacing={5} className={classes.links}>
+          <HeaderControls />
+        </Group>
+      </Container>
     </MantineHeader>
   );
 };

@@ -14,10 +14,10 @@ import { StoryStorage } from '@libs/storage';
 import { STORAGE_KEY } from '@constants/constant';
 
 // components
-import NavMenuUser from '@components/ui/Sidebar/components/NavMenuUser';
 import { Text, Group, Menu, Divider, Avatar, Box } from '@mantine/core';
 import { Settings, UserCircle } from 'tabler-icons-react';
 import { getUserThumbnail } from '@utils/utils';
+import NavMenuUser from './NavMenuUser';
 
 interface UserMenuProps {}
 

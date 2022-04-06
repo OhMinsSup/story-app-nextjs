@@ -1,1 +1,1 @@
-export { MantineLogo, MantineLogoSmall } from './Logo';
+export { default as MantineLogo } from './MantineLogo';
