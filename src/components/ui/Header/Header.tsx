@@ -49,11 +49,7 @@ const Header = () => {
     <MantineHeader height={HEADER_HEIGHT} className={classes.root}>
       <Container className={classes.header}>
         <Group spacing={8} className={classes.links}>
-          <Link href="/">
-            <a className="p-3">
-              <MantineLogo />
-            </a>
-          </Link>
+          <MantineLogo />
           {items}
         </Group>
         <Group spacing={5} className={classes.links}>

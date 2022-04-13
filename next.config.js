@@ -18,18 +18,20 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // experimental: {
-  // 서버 측 suspense 및 ssr 스트리밍 지원에 대한 기본 제공, http 스트리밍을 통해서 서버 렌더링 가능
-  // concurrentFeatures: true,
-  // 컴포넌트 레벨에서 동작하는 모든 것을 서버 단에서 처리할 수 있게 된다.
-  // serverComponents: true,
-  // },
+  experimental: {
+    // 서버 측 suspense 및 ssr 스트리밍 지원에 대한 기본 제공, http 스트리밍을 통해서 서버 렌더링 가능
+    reactMode: 'concurrent',
+  },
 
   // * 이용자에게 제공되는 헤더에 nextjs 로 개발되었음을 노출하지 않습니다.
   poweredByHeader: false,
 
   // * 주소 뒤에 슬래시를 붙일지 여부입니다.
   trailingSlash: true,
+
+  compiler: {
+    removeConsole: true,
+  },
 
   async headers() {
     return [
