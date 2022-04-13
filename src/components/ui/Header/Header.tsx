@@ -7,7 +7,6 @@ import Link from 'next/link';
 import HeaderControls from './components/HeaderControls';
 
 // hooks
-import { useBooleanToggle } from '@mantine/hooks';
 import useStyles, { HEADER_HEIGHT } from './styles/Header.styles';
 
 const links = [

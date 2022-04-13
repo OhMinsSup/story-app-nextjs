@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Hydrate } from 'react-query/hydration';
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 // hooks
 import { useStore } from '@store/store';
@@ -66,6 +67,7 @@ const Provider: React.FC<ProviderProps> = ({ children, pageProps }) => {
   return (
     <QueryClientProvider client={queryClientRef.current as QueryClient}>
       <Hydrate state={pageProps.dehydratedState}>{children}</Hydrate>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 };

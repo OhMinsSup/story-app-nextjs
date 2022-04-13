@@ -11,17 +11,19 @@ import { api } from '@api/module';
 import { StoryStorage } from '@libs/storage';
 
 // constants
-import { STORAGE_KEY } from '@constants/constant';
+import { PAGE_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
 
 // components
 import { Text, Group, Menu, Divider, Avatar, Box } from '@mantine/core';
-import { Settings, UserCircle } from 'tabler-icons-react';
+import { Settings, UserCircle, Brush } from 'tabler-icons-react';
 import { getUserThumbnail } from '@utils/utils';
-import NavMenuUser from './NavMenuUser';
 
-interface UserMenuProps {}
+// types
+import type { MenuProps } from '@mantine/core';
 
-const UserMenu: React.FC<UserMenuProps> = () => {
+interface UserMenuProps extends Pick<MenuProps, 'control'> {}
+
+const UserMenu: React.FC<UserMenuProps> = (props) => {
   const router = useRouter();
   const { userInfo, setAuth, setLoggedIn } = useUserHook();
 
@@ -41,24 +43,24 @@ const UserMenu: React.FC<UserMenuProps> = () => {
     console.log('onMoveToMyPage');
   };
 
+  const onMoveToPublish = () => {
+    router.push(PAGE_ENDPOINTS.PUBLISH.ROOT);
+  };
+
   const url = getUserThumbnail(userInfo?.profile);
 
   return (
     <Menu
       withArrow
-      size="auto"
-      placement="start"
-      control={<NavMenuUser />}
-      className="w-full"
+      size="md"
+      placement="end"
+      control={props.control}
       radius="md"
     >
       <Group align="center" p={12}>
         <Avatar src={url} radius="xl" />
         <Box sx={{ flex: 1 }}>
           <Text size="sm" weight={600}>
-            {userInfo?.email}
-          </Text>
-          <Text color="gray" size="xs">
             @{userInfo?.profile?.nickname}
           </Text>
         </Box>
@@ -71,8 +73,11 @@ const UserMenu: React.FC<UserMenuProps> = () => {
       >
         마이페이지
       </Menu.Item>
-      <Menu.Item icon={<Settings size={14} />} p={12} onClick={onMoveToMyPage}>
+      <Menu.Item icon={<Settings size={14} />} p={12} onClick={onMoveToSetting}>
         설정
+      </Menu.Item>
+      <Menu.Item icon={<Brush size={14} />} p={12} onClick={onMoveToPublish}>
+        발행하기
       </Menu.Item>
       <Menu.Item p={12} onClick={onLogout}>
         <Text
