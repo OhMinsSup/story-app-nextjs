@@ -11,7 +11,9 @@ import { StoryStorage } from '@libs/storage';
 // constants
 import { STORAGE_KEY } from '@constants/constant';
 
-const Core: React.FC = ({ children }) => {
+interface CoreProps {}
+
+const Core: React.FC<React.PropsWithChildren<CoreProps>> = ({ children }) => {
   const { isLoggedIn, setLoggedIn } = useUserHook();
 
   const _ = useMeQuery();

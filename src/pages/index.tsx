@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useId } from 'react';
 
 // hooks
 import { fetchNftList, useNftListQuery } from '@api/queries';
@@ -55,6 +55,8 @@ const IndexPage = () => {
     enabled: hasNextPage,
   });
 
+  const id = useId();
+
   return (
     <AppShell
       padding="md"
@@ -80,17 +82,20 @@ const IndexPage = () => {
           { maxWidth: 480, cols: 1, spacing: 'sm' },
         ]}
       >
-        {data?.pages.map((item, i) => (
-          <React.Fragment key={`grid-${i}`}>
+        {data?.pages.map((item) => (
+          <React.Fragment key={`item-grid-wrapper-${id}`}>
             {item.list.map((story) => (
-              <StoriesCard item={story} key={`stories-item-grid-${story.id}`} />
+              <StoriesCard
+                item={story}
+                key={`stories-item-grid-${story.id}-${id}`}
+              />
             ))}
           </React.Fragment>
         ))}
         {hasNextPage &&
           Array.from({ length: 10 }).map((_, index) => (
             <div
-              key={`loading-key-${index}`}
+              key={`loading-key-${id}`}
               ref={index === 0 ? ref : undefined}
             />
           ))}

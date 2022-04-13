@@ -11,7 +11,7 @@ import { API_ENDPOINTS } from '@constants/constant';
 import { isEmpty } from '@utils/assertion';
 import { makeQueryString } from '@utils/utils';
 
-import type { QueryFunctionContext, EnsuredQueryKey } from 'react-query';
+import type { QueryFunctionContext } from 'react-query';
 import type { ListSchema, StorySchema } from '@api/schema/story-api';
 
 const SIZE = 25;
@@ -19,7 +19,7 @@ const SIZE = 25;
 export const fetchNftList = async ({
   queryKey,
   pageParam,
-}: QueryFunctionContext<EnsuredQueryKey<any>, any>) => {
+}: QueryFunctionContext<any>) => {
   const [_key, _params] = queryKey;
   const safeParams = _params || {};
   const query = makeQueryString({
@@ -44,7 +44,7 @@ export function useNftListQuery(
   enabled = true,
 ) {
   const queryKeyLoader = () => {
-    const keys: EnsuredQueryKey<any> = [API_ENDPOINTS.LOCAL.STORY.ROOT];
+    const keys: any = [API_ENDPOINTS.LOCAL.STORY.ROOT];
     if (isEmpty(params)) {
       return keys;
     }

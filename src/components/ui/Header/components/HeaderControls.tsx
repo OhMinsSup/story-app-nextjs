@@ -22,9 +22,7 @@ function HeaderControls() {
         <HeaderControl onClick={() => toggleColorScheme()}>
           {colorScheme === 'dark' ? <Sun size={22} /> : <Moon size={22} />}
         </HeaderControl>
-        <HeaderControl>
-          <UserMenu control={<UserAvatar />} />
-        </HeaderControl>
+        <UserMenu control={<UserAvatar />} />
       </Group>
     </Box>
   );

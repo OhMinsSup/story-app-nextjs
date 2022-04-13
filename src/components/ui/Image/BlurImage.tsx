@@ -14,7 +14,9 @@ const baseImageConfig: ImageProps = {
   alt: 'Story Content Image',
 };
 
-const BlurImage: React.FC<BlurImageProps> = ({ ...props }) => {
+const BlurImage: React.FC<React.PropsWithChildren<BlurImageProps>> = ({
+  ...props
+}) => {
   const [isLoading, setLoading] = useState(true);
 
   const mergedImageConfig = {

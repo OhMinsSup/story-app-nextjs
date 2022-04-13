@@ -44,7 +44,7 @@ const UserMenu: React.FC<UserMenuProps> = (props) => {
   };
 
   const onMoveToPublish = () => {
-    router.push(PAGE_ENDPOINTS.PUBLISH.ROOT);
+    router.push(PAGE_ENDPOINTS.NFT.REGIST);
   };
 
   const url = getUserThumbnail(userInfo?.profile);

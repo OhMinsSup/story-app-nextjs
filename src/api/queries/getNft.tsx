@@ -27,7 +27,7 @@ export const useNftQuery = (id: DataIdParams) => {
     [
       API_ENDPOINTS.LOCAL.STORY.DETAIL,
       id ? parseInt(id.toString(), 10) : undefined,
-    ],
+    ].filter(Boolean),
     fetchNftDetail,
     {
       retry: false,

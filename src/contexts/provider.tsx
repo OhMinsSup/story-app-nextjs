@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { Hydrate } from 'react-query/hydration';
+import { QueryClient, QueryClientProvider, Hydrate } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
 // hooks
@@ -23,7 +22,10 @@ interface ProviderProps {
   pageProps: any;
 }
 
-const Provider: React.FC<ProviderProps> = ({ children, pageProps }) => {
+const Provider: React.FC<React.PropsWithChildren<ProviderProps>> = ({
+  children,
+  pageProps,
+}) => {
   const { setAuth, setLoggedIn } = useStore((store) => ({
     setAuth: store.actions?.setAuth,
     setLoggedIn: store.actions?.setLoggedIn,

@@ -11,6 +11,7 @@ export const PAGE_ENDPOINTS = {
   NFT: {
     ROOT: '/nft/',
     ID: (id: string | number) => `/nft/${id}/`,
+    REGIST: '/nft/regist/',
   },
   STORY: {
     ROOT: '/story/',
