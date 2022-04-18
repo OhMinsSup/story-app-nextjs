@@ -1,14 +1,13 @@
 import { useQuery } from 'react-query';
+import { useUserHook } from '@store/hook';
 
 import { api } from '@api/module';
 
 import { API_ENDPOINTS } from '@constants/constant';
 
-import type { QueryFunctionContext, QueryKey } from 'react-query';
 import type { Schema, StoryErrorApi, UserModel } from '@api/schema/story-api';
-import { useUserHook } from '@store/hook';
 
-export const fetchMe = async (_: QueryFunctionContext<QueryKey, any>) => {
+export const fetchMe = async () => {
   const response = await api.get({
     url: API_ENDPOINTS.LOCAL.USER.ME,
   });

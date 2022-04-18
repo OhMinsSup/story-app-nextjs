@@ -1,6 +1,12 @@
 import React from 'react';
-import { Header } from '@components/ui/Header';
+
+// components
 import { AppShell } from '@mantine/core';
+import { Header } from '@components/ui/Header';
+import { NftForm } from '@components/nft';
+
+// hooks
+import { ClientProvider } from '@components/nft/context/client';
 
 const NftRegistPage = () => {
   return (
@@ -18,7 +24,9 @@ const NftRegistPage = () => {
         },
       })}
     >
-      ??
+      <ClientProvider>
+        <NftForm />
+      </ClientProvider>
     </AppShell>
   );
 };
