@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 
 // components
 import {
@@ -6,15 +7,26 @@ import {
   Group,
   Textarea,
   ActionIcon,
+  Space,
   MultiSelect,
+  ColorInput,
+  InputWrapper,
+  Input,
 } from '@mantine/core';
 import { CloudUpload, Typography, Tags, X } from 'tabler-icons-react';
 
 // hooks
 import { useClientContext } from '@components/nft/context/client';
 
+const UploadModal = dynamic(() => import('@components/ui/Modal/UploadModal'), {
+  ssr: false,
+});
+
 const NftForm = () => {
-  const { editor, setVisibleSubTitle, setVisibleTags } = useClientContext();
+  const { editor, setVisibleSubTitle, setVisibleTags, setVisibleUpload } =
+    useClientContext();
+
+  const [value, setValue] = useState('');
 
   const onClickForOpenSubTitle = () => {
     setVisibleSubTitle(true);
@@ -32,15 +44,24 @@ const NftForm = () => {
     setVisibleTags(false);
   };
 
+  const onClickForOpenUpload = () => {
+    setVisibleUpload(true);
+  };
+
+  const onClickForCloseUpload = () => {
+    setVisibleUpload(false);
+  };
+
   return (
     <>
       <div className="container grid grid-cols-12 px-2 mx-auto 2xl:grid-cols-10 2xl:px-5">
         <div className="col-span-12 xl:col-span-10 xl:col-start-2 2xl:col-start-3 2xl:col-span-6">
           <div className="w-full px-4 pt-5">
-            <div className="form-area">
+            <form className="form-area">
               <Group className="mb-10 px-4">
                 <Button
                   leftIcon={<CloudUpload />}
+                  onClick={onClickForOpenUpload}
                   sx={(theme) => ({
                     backgroundColor:
                       theme.colorScheme === 'dark'
@@ -125,68 +146,105 @@ const NftForm = () => {
                 />
               </div>
               {editor.subTitle && (
-                <div className="relative mb-4 mt-5">
-                  <Textarea
-                    placeholder="부제 (옵션)"
-                    size="md"
-                    spellCheck="false"
-                    aria-label="subtitle"
-                    className="w-full px-4 text-2xl font-medium leading-snug"
-                    maxRows={3}
-                    styles={{
-                      input: {
-                        border: 'none',
-                      },
-                    }}
-                  />
-                  <ActionIcon
-                    className="absolute top-1 right-5 px-2 text-xl"
-                    onClick={onClickForCloseSubTitle}
-                  >
-                    <X size={30} />
-                  </ActionIcon>
+                <div className="relative mb-4 mt-5  px-4">
+                  <InputWrapper id="subTitle" required label="부제 (옵션)">
+                    <Textarea
+                      id="subTitle"
+                      placeholder="부제 (옵션)"
+                      size="md"
+                      spellCheck="false"
+                      aria-label="subtitle"
+                      className="w-full text-2xl font-medium leading-snug"
+                      maxRows={3}
+                      styles={{
+                        input: {
+                          border: 'none',
+                        },
+                      }}
+                    />
+                    <ActionIcon
+                      className="absolute top-1 right-5 px-2 text-xl"
+                      onClick={onClickForCloseSubTitle}
+                    >
+                      <X size={30} />
+                    </ActionIcon>
+                  </InputWrapper>
                 </div>
               )}
               {editor.tags && (
-                <div className="relative mb-4 mt-5">
-                  <MultiSelect
-                    data={[
-                      'React',
-                      'Angular',
-                      'Svelte',
-                      'Vue',
-                      'Riot',
-                      'Next.js',
-                      'Blitz.js',
-                    ]}
-                    className="w-full px-4"
-                    placeholder="태그 (옵션)"
-                    searchable
-                    size="md"
-                    limit={5}
-                    nothingFound="Nothing found"
-                    withinPortal
-                    rightSection={
-                      <ActionIcon
-                        className="px-2 text-xl"
-                        onClick={onClickForCloseTags}
-                      >
-                        <X size={30} />
-                      </ActionIcon>
-                    }
-                    styles={{
-                      input: {
-                        border: 'none',
-                      },
-                    }}
-                  />
+                <div className="relative mb-4 mt-5 px-4">
+                  <InputWrapper id="tags" required label="태그">
+                    <MultiSelect
+                      id="tags"
+                      data={[
+                        'React',
+                        'Angular',
+                        'Svelte',
+                        'Vue',
+                        'Riot',
+                        'Next.js',
+                        'Blitz.js',
+                      ]}
+                      className="w-full"
+                      placeholder="태그 (옵션)"
+                      searchable
+                      size="md"
+                      limit={5}
+                      nothingFound="Nothing found"
+                      withinPortal
+                      rightSection={
+                        <ActionIcon
+                          className="px-2 text-xl"
+                          onClick={onClickForCloseTags}
+                        >
+                          <X size={30} />
+                        </ActionIcon>
+                      }
+                      styles={{
+                        input: {
+                          border: 'none',
+                        },
+                      }}
+                    />
+                  </InputWrapper>
                 </div>
               )}
-              <div className="px-4">NftForm</div>
-            </div>
+              <div className="px-4">
+                <InputWrapper
+                  id="color"
+                  required
+                  label="Credit card information"
+                  description="Please enter your credit card information, we need some money"
+                  error="Your credit card expired"
+                >
+                  <ColorInput id="color" value={value} onChange={setValue} />
+                </InputWrapper>
+                <Space h="md" />
+                <InputWrapper
+                  id="123"
+                  required
+                  label="Credit card information"
+                  description="Please enter your credit card information, we need some money"
+                  error="Your credit card expired"
+                >
+                  <Textarea id="123" autosize={true} spellCheck="false" />
+                </InputWrapper>
+                <Space h="md" />
+                <InputWrapper
+                  id="12345"
+                  required
+                  label="Credit card information"
+                  description="Please enter your credit card information, we need some money"
+                  error="Your credit card expired"
+                >
+                  <Input id="12345" />
+                </InputWrapper>
+              </div>
+            </form>
           </div>
         </div>
       </div>
+      <UploadModal opened={editor.upload} onClose={onClickForCloseUpload} />
     </>
   );
 };
