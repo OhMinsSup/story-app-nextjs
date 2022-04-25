@@ -1,5 +1,6 @@
 import '@assets/main.css';
 import 'swiper/css';
+import 'dayjs/locale/ko';
 
 import React, { useEffect } from 'react';
 

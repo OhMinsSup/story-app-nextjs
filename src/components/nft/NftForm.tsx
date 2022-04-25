@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic';
 
 // components
 import {
-  Button,
   Group,
   Textarea,
   ActionIcon,
@@ -12,10 +11,14 @@ import {
   ColorInput,
   InputWrapper,
   Input,
+  Switch,
 } from '@mantine/core';
-import { CloudUpload, Typography, Tags, X } from 'tabler-icons-react';
+import { DateRangePicker } from '@mantine/dates';
+import { CloudUpload, Tags, X } from 'tabler-icons-react';
+import { Button } from '@components/ui/Button';
 
 // hooks
+import { useMediaQuery } from '@mantine/hooks';
 import { useClientContext } from '@components/nft/context/client';
 
 const UploadModal = dynamic(() => import('@components/ui/Modal/UploadModal'), {
@@ -23,21 +26,13 @@ const UploadModal = dynamic(() => import('@components/ui/Modal/UploadModal'), {
 });
 
 const NftForm = () => {
-  const { editor, setVisibleSubTitle, setVisibleTags, setVisibleUpload } =
-    useClientContext();
+  const { editor, setVisibleTags, setVisibleUpload } = useClientContext();
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   const [value, setValue] = useState('');
 
-  const onClickForOpenSubTitle = () => {
-    setVisibleSubTitle(true);
-  };
-
-  const onClickForCloseSubTitle = () => {
-    setVisibleSubTitle(false);
-  };
-
   const onClickForOpenTags = () => {
-    setVisibleTags(true);
+    setVisibleTags(!editor.tags);
   };
 
   const onClickForCloseTags = () => {
@@ -54,125 +49,38 @@ const NftForm = () => {
 
   return (
     <>
-      <div className="container grid grid-cols-12 px-2 mx-auto 2xl:grid-cols-10 2xl:px-5">
+      <div className="container grid grid-cols-12 px-4 mx-auto 2xl:grid-cols-10 2xl:px-5 mb-6">
         <div className="col-span-12 xl:col-span-10 xl:col-start-2 2xl:col-start-3 2xl:col-span-6">
-          <div className="w-full px-4 pt-5">
+          <div className="w-full pt-5 md:px-4">
             <form className="form-area">
-              <Group className="mb-10 px-4">
+              <Group className="mb-10" grow={isMobile}>
                 <Button
                   leftIcon={<CloudUpload />}
                   onClick={onClickForOpenUpload}
-                  sx={(theme) => ({
-                    backgroundColor:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[9]
-                        : 'white',
-
-                    color:
-                      theme.colorScheme === 'dark'
-                        ? 'white'
-                        : theme.colors.dark[9],
-                    '&:hover': {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.primaryColor
-                          : theme.colors.gray[1],
-                    },
-                  })}
-                >
-                  파일 업로드
-                </Button>
-                <Button
-                  leftIcon={<Typography />}
-                  sx={(theme) => ({
-                    backgroundColor:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[9]
-                        : 'white',
-
-                    color:
-                      theme.colorScheme === 'dark'
-                        ? 'white'
-                        : theme.colors.dark[9],
-                    '&:hover': {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.primaryColor
-                          : theme.colors.gray[1],
-                    },
-                  })}
-                  onClick={onClickForOpenSubTitle}
-                >
-                  부제 추가
-                </Button>
+                  text="파일 업로드"
+                />
                 <Button
                   onClick={onClickForOpenTags}
                   leftIcon={<Tags />}
-                  sx={(theme) => ({
-                    backgroundColor:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[9]
-                        : 'white',
-
-                    color:
-                      theme.colorScheme === 'dark'
-                        ? 'white'
-                        : theme.colors.dark[9],
-                    '&:hover': {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.primaryColor
-                          : theme.colors.gray[1],
-                    },
-                  })}
-                >
-                  태그 추가
-                </Button>
-              </Group>
-              <div>
-                <Textarea
-                  placeholder="제목"
-                  size="xl"
-                  autosize={true}
-                  spellCheck="false"
-                  aria-label="title"
-                  className="w-full px-4 mt-2 mb-5"
-                  maxRows={7}
-                  styles={{
-                    input: {
-                      border: 'none',
-                    },
-                  }}
+                  text="태그 추가"
                 />
+              </Group>
+              <div className="relative mb-4 mt-5 md:px-4">
+                <InputWrapper id="title" required label="제목">
+                  <Textarea
+                    placeholder="제목"
+                    id="title"
+                    size="lg"
+                    autosize={true}
+                    spellCheck="false"
+                    aria-label="title"
+                    className="w-full mt-2 mb-5"
+                    maxRows={7}
+                  />
+                </InputWrapper>
               </div>
-              {editor.subTitle && (
-                <div className="relative mb-4 mt-5  px-4">
-                  <InputWrapper id="subTitle" required label="부제 (옵션)">
-                    <Textarea
-                      id="subTitle"
-                      placeholder="부제 (옵션)"
-                      size="md"
-                      spellCheck="false"
-                      aria-label="subtitle"
-                      className="w-full text-2xl font-medium leading-snug"
-                      maxRows={3}
-                      styles={{
-                        input: {
-                          border: 'none',
-                        },
-                      }}
-                    />
-                    <ActionIcon
-                      className="absolute top-1 right-5 px-2 text-xl"
-                      onClick={onClickForCloseSubTitle}
-                    >
-                      <X size={30} />
-                    </ActionIcon>
-                  </InputWrapper>
-                </div>
-              )}
               {editor.tags && (
-                <div className="relative mb-4 mt-5 px-4">
+                <div className="relative mb-4 mt-5 md:px-4">
                   <InputWrapper id="tags" required label="태그">
                     <MultiSelect
                       id="tags"
@@ -200,50 +108,99 @@ const NftForm = () => {
                           <X size={30} />
                         </ActionIcon>
                       }
-                      styles={{
-                        input: {
-                          border: 'none',
-                        },
-                      }}
                     />
                   </InputWrapper>
                 </div>
               )}
-              <div className="px-4">
+              <div className="md:px-4">
                 <InputWrapper
-                  id="color"
+                  id="description"
                   required
-                  label="Credit card information"
+                  label="NFT 설명"
                   description="Please enter your credit card information, we need some money"
                   error="Your credit card expired"
                 >
-                  <ColorInput id="color" value={value} onChange={setValue} />
+                  <Textarea
+                    id="description"
+                    autosize={true}
+                    maxRows={7}
+                    spellCheck="false"
+                  />
                 </InputWrapper>
                 <Space h="md" />
                 <InputWrapper
-                  id="123"
-                  required
-                  label="Credit card information"
+                  id="backgroundColor"
+                  label="배경색"
                   description="Please enter your credit card information, we need some money"
                   error="Your credit card expired"
                 >
-                  <Textarea id="123" autosize={true} spellCheck="false" />
+                  <ColorInput
+                    id="backgroundColor"
+                    value={value}
+                    onChange={setValue}
+                  />
+                </InputWrapper>
+
+                <Space h="md" />
+                <InputWrapper
+                  id="externalUrl"
+                  label="연관 사이트"
+                  description="Please enter your credit card information, we need some money"
+                  error="Your credit card expired"
+                >
+                  <Input id="externalUrl" />
                 </InputWrapper>
                 <Space h="md" />
                 <InputWrapper
-                  id="12345"
                   required
-                  label="Credit card information"
+                  label="판매기간"
                   description="Please enter your credit card information, we need some money"
                   error="Your credit card expired"
                 >
-                  <Input id="12345" />
+                  <DateRangePicker
+                    locale="ko"
+                    dropdownType={isMobile ? 'modal' : 'popover'}
+                    value={[new Date(2021, 11, 1), new Date(2021, 11, 5)]}
+                  />
+                </InputWrapper>
+                <Space h="md" />
+                <InputWrapper
+                  id="price"
+                  label="판매가격"
+                  description="Please enter your credit card information, we need some money"
+                  error="Your credit card expired"
+                >
+                  <Input id="price" />
+                </InputWrapper>
+                <Space h="md" />
+                <InputWrapper
+                  id="private"
+                  label="공개여부"
+                  description="Please enter your credit card information, we need some money"
+                  error="Your credit card expired"
+                >
+                  <Switch size="lg" />
                 </InputWrapper>
               </div>
             </form>
           </div>
         </div>
       </div>
+
+      <Group
+        position="right"
+        className="p-5"
+        sx={(theme) => ({
+          backgroundColor:
+            theme.colorScheme === 'dark'
+              ? theme.colors.dark[6]
+              : theme.colors.gray[0],
+        })}
+      >
+        <Button text="등록하기" />
+        <Button text="등록하기" />
+      </Group>
+
       <UploadModal opened={editor.upload} onClose={onClickForCloseUpload} />
     </>
   );

@@ -12,13 +12,12 @@ const NftRegistPage = () => {
   return (
     <AppShell
       padding="md"
-      className="h-full"
       header={<Header />}
       styles={(theme) => ({
-        body: {
-          height: '100%',
-        },
         main: {
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingBottom: 0,
           backgroundColor:
             theme.colorScheme === 'dark' ? theme.colors.dark[9] : undefined,
         },
