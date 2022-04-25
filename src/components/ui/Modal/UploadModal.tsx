@@ -1,4 +1,9 @@
 import React from 'react';
+
+// components
+import { Upload, Photo, X, Icon as TablerIcon } from 'tabler-icons-react';
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+
 import {
   Group,
   Modal,
@@ -8,10 +13,11 @@ import {
   Space,
   Image,
 } from '@mantine/core';
-import { useMantineTheme } from '@mantine/core';
-import { Upload, Photo, X, Icon as TablerIcon } from 'tabler-icons-react';
-import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 
+// hooks
+import { useMantineTheme } from '@mantine/core';
+
+// types
 import type { MantineTheme } from '@mantine/core';
 import type { DropzoneStatus } from '@mantine/dropzone';
 
