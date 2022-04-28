@@ -21,41 +21,41 @@ import { API_ENDPOINTS } from '@constants/constant';
 // types
 import type { GetServerSidePropsContext } from 'next';
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const queryClient = new QueryClient();
+// export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+//   const queryClient = new QueryClient();
 
-  const cookie = ctx.req ? ctx.req.headers.cookie : '';
-  if (client.defaults.headers) {
-    (client.defaults.headers as any).Cookie = '';
-    if (ctx.req && cookie) {
-      (client.defaults.headers as any).Cookie = cookie;
-    }
-  }
+//   const cookie = ctx.req ? ctx.req.headers.cookie : '';
+//   if (client.defaults.headers) {
+//     (client.defaults.headers as any).Cookie = '';
+//     if (ctx.req && cookie) {
+//       (client.defaults.headers as any).Cookie = cookie;
+//     }
+//   }
 
-  await queryClient.prefetchInfiniteQuery(
-    [API_ENDPOINTS.LOCAL.STORY.ROOT],
-    fetchNftList,
-  );
+//   await queryClient.prefetchInfiniteQuery(
+//     [API_ENDPOINTS.LOCAL.STORY.ROOT],
+//     fetchNftList,
+//   );
 
-  return {
-    props: {
-      dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
-    },
-  };
-};
+//   return {
+//     props: {
+//       dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
+//     },
+//   };
+// };
 
 const IndexPage = () => {
-  const { data, fetchNextPage, hasNextPage } = useNftListQuery();
+  // const { data, fetchNextPage, hasNextPage } = useNftListQuery();
 
-  const ref = useRef<HTMLDivElement | null>(null);
+  // const ref = useRef<HTMLDivElement | null>(null);
 
-  useIntersectionObserver({
-    target: ref,
-    onIntersect: fetchNextPage,
-    enabled: hasNextPage,
-  });
+  // useIntersectionObserver({
+  //   target: ref,
+  //   onIntersect: fetchNextPage,
+  //   enabled: hasNextPage,
+  // });
 
-  const id = useId();
+  // const id = useId();
 
   return (
     <AppShell
@@ -82,7 +82,7 @@ const IndexPage = () => {
           { maxWidth: 480, cols: 1, spacing: 'sm' },
         ]}
       >
-        {data?.pages.map((item) => (
+        {/* {data?.pages.map((item) => (
           <React.Fragment key={`item-grid-wrapper-${id}`}>
             {item.list.map((story) => (
               <StoriesCard
@@ -98,7 +98,7 @@ const IndexPage = () => {
               key={`loading-key-${id}`}
               ref={index === 0 ? ref : undefined}
             />
-          ))}
+          ))} */}
       </SimpleGrid>
     </AppShell>
   );

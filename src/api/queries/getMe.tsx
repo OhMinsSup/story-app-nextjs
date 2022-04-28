@@ -5,7 +5,7 @@ import { api } from '@api/module';
 
 import { API_ENDPOINTS } from '@constants/constant';
 
-import type { Schema, StoryErrorApi, UserModel } from '@api/schema/story-api';
+import type { Schema, StoryErrorApi, UserSchema } from '@api/schema/story-api';
 
 export const fetchMe = async () => {
   const response = await api.get({
@@ -19,7 +19,7 @@ export const useMeQuery = () => {
 
   const enabled = !userInfo && isLoggedIn;
 
-  const { data, ...fields } = useQuery<UserModel, StoryErrorApi<Schema>>(
+  const { data, ...fields } = useQuery<UserSchema, StoryErrorApi<Schema>>(
     [API_ENDPOINTS.LOCAL.USER.ME],
     fetchMe,
     {

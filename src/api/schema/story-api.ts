@@ -93,7 +93,7 @@ export interface MediaSchema {
   version: string;
 }
 
-export interface UserModel {
+export interface UserSchema {
   id: number;
   email: string;
   profile: ProfileSchema;
@@ -177,7 +177,7 @@ export interface LoginInput {
   deviceId?: number;
 }
 
-export interface LoginSchema extends UserModel {
+export interface LoginSchema {
   accessToken: string;
 }
 
@@ -216,7 +216,7 @@ export interface StorySchema {
   updatedAt: string;
   media: MediaSchema;
   likes: { userId: number }[];
-  user: UserModel;
-  owner: UserModel;
+  user: UserSchema;
+  owner: UserSchema;
   tags: TagSchema[];
 }

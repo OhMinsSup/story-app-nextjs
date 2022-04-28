@@ -180,13 +180,9 @@ const SignupPage = () => {
       <SEO title="Story - 회원가입" url={PAGE_ENDPOINTS.SIGNUP} />
       <AppShell
         padding="md"
-        className="h-full"
         navbarOffsetBreakpoint="sm"
         header={<Header />}
         styles={(theme) => ({
-          body: {
-            height: '100%',
-          },
           main: {
             backgroundColor:
               theme.colorScheme === 'dark' ? theme.colors.dark[9] : undefined,

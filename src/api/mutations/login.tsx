@@ -1,11 +1,12 @@
 // hooks
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 
 // shallow
 import shallow from 'zustand/shallow';
 
 // api
 import { api } from '@api/module';
+import { fetchMe } from '@api/queries';
 
 // constants
 import { API_ENDPOINTS, RESULT_CODE, STORAGE_KEY } from '@constants/constant';
@@ -25,6 +26,7 @@ import type {
   LoginSchema,
   StoryErrorApi,
   StoryApi,
+  UserSchema,
 } from '@api/schema/story-api';
 
 const fetchPostLogin = async (body: LoginInput) => {
@@ -35,6 +37,8 @@ const fetchPostLogin = async (body: LoginInput) => {
 };
 
 export function useLoginMutation() {
+  const queryClient = useQueryClient();
+
   const { setAuth, setLoggedIn } = useStore(
     ({ actions }) => ({
       setAuth: actions?.setAuth,
@@ -49,11 +53,18 @@ export function useLoginMutation() {
     } = data;
 
     if (RESULT_CODE.OK === resultCode && !isEmpty(result)) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { accessToken, ...user } = result;
-      setLoggedIn?.(true);
-      setAuth?.(user);
+      const { accessToken } = result;
+
+      const queryKey = [API_ENDPOINTS.LOCAL.USER.ME];
+
+      await queryClient.prefetchQuery(queryKey, fetchMe);
+
+      const user = queryClient.getQueryData<UserSchema>(queryKey);
+      if (user) setAuth?.(user);
+
       await StoryStorage.setItem(STORAGE_KEY.IS_LOGGED_IN_KEY, !!accessToken);
+
+      setLoggedIn?.(true);
     }
   };
 

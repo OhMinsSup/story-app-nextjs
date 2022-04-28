@@ -5,17 +5,17 @@ import createContext from 'zustand/context';
 // utils
 import { isBrowser } from '@utils/utils';
 
-import type { UserModel } from '@api/schema/story-api';
+import type { UserSchema } from '@api/schema/story-api';
 import type { SetState, UseBoundStore, StoreApi } from 'zustand';
 
 export interface Actions {
-  setAuth: (userInfo: UserModel | null) => void;
+  setAuth: (userInfo: UserSchema | null) => void;
   setLoggedIn: (isLoggedIn: boolean) => void;
 }
 
 export interface State {
   actions?: Actions;
-  userInfo: UserModel | null;
+  userInfo: UserSchema | null;
   isLoggedIn: boolean;
 }
 
@@ -37,7 +37,7 @@ export const initializeStore = (preloadedState = {} as State) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return create<State>((set: SetState<State>, get: SetState<State>) => {
     const actions: Actions = {
-      setAuth: (userInfo: UserModel | null) =>
+      setAuth: (userInfo: UserSchema | null) =>
         set({
           userInfo,
         }),
