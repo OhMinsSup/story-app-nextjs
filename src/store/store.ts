@@ -1,12 +1,12 @@
 import { useLayoutEffect } from 'react';
-import create from 'zustand';
+import create, { StoreApi } from 'zustand';
 import createContext from 'zustand/context';
 
 // utils
 import { isBrowser } from '@utils/utils';
 
 import type { UserSchema } from '@api/schema/story-api';
-import type { SetState, UseBoundStore, StoreApi } from 'zustand';
+import type { SetState, UseBoundStore } from 'zustand';
 
 export interface Actions {
   setAuth: (userInfo: UserSchema | null) => void;
@@ -19,7 +19,7 @@ export interface State {
   isLoggedIn: boolean;
 }
 
-let store: UseBoundStore<State, StoreApi<State>> | null = null;
+let store: UseBoundStore<StoreApi<State>> | null = null;
 
 const initialState: State = {
   actions: undefined,
@@ -27,7 +27,7 @@ const initialState: State = {
   isLoggedIn: false,
 };
 
-const zustandContext = createContext<State>();
+const zustandContext = createContext<StoreApi<State>>();
 
 export const ZustandProvider = zustandContext.Provider;
 
@@ -73,5 +73,5 @@ export function useCreateStore(initialState: State) {
     }
   }, [initialState]);
 
-  return () => store as UseBoundStore<State, StoreApi<State>>;
+  return () => store as UseBoundStore<StoreApi<State>>;
 }

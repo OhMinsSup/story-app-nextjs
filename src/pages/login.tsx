@@ -3,7 +3,7 @@ import React from 'react';
 // compoents
 import { Header } from '@components/ui/Header';
 import { GoogleButton, GithubButton } from '@components/ui/Button';
-import { SEO } from '@components/ui/Seo';
+import { Seo } from '@components/ui/Seo';
 import {
   Anchor,
   AppShell,
@@ -44,6 +44,7 @@ import { StoryStorage } from '@libs/storage';
 
 // types
 import type { LoginInput } from '@api/schema/story-api';
+import { Layout } from '@components/ui/Layout';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -124,22 +125,8 @@ const LoginPage = () => {
 
   return (
     <>
-      <SEO title="Story - 로그인" url={PAGE_ENDPOINTS.LOGIN} />
-      <AppShell
-        padding="md"
-        className="h-full"
-        navbarOffsetBreakpoint="sm"
-        header={<Header />}
-        styles={(theme) => ({
-          body: {
-            height: '100%',
-          },
-          main: {
-            backgroundColor:
-              theme.colorScheme === 'dark' ? theme.colors.dark[9] : undefined,
-          },
-        })}
-      >
+      <Seo title="Story - 로그인" />
+      <Layout>
         <Container size={420} my={40}>
           <Text size="lg" weight={700}>
             Story
@@ -206,12 +193,7 @@ const LoginPage = () => {
             </Group>
           </form>
         </Container>
-        <style>{`
-        .mantine-AppShell-body {
-          height: 100%;
-        }
-      `}</style>
-      </AppShell>
+      </Layout>
       <Alert />
     </>
   );

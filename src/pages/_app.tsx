@@ -2,32 +2,24 @@ import '@assets/main.css';
 import 'swiper/css';
 import 'dayjs/locale/ko';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 // components
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { Noop } from '@components/ui/Noop';
 import { Provider } from '@contexts/index';
 import { DefaultSeo } from '@components/ui/Seo';
+import { Core } from '@components/ui/Core';
 
 // type
 import type { AppProps } from 'next/app';
 import type { ColorScheme } from '@mantine/core';
+
 // hooks
 import { useLocalStorage } from '@mantine/hooks';
 
 // store
 import { useCreateStore, ZustandProvider } from '@store/store';
-import {
-  useAsyncFn,
-  useIsomorphicLayoutEffect,
-  usePermission,
-} from 'react-use';
-
-// utils
-import { hydrateFirebase } from '@libs/firebase-manager/firebase-manager';
-import { isEmpty } from '@utils/assertion';
-import { isBrowser } from '@utils/utils';
 
 const THEME_KEY = 'story-color-scheme';
 
@@ -38,38 +30,13 @@ interface AppPageProps extends AppProps {
 const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
   const ErrorBoundary = Component.ErrorBoundary || Noop;
 
-  const permission = usePermission({ name: 'notifications' });
-
   const createStore = useCreateStore(pageProps.initialZustandState);
-
-  const [firebase, doFetch] = useAsyncFn(async () => {
-    const firebase = await hydrateFirebase();
-    return firebase;
-  }, []);
 
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: THEME_KEY,
     defaultValue: 'light',
     getInitialValueInEffect: true,
   });
-
-  useIsomorphicLayoutEffect(() => {
-    doFetch();
-  }, []);
-
-  useEffect(() => {
-    if (!isBrowser) return;
-    if (permission === 'granted' && firebase.value) {
-      if (isEmpty(firebase.value?.messaging)) {
-        firebase.value?.setMessaging();
-        const messaging = firebase.value?.messaging;
-        if (messaging) {
-          firebase.value?.forgroundMessaging(messaging);
-          firebase.value?.intializeMessaging(messaging);
-        }
-      }
-    }
-  }, [permission, firebase.value]);
 
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
@@ -122,6 +89,7 @@ const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
             <Provider pageProps={pageProps}>
               <ErrorBoundary>
                 <Component {...pageProps} />
+                <Core />
               </ErrorBoundary>
             </Provider>
           </ZustandProvider>

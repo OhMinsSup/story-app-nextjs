@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 
 // components
 import { MantineLogo } from '@components/ui/Logo';
 import { Header as MantineHeader, Group, Container } from '@mantine/core';
 import Link from 'next/link';
-import HeaderControls from './components/HeaderControls';
 
 // hooks
 import useStyles, { HEADER_HEIGHT } from './styles/Header.styles';
+
+const HeaderControls = dynamic(() => import('./components/HeaderControls'), {
+  ssr: false,
+});
 
 const links = [
   {

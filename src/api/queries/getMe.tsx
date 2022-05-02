@@ -15,7 +15,7 @@ export const fetchMe = async () => {
 };
 
 export const useMeQuery = () => {
-  const { setAuth, userInfo, isLoggedIn } = useUserHook();
+  const { setAuth, userInfo, isLoggedIn, setLoggedIn } = useUserHook();
   console.log('useMeQuery', userInfo, isLoggedIn);
 
   const enabled = !userInfo && isLoggedIn;
@@ -27,7 +27,10 @@ export const useMeQuery = () => {
       enabled,
       retry: false,
       initialData: userInfo ?? undefined,
-      onSuccess: (data) => setAuth?.(data),
+      onSuccess: (data) => {
+        setAuth?.(data);
+        setLoggedIn?.(true);
+      },
     },
   );
 

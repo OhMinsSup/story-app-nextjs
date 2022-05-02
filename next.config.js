@@ -30,7 +30,7 @@ const nextConfig = {
   trailingSlash: true,
 
   compiler: {
-    removeConsole: true,
+    removeConsole: IS_PROD,
   },
 
   async headers() {
@@ -68,21 +68,6 @@ const nextConfig = {
   // * Next.js는 렌더링 된 콘텐츠와 정적 파일을 압축하기 위해 gzip 압축을 제공합니다.
   // https://nextjs.org/docs/api-reference/next.config.js/compression
   compress: true,
-
-  webpack: (config, { isServer }) => {
-    // * 개발 중 사용될 웹팩 설정입니다.
-    if (!IS_PROD) {
-      // * HMR 시 CPU 사용량을 줄이는 빌드 최적화 코드
-      config.watchOptions.poll = 1000;
-      config.watchOptions.aggregateTimeout = 300;
-    }
-
-    return {
-      ...config,
-      mode: IS_PROD ? 'production' : 'development',
-      devtool: IS_PROD ? 'hidden-source-map' : 'eval-source-map',
-    };
-  },
 };
 
 const composeEnhancers = [
