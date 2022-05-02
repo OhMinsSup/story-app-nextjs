@@ -5,11 +5,10 @@ import 'dayjs/locale/ko';
 import React, { useEffect } from 'react';
 
 // components
-import { Core } from '@components/ui/Core';
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { Noop } from '@components/ui/Noop';
 import { Provider } from '@contexts/index';
-import { SEO } from '@components/ui/SEO';
+import { DefaultSeo } from '@components/ui/Seo';
 
 // type
 import type { AppProps } from 'next/app';
@@ -32,9 +31,12 @@ import { isBrowser } from '@utils/utils';
 
 const THEME_KEY = 'story-color-scheme';
 
-const AppPage = ({ Component, pageProps }: AppProps) => {
-  const Layout = (Component as any).Layout || Noop;
-  const ErrorBoundary = (Component as any).ErrorBoundary || Noop;
+interface AppPageProps extends AppProps {
+  Component: any;
+}
+
+const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
+  const ErrorBoundary = Component.ErrorBoundary || Noop;
 
   const permission = usePermission({ name: 'notifications' });
 
@@ -74,7 +76,7 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
 
   return (
     <>
-      <SEO />
+      <DefaultSeo />
       <ColorSchemeProvider
         colorScheme={colorScheme}
         toggleColorScheme={toggleColorScheme}
@@ -119,11 +121,8 @@ const AppPage = ({ Component, pageProps }: AppProps) => {
           <ZustandProvider createStore={createStore}>
             <Provider pageProps={pageProps}>
               <ErrorBoundary>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
+                <Component {...pageProps} />
               </ErrorBoundary>
-              <Core />
             </Provider>
           </ZustandProvider>
         </MantineProvider>

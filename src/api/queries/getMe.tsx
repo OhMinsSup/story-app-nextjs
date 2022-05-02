@@ -16,6 +16,7 @@ export const fetchMe = async () => {
 
 export const useMeQuery = () => {
   const { setAuth, userInfo, isLoggedIn } = useUserHook();
+  console.log('useMeQuery', userInfo, isLoggedIn);
 
   const enabled = !userInfo && isLoggedIn;
 
