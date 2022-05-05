@@ -9,8 +9,6 @@ export const useUserHook = () => {
     (store) => ({
       userInfo: store.userInfo,
       setAuth: store.actions?.setAuth,
-      isLoggedIn: store.isLoggedIn,
-      setLoggedIn: store.actions?.setLoggedIn,
     }),
     shallow,
   );

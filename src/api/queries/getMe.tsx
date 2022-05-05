@@ -15,22 +15,15 @@ export const fetchMe = async () => {
 };
 
 export const useMeQuery = () => {
-  const { setAuth, userInfo, isLoggedIn, setLoggedIn } = useUserHook();
-  console.log('useMeQuery', userInfo, isLoggedIn);
-
-  const enabled = !userInfo && isLoggedIn;
+  const { setAuth, userInfo } = useUserHook();
 
   const { data, ...fields } = useQuery<UserSchema, StoryErrorApi<Schema>>(
     [API_ENDPOINTS.LOCAL.USER.ME],
     fetchMe,
     {
-      enabled,
       retry: false,
       initialData: userInfo ?? undefined,
-      onSuccess: (data) => {
-        setAuth?.(data);
-        setLoggedIn?.(true);
-      },
+      onSuccess: (data) => setAuth?.(data),
     },
   );
 

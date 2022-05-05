@@ -11,9 +11,8 @@ import {
 import { FIREBASE_VAPID_KEY } from '@constants/env';
 import { api } from '@api/module';
 import { isFunction } from '@utils/assertion';
-import { API_ENDPOINTS, RESULT_CODE, STORAGE_KEY } from '@constants/constant';
+import { API_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 import { isBrowser } from '@utils/utils';
-import { StoryStorage } from '@libs/storage';
 
 import type { FirebaseApp } from 'firebase/app';
 import type { Analytics } from 'firebase/analytics';
@@ -142,7 +141,7 @@ class FireBaseManager {
    */
   async device(pushToken: string) {
     const { data } = await api.post<DeviceSchema>({
-      url: API_ENDPOINTS.LOCAL.NOTIFICATIONS.DEVICE,
+      url: API_ENDPOINTS.LOCAL.DEVICE.ROOT,
       body: {
         pushToken,
       },
@@ -159,13 +158,8 @@ class FireBaseManager {
         }
         break;
       case RESULT_CODE.OK: // 정상적인 경우
-      default: {
-        await StoryStorage.setItem(STORAGE_KEY.PUSH_TOKEN_KEY, {
-          deviceId: data.result.id,
-          pushToken,
-        });
+      default:
         break;
-      }
     }
   }
 
@@ -175,11 +169,6 @@ class FireBaseManager {
    * @author veloss
    */
   async getPushToken(messaging: Messaging) {
-    const data = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
-    if (data && data.pushToken) {
-      return data.pushToken;
-    }
-
     if (!messaging) return null;
 
     const pushToken = await getToken(messaging, {

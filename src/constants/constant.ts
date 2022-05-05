@@ -60,6 +60,9 @@ export const API_ENDPOINTS = {
       PUSH: '/notifications/push',
       DEVICE: '/notifications/device',
     },
+    DEVICE: {
+      ROOT: '/devices',
+    },
     STORY: {
       // news
       ROOT: '/stories',
