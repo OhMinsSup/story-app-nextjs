@@ -18,33 +18,33 @@ type SetVisibleUploadType = {
 
 type ActionType = SetVisibleTagsType | SetVisibleUploadType;
 
-interface ClientState {
+interface ModuleState {
   editor: {
     tags: boolean;
     upload: boolean;
   };
 }
 
-interface ClientContext extends ClientState {
+interface ModuleContext extends ModuleState {
   setVisibleTags: (payload: boolean) => void;
   setVisibleUpload: (payload: boolean) => void;
   dispatch: React.Dispatch<ActionType>;
 }
 
-const initialState: ClientState = {
+const initialState: ModuleState = {
   editor: {
     tags: false,
     upload: false,
   },
 };
 
-const [Provider, useClientContext] = createContext<ClientContext>({
-  name: 'useClientContext',
-  errorMessage: 'useClientContext: `context` is undefined.',
+const [Provider, useModuleContext] = createContext<ModuleContext>({
+  name: 'useModuleContext',
+  errorMessage: 'useModuleContext: `context` is undefined.',
   defaultValue: initialState,
 });
 
-interface ClientProps {
+interface Props {
   children: React.ReactNode;
 }
 
@@ -71,7 +71,7 @@ function reducer(state = initialState, action: ActionType) {
   }
 }
 
-function ClientProvider({ children }: ClientProps) {
+function ModuleProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const setVisibleTags = (payload: boolean) => {
@@ -101,4 +101,4 @@ function ClientProvider({ children }: ClientProps) {
   return <Provider value={actions}>{children}</Provider>;
 }
 
-export { ClientProvider, useClientContext };
+export { ModuleProvider, useModuleContext };

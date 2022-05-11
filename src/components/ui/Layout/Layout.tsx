@@ -12,13 +12,14 @@ const Layout: React.FC<React.PropsWithChildren<LayoutProps>> = ({
       className="h-full"
       navbarOffsetBreakpoint="sm"
       header={<Header />}
-      styles={(theme) => ({
+      styles={() => ({
         body: {
           height: '100%',
         },
         main: {
-          backgroundColor:
-            theme.colorScheme === 'dark' ? theme.colors.dark[9] : undefined,
+          paddingLeft: 0,
+          paddingRight: 0,
+          paddingBottom: 0,
         },
       })}
     >

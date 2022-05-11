@@ -1,2 +1,3 @@
-export { GoogleButton, GithubButton } from './SocialButtons';
 export { default as Button } from './Button';
+export { default as GithubButton } from './GithubButton';
+export { default as GoogleButton } from './GoogleButton';
