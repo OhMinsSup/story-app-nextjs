@@ -21,7 +21,7 @@ export const useMeQuery = () => {
     [API_ENDPOINTS.LOCAL.USER.ME],
     fetchMe,
     {
-      retry: false,
+      staleTime: 60 * 1000, // 1 minute
       initialData: userInfo ?? undefined,
       onSuccess: (data) => setAuth?.(data),
     },

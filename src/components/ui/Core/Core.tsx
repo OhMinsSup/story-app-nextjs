@@ -1,20 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 // api
 import { fetchMe } from '@api/queries';
 
 // hooks
+import { useQueryClient } from 'react-query';
 import { useUserHook } from '@store/hook';
 import {
   useAsyncFn,
   useIsomorphicLayoutEffect,
   usePermission,
 } from 'react-use';
-import { useQueryClient } from 'react-query';
-import {
-  hydrateFirebase,
-  useFireBaseManager,
-} from '@libs/firebase-manager/firebase-manager';
+
+// messages
+import { hydrateFirebase } from '@libs/firebase-manager/firebase-manager';
 
 // utils
 import { isEmpty } from '@utils/assertion';
@@ -22,18 +21,20 @@ import { isEmpty } from '@utils/assertion';
 // constants
 import { API_ENDPOINTS } from '@constants/constant';
 
+// types
 import type { UserSchema } from '@api/schema/story-api';
 
 interface CoreProps {}
-
-const Core: React.FC<React.PropsWithChildren<CoreProps>> = ({ children }) => {
+const Core: React.FC<React.PropsWithChildren<CoreProps>> = ({
+  children,
+  ...props
+}) => {
   const { setAuth } = useUserHook();
   const queryClient = useQueryClient();
 
-  const firebase = useFireBaseManager();
   const permission = usePermission({ name: 'notifications' });
 
-  const [state, doFetch] = useAsyncFn(async () => {
+  const [stateForUser, doFetchForUser] = useAsyncFn(async () => {
     let user: UserSchema | undefined = undefined;
 
     try {
@@ -41,32 +42,48 @@ const Core: React.FC<React.PropsWithChildren<CoreProps>> = ({ children }) => {
       await queryClient.prefetchQuery(queryKey, fetchMe);
       user = queryClient.getQueryData<UserSchema>(queryKey);
       if (user) setAuth?.(user);
-      return user ?? null;
     } catch (error) {
       return null;
     }
+
+    return user ?? null;
+  }, []);
+
+  const [, doFetchForDevice] = useAsyncFn(
+    async (permission: PermissionState) => {
+      if (permission !== 'granted') return false;
+      if (isEmpty(stateForUser.value)) return false;
+
+      const firebase = await hydrateFirebase();
+
+      await firebase.refreshMessaging();
+
+      return true;
+    },
+    [stateForUser.value],
+  );
+
+  useIsomorphicLayoutEffect(() => {
+    doFetchForUser();
   }, []);
 
   useIsomorphicLayoutEffect(() => {
-    doFetch();
-  }, []);
+    if (!permission) return;
+    doFetchForDevice(permission);
+  }, [permission, doFetchForDevice]);
 
-  useEffect(() => {
-    if (permission === 'granted' && state.value) {
-      if (isEmpty(firebase?.messaging)) {
-        hydrateFirebase();
-      } else {
-        firebase?.setMessaging();
-        const messaging = firebase?.messaging;
-        if (messaging) {
-          firebase?.forgroundMessaging(messaging);
-          firebase?.intializeMessaging(messaging);
+  return (
+    <>
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child, {
+            ...props,
+          });
         }
-      }
-    }
-  }, [permission, state, firebase]);
-
-  return <>{children}</>;
+        return child;
+      })}
+    </>
+  );
 };
 
 export default Core;

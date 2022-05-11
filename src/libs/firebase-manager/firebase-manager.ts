@@ -223,7 +223,7 @@ export async function hydrateFirebase() {
     return firebaseManager;
   }
   firebaseManager = new FireBaseManager();
-  (window as any).firebaseManager = firebaseManager;
+  if (isBrowser) window.firebaseManager = firebaseManager;
   return firebaseManager;
 }
 

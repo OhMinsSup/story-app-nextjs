@@ -21,28 +21,31 @@ import { API_ENDPOINTS } from '@constants/constant';
 // types
 import type { GetServerSidePropsContext } from 'next';
 
-// export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-//   const queryClient = new QueryClient();
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  //   const queryClient = new QueryClient();
 
-//   const cookie = ctx.req ? ctx.req.headers.cookie : '';
-//   if (client.defaults.headers) {
-//     (client.defaults.headers as any).Cookie = '';
-//     if (ctx.req && cookie) {
-//       (client.defaults.headers as any).Cookie = cookie;
-//     }
-//   }
+  //   const cookie = ctx.req ? ctx.req.headers.cookie : '';
+  //   if (client.defaults.headers) {
+  //     (client.defaults.headers as any).Cookie = '';
+  //     if (ctx.req && cookie) {
+  //       (client.defaults.headers as any).Cookie = cookie;
+  //     }
+  //   }
 
-//   await queryClient.prefetchInfiniteQuery(
-//     [API_ENDPOINTS.LOCAL.STORY.ROOT],
-//     fetchNftList,
-//   );
+  //   await queryClient.prefetchInfiniteQuery(
+  //     [API_ENDPOINTS.LOCAL.STORY.ROOT],
+  //     fetchNftList,
+  //   );
 
-//   return {
-//     props: {
-//       dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
-//     },
-//   };
-// };
+  //   return {
+  //     props: {
+  //       dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
+  //     },
+  //   };
+  return {
+    props: {},
+  };
+};
 
 const IndexPage = () => {
   // const { data, fetchNextPage, hasNextPage } = useNftListQuery();

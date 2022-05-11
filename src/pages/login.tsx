@@ -1,12 +1,10 @@
 import React from 'react';
 
 // compoents
-import { Header } from '@components/ui/Header';
 import { GoogleButton, GithubButton } from '@components/ui/Button';
 import { Seo } from '@components/ui/Seo';
 import {
   Anchor,
-  AppShell,
   Button,
   Container,
   Divider,

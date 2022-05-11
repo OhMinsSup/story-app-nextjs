@@ -1,5 +1,5 @@
+import np from 'nprogress';
 import Document, { Head, Html, Main, NextScript } from 'next/document';
-import NProgress from 'nprogress';
 import { Router } from 'next/router';
 import { createGetInitialProps } from '@mantine/next';
 import * as Sentry from '@sentry/browser';
@@ -8,13 +8,9 @@ import { Integrations } from '@sentry/tracing';
 // constants
 import { IS_DEPLOY_GROUP_PROD, IS_PROD, SENTRY_DSN } from '@constants/env';
 
-const start = () => {
-  NProgress.start();
-};
+const start = () => np.start();
 
-const done = () => {
-  NProgress.done();
-};
+const done = () => np.done();
 
 Router.events.on('routeChangeStart', start);
 Router.events.on('routeChangeComplete', done);
@@ -32,12 +28,12 @@ Sentry.init({
 
 const getInitialProps = createGetInitialProps();
 
-class MyDocument extends Document {
+export default class _Document extends Document {
   static getInitialProps = getInitialProps;
 
   render() {
     return (
-      <Html lang="ko">
+      <Html>
         <Head />
         <body>
           <Main />
@@ -47,5 +43,3 @@ class MyDocument extends Document {
     );
   }
 }
-
-export default MyDocument;

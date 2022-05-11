@@ -7,16 +7,14 @@ import { useStore } from '@store/store';
 import { useMemoizedFn } from '@hooks/useMemoizedFn';
 
 // constants
-import { STATUS_CODE, STORAGE_KEY } from '@constants/constant';
+import { STATUS_CODE } from '@constants/constant';
 
 // api
 import { api } from '@api/module';
 
-// storage
-import { StoryStorage } from '@libs/storage';
-
 // error
 import { ApiError } from '@libs/error';
+import { Core } from '@components/ui/Core';
 
 interface ProviderProps {
   pageProps: any;
@@ -26,23 +24,17 @@ const Provider: React.FC<React.PropsWithChildren<ProviderProps>> = ({
   children,
   pageProps,
 }) => {
-  const { setAuth, setLoggedIn } = useStore((store) => ({
+  const { setAuth } = useStore((store) => ({
     setAuth: store.actions?.setAuth,
-    setLoggedIn: store.actions?.setLoggedIn,
   }));
 
   const queryClientRef = useRef<QueryClient>();
 
   const onError = useMemoizedFn(async (error) => {
     if (ApiError.isAxiosError(error)) {
-      console.log(error.response);
       switch (error.response?.status) {
         case STATUS_CODE.UNAUTHORIZED:
-          await StoryStorage.removeItem(STORAGE_KEY.IS_LOGGED_IN_KEY);
-          await api.logout().then(() => {
-            setAuth?.(null);
-            setLoggedIn?.(false);
-          });
+          await api.logout().then(() => setAuth?.(null));
           break;
         default:
           break;
@@ -68,7 +60,9 @@ const Provider: React.FC<React.PropsWithChildren<ProviderProps>> = ({
 
   return (
     <QueryClientProvider client={queryClientRef.current as QueryClient}>
-      <Hydrate state={pageProps.dehydratedState}>{children}</Hydrate>
+      <Hydrate state={pageProps.dehydratedState}>
+        <Core>{children}</Core>
+      </Hydrate>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

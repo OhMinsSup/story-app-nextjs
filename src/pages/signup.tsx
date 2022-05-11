@@ -16,7 +16,7 @@ import { useRouter } from 'next/router';
 import { generateKey } from '@utils/utils';
 
 // components
-import { SEO } from '@components/ui/Seo';
+import { Seo } from '@components/ui/Seo';
 import { UserProfileUpload } from '@components/ui/Upload';
 import { Header } from '@components/ui/Header';
 import {
@@ -177,7 +177,7 @@ const SignupPage = () => {
 
   return (
     <>
-      <SEO title="Story - 회원가입" url={PAGE_ENDPOINTS.SIGNUP} />
+      <Seo title="Story - 회원가입" />
       <AppShell
         padding="md"
         navbarOffsetBreakpoint="sm"

@@ -16,7 +16,6 @@ const IS_PROD = process.env.NODE_ENV === 'production';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
   swcMinify: true,
   experimental: {
     // 서버 측 suspense 및 ssr 스트리밍 지원에 대한 기본 제공, http 스트리밍을 통해서 서버 렌더링 가능
