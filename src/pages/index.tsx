@@ -20,6 +20,7 @@ import { API_ENDPOINTS } from '@constants/constant';
 
 // types
 import type { GetServerSidePropsContext } from 'next';
+import { Layout } from '@components/ui/Layout';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   //   const queryClient = new QueryClient();
@@ -61,20 +62,7 @@ const IndexPage = () => {
   // const id = useId();
 
   return (
-    <AppShell
-      padding="md"
-      className="h-full"
-      header={<Header />}
-      styles={(theme) => ({
-        body: {
-          height: '100%',
-        },
-        main: {
-          backgroundColor:
-            theme.colorScheme === 'dark' ? theme.colors.dark[9] : undefined,
-        },
-      })}
-    >
+    <Layout>
       <SimpleGrid
         cols={6}
         spacing="lg"
@@ -103,7 +91,7 @@ const IndexPage = () => {
             />
           ))} */}
       </SimpleGrid>
-    </AppShell>
+    </Layout>
   );
 };
 

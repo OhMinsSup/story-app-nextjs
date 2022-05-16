@@ -1,32 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import { isObject, isUndefined } from '@utils/assertion';
-import { klayUnits } from '@utils/utils';
+import { isInvalidDate, Nullable } from '@utils/assertion';
+import dayjs from 'dayjs';
 import * as yup from 'yup';
-
-function compact<T>(array: T[]): T[] {
-  return array.filter(Boolean);
-}
-
-const isNullOrUndefined = (value: unknown): value is null | undefined =>
-  value == null;
-
-export function getError<T>(obj: T, path: string, defaultValue?: unknown): any {
-  if (!path || !isObject(obj)) {
-    return defaultValue;
-  }
-
-  const result = compact(path.split(/[,[\].]+?/)).reduce(
-    (result, key) =>
-      isNullOrUndefined(result) ? result : result[key as keyof {}],
-    obj,
-  );
-
-  return isUndefined(result) || result === obj
-    ? isUndefined(obj[path as keyof T])
-      ? defaultValue
-      : obj[path as keyof T]
-    : result;
-}
 
 export const common = {
   email: yup
@@ -81,25 +55,65 @@ export const schema = {
     file: yup.mixed().required('keystore 파일을 입력해 주세요.'),
     password: yup.string().required('비밀번호를 입력해 주세요.'),
   }),
-  publish: yup.object().shape({
-    name: yup.string().required('이름을 입력해주세요.'),
-    media: common.media.nullable(true).required('미디어를 등록해주세요.'),
-    description: yup.string().required('내용을 입력해주세요.'),
+  story: yup.object().shape({
+    title: yup
+      .string()
+      .max(100, '최대 100자 내외로 입력해주세요.')
+      .required('제목을 입력해주세요.'),
+    // media: common.media.nullable(true).required('미디어를 등록해주세요.'),
+    description: yup
+      .string()
+      .max(1000, '최대 1000자 내외로 입력해주세요.')
+      .required('내용을 입력해주세요.'),
     backgroundColor: yup
       .string()
       .matches(/^#[0-9a-fA-F]{6}$/, '색상 형식으로 입력해주세요.')
-      .notRequired(),
-    externalUrl: yup
+      .nullable()
+      .optional(),
+    externalSite: yup
       .string()
-      .url('외부 URL형식으로 입력해주세요.')
-      .notRequired(),
-    tags: yup.array().of(yup.mixed()).notRequired(),
-    unit: yup.string().oneOf(klayUnits).required('단위를 입력해주세요.'),
+      .nullable()
+      .transform((value?: string | null) => {
+        if (!value) return value;
+        // 마지막 문자가 , 이면 제거
+        if (value.endsWith(',')) return value.slice(0, -1);
+        return value.trim();
+      })
+      .optional(),
+    isPublic: yup
+      .boolean()
+      .oneOf([true, false])
+      .required('공개 여부를 선택해주세요.'),
+    rangeDate: yup
+      .array()
+      .of(yup.date().required('시작일을 선택해주세요.'))
+      .length(2, '시작일과 종료일을 선택해주세요.')
+      .test(
+        'rangeDate_beign',
+        '종료일은 시작일 이후로 선택해주세요.',
+        (value) => {
+          if (!value) return false;
+          const [begin, end] = value;
+          if (isInvalidDate(begin) || isInvalidDate(end)) return false;
+          if (dayjs(begin).isAfter(dayjs(end))) return false;
+          return true;
+        },
+      )
+      .test('rangeDate_end', '시작일은 오늘 이후로 선택해주세요.', (value) => {
+        if (!value) return false;
+        const [begin] = value;
+        if (!begin) return false;
+        if (isInvalidDate(begin)) return false;
+        if (dayjs(begin).isBefore(dayjs())) return false;
+        return true;
+      })
+      .required('공개 기간을 선택해주세요.'),
     price: yup
       .string()
       .test('price', '숫자만 입력이 가능합니다', (price) => {
-        if (!price) return true;
-        const regex = /^[0-9]+$/;
+        if (!price) return false;
+        // 정규식 소수점 및 숫자만 입력 (수수점은 존재 할 수도 없을 수 도 있음)
+        const regex = /^[0-9]+(\.[0-9]+)?$/;
         if (price.match(regex)) {
           return true;
         }

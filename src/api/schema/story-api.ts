@@ -195,14 +195,14 @@ export interface SignupInput {
 
 // =================== Story =================== //
 
-export interface PublishInput {
-  name: string;
-  tags: string[];
+export interface StoryInput {
+  title: string;
   description: string;
-  mediaId: number;
-  isPrivate?: boolean;
-  backgroundColor?: string | null;
-  externalUrl?: string | null;
+  backgroundColor?: string;
+  externalSite?: string;
+  rangeDate: Date[];
+  isPublic: boolean;
+  price: string;
 }
 
 export interface StorySchema {

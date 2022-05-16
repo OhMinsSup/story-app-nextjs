@@ -1,5 +1,7 @@
 export type Dict<T = any> = Record<string, T>;
 
+export type Nullable<T> = T | null | undefined;
+
 // Number assertions
 export function isNumber(value: any): value is number {
   return typeof value === 'number';
@@ -91,3 +93,15 @@ export function isHTMLElement(el: any): el is HTMLElement {
   const win = el.ownerDocument.defaultView ?? window;
   return el instanceof win.HTMLElement;
 }
+
+export function compact<T>(array: T[]): T[] {
+  return array.filter(Boolean);
+}
+
+export const isNullOrUndefined = (value: unknown): value is null | undefined =>
+  value == null;
+
+export const isInvalidDate = (date?: Date | null) => {
+  if (!date) return true;
+  return isNaN(date.getTime());
+};
