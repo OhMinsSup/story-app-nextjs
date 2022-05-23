@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
 
 // components
@@ -21,6 +21,9 @@ import { Button } from '@components/ui/Button';
 import { useForm, yupResolver } from '@mantine/form';
 import { schema } from '@libs/validation/schema';
 
+// utils
+import { getTargetElement } from '@utils/utils';
+
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
 import { useModuleContext } from '@components/nft/context/context';
@@ -35,13 +38,15 @@ const UploadModal = dynamic(() => import('@components/ui/Modal/UploadModal'), {
 const NftForm = () => {
   const { editor, setVisibleTags, setVisibleUpload } = useModuleContext();
   const isMobile = useMediaQuery('(max-width: 768px)');
+  const ref = useRef<HTMLFormElement | null>(null);
 
   const initialValues: StoryInput = useMemo(() => {
     return {
       title: '',
       description: '',
+      tags: [],
       backgroundColor: '#ffffff',
-      externalSite: undefined,
+      externalSite: '',
       rangeDate: [],
       isPublic: false,
       price: '',
@@ -53,33 +58,44 @@ const NftForm = () => {
     initialValues,
   });
 
-  const onClickForOpenTags = () => {
+  const onClickForOpenTags = useCallback(() => {
     setVisibleTags(!editor.tags);
-  };
+  }, [editor.tags, setVisibleTags]);
 
-  const onClickForCloseTags = () => {
+  const onClickForCloseTags = useCallback(() => {
     setVisibleTags(false);
-  };
+  }, [setVisibleTags]);
 
-  const onClickForOpenUpload = () => {
+  const onClickForOpenUpload = useCallback(() => {
     setVisibleUpload(true);
-  };
+  }, [setVisibleUpload]);
 
-  const onClickForCloseUpload = () => {
+  const onClickForCloseUpload = useCallback(() => {
     setVisibleUpload(false);
-  };
+  }, [setVisibleUpload]);
 
   const onSubmit = async (values: typeof form.values) => {
     console.log(values);
   };
 
+  const onPipelineSubmit = useCallback(() => {
+    const ele = getTargetElement(ref);
+    ele?.dispatchEvent(
+      new Event('submit', {
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+  }, []);
+
   return (
     <>
-      <div className="container grid grid-cols-12 mx-auto 2xl:grid-cols-10 2xl:px-5 h-full">
+      <div className="container grid grid-cols-12 mx-auto 2xl:grid-cols-10 2xl:px-5 md:h-full">
         <div className="col-span-12 xl:col-span-10 xl:col-start-2 2xl:col-start-3 2xl:col-span-6">
           <div className="w-full pt-5">
             <form
-              className="form-area h-full"
+              ref={ref}
+              className="form-area"
               onSubmit={form.onSubmit(onSubmit)}
             >
               <div className="px-4">
@@ -113,15 +129,7 @@ const NftForm = () => {
                     <InputWrapper id="tags" required label="태그">
                       <MultiSelect
                         id="tags"
-                        data={[
-                          'React',
-                          'Angular',
-                          'Svelte',
-                          'Vue',
-                          'Riot',
-                          'Next.js',
-                          'Blitz.js',
-                        ]}
+                        data={form.values.tags}
                         className="w-full"
                         placeholder="태그 (옵션)"
                         searchable
@@ -129,6 +137,16 @@ const NftForm = () => {
                         limit={5}
                         nothingFound="Nothing found"
                         withinPortal
+                        creatable
+                        error={form.errors.tags}
+                        getCreateLabel={(query) => `+ Create ${query}`}
+                        onCreate={(query) => {
+                          console.log(query);
+                          form.setFieldValue('tags', [
+                            ...form.values.tags,
+                            query,
+                          ]);
+                        }}
                         rightSection={
                           <ActionIcon
                             className="px-2 text-xl"
@@ -190,24 +208,11 @@ const NftForm = () => {
                 </InputWrapper>
                 <Space h="xl" />
               </div>
-              <Group
-                position="right"
-                className="p-5"
-                sx={(theme) => ({
-                  backgroundColor:
-                    theme.colorScheme === 'dark'
-                      ? theme.colors.dark[6]
-                      : theme.colors.gray[0],
-                })}
-              >
-                <Button type="submit" text="등록하기" />
-              </Group>
             </form>
           </div>
         </div>
       </div>
-
-      {/* <Group
+      <Group
         position="right"
         className="p-5"
         sx={(theme) => ({
@@ -217,8 +222,8 @@ const NftForm = () => {
               : theme.colors.gray[0],
         })}
       >
-        <Button type="button" text="등록하기" onClick={onClickForSubmit} />
-      </Group> */}
+        <Button type="button" text="등록하기" onClick={onPipelineSubmit} />
+      </Group>
 
       <UploadModal opened={editor.upload} onClose={onClickForCloseUpload} />
     </>

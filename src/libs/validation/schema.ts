@@ -80,6 +80,11 @@ export const schema = {
         return value.trim();
       })
       .optional(),
+    tags: yup
+      .array()
+      .of(yup.string().required())
+      .max(5, '최대 5개까지 입력해주세요.')
+      .optional(),
     isPublic: yup
       .boolean()
       .oneOf([true, false])

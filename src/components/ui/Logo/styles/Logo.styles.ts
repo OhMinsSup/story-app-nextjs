@@ -6,6 +6,9 @@ export default createStyles((theme) => ({
     textDecoration: 'none',
     userSelect: 'none',
     color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+    paddingLeft: '5px',
+    paddingRight: '5px',
+    lineHeight: '15px',
   },
 
   image: {

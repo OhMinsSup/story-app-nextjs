@@ -201,6 +201,7 @@ export interface StoryInput {
   backgroundColor?: string;
   externalSite?: string;
   rangeDate: Date[];
+  tags: string[];
   isPublic: boolean;
   price: string;
 }

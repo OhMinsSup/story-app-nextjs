@@ -15,14 +15,6 @@ const HeaderControls = dynamic(() => import('./components/HeaderControls'), {
 
 const links = [
   {
-    link: '/drops',
-    label: 'Drops',
-  },
-  {
-    link: '/community',
-    label: 'Marketplace',
-  },
-  {
     link: '/search',
     label: '검색',
   },

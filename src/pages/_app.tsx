@@ -9,7 +9,6 @@ import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { Noop } from '@components/ui/Noop';
 import { Provider } from '@contexts/index';
 import { DefaultSeo } from '@components/ui/Seo';
-import { Core } from '@components/ui/Core';
 
 // type
 import type { AppProps } from 'next/app';
