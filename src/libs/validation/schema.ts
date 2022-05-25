@@ -31,7 +31,7 @@ export const common = {
   gender: yup.string().oneOf(['M', 'F']).required('성별을 선택해 주세요.'),
   media: yup.object().shape({
     contentUrl: yup.string().required('미디어 주소를 입력해주세요.'),
-    name: yup.string(),
+    name: yup.string().optional().notRequired(),
     idx: yup.number().required('미디어 주소를 입력해주세요.'),
   }),
 };
@@ -60,7 +60,7 @@ export const schema = {
       .string()
       .max(100, '최대 100자 내외로 입력해주세요.')
       .required('제목을 입력해주세요.'),
-    // media: common.media.nullable(true).required('미디어를 등록해주세요.'),
+    media: common.media.required('미디어를 등록해주세요.'),
     description: yup
       .string()
       .max(1000, '최대 1000자 내외로 입력해주세요.')

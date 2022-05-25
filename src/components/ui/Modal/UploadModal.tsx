@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 // components
 import { Upload, Photo, X, Icon as TablerIcon } from 'tabler-icons-react';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
-
 import {
   Group,
   Modal,
+  Drawer,
   Container,
   Text,
   Divider,
@@ -14,12 +14,26 @@ import {
   Image,
 } from '@mantine/core';
 
+// api
+import { api } from '@api/module';
+
 // hooks
 import { useMantineTheme } from '@mantine/core';
+import { useModuleContext } from '@components/nft/context/context';
+import { useMediaQuery } from '@mantine/hooks';
+
+// utils
+import { isEmpty } from '@utils/assertion';
+
+// enum
+import { StoryUploadTypeEnum } from '@api/schema/enum';
 
 // types
 import type { MantineTheme } from '@mantine/core';
 import type { DropzoneStatus } from '@mantine/dropzone';
+import { useUploadedFileListQuery } from '@api/queries';
+import { useQueryClient } from 'react-query';
+import classNames from 'classnames';
 
 function getIconColor(status: DropzoneStatus, theme: MantineTheme) {
   return status.accepted
@@ -70,28 +84,83 @@ const dropzoneChildren = (status: DropzoneStatus, theme: MantineTheme) => (
 
 interface UploadModalProps {
   opened: boolean;
-  onClose: () => void;
+  onClose: (...args: any[]) => void;
 }
 
 const UploadModal: React.FC<UploadModalProps> = ({ opened, onClose }) => {
+  const { data, queryKey } = useUploadedFileListQuery();
+  const queryClient = useQueryClient();
   const theme = useMantineTheme();
+  const { upload, setUploadedImage } = useModuleContext();
+  const isMobile = useMediaQuery('(max-width: 768px)', false);
+
+  const onUploadStart = useCallback(
+    async (files: File[]) => {
+      const file = files[0];
+      if (!file || isEmpty(file)) return;
+
+      const response = await api.upload({
+        file,
+        storyType: StoryUploadTypeEnum.STORY,
+      });
+
+      const {
+        data: { ok, result },
+      } = response;
+
+      if (ok) {
+        const payload = {
+          idx: result.id,
+          name: result.name,
+          contentUrl: result.path,
+        };
+        setUploadedImage(payload);
+        await queryClient.invalidateQueries(queryKey);
+      }
+    },
+    [setUploadedImage, queryClient, queryKey],
+  );
+
+  const onCloseModal = useCallback(() => {
+    onClose(upload);
+  }, [onClose, upload]);
+
+  const onClickSeleteItem = useCallback(
+    (image: Record<string, any>) => {
+      const payload = {
+        idx: image.id,
+        name: image.publidId,
+        contentUrl: image.contentUrl,
+      };
+      setUploadedImage(payload);
+    },
+    [setUploadedImage],
+  );
+
+  const Wapper = isMobile ? Drawer : Modal;
 
   return (
-    <Modal
+    <Wapper
       opened={opened}
-      onClose={onClose}
-      centered
-      size={'lg'}
-      overlayColor={
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[9]
-          : theme.colors.gray[2]
-      }
-      overlayOpacity={0.95}
+      onClose={onCloseModal}
+      {...(isMobile
+        ? {
+            position: 'bottom',
+            size: '100%',
+          }
+        : {
+            size: 'lg',
+            centered: true,
+            overlayColor:
+              theme.colorScheme === 'dark'
+                ? theme.colors.dark[9]
+                : theme.colors.gray[2],
+            overlayOpacity: 0.95,
+          })}
     >
       <Container>
         <Dropzone
-          onDrop={(files) => console.log('accepted files', files)}
+          onDrop={onUploadStart}
           onReject={(files) => console.log('rejected files', files)}
           maxSize={3 * 1024 ** 2}
           accept={IMAGE_MIME_TYPE}
@@ -99,51 +168,37 @@ const UploadModal: React.FC<UploadModalProps> = ({ opened, onClose }) => {
           {(status) => dropzoneChildren(status, theme)}
         </Dropzone>
         <Space h="md" />
-        <Divider />
+        {!isEmpty(data) && <Divider />}
       </Container>
-      <div className="flex flex-row flex-wrap items-center justify-center px-1 pb-4 mt-4 overflow-auto h-72">
-        <div className="w-64 h-44 mx-auto mb-12 rounded-lg cursor-pointer md:mx-2">
-          <Image
-            className="w-full h-full bg-cover"
-            src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixid=MnwyNjEwMzZ8MHwxfHNlYXJjaHwxfHxibG9nfGVufDB8MHx8fDE2NTAzOTc4NjQ&amp;ixlib=rb-1.2.1&amp;w=200&amp;q=80&amp;fit=crop"
-            alt="MacBook Pro, white ceramic mug,and black smartphone on table"
-            withPlaceholder
-            radius="md"
-            caption="My dog begging for treats"
-          />
+      {isEmpty(data) || !data ? null : (
+        <div className="flex flex-row flex-wrap items-center justify-center px-1 pb-4 mt-4 overflow-auto h-72">
+          {data.map((image) => (
+            <div
+              role="button"
+              aria-label="select image"
+              key={`uploaded-image-key-${image.id}`}
+              className={classNames(
+                'w-64 min-h-[180px] mx-auto mb-12 rounded-lg cursor-pointer md:mx-2',
+                {
+                  'border border-indigo-500/100 border-solid':
+                    image.id === upload.image?.idx,
+                },
+              )}
+              onClick={() => onClickSeleteItem(image)}
+            >
+              <Image
+                className="w-full h-full bg-cover"
+                src={image.contentUrl}
+                alt={`nft content ${image.publidId}`}
+                withPlaceholder
+                radius="md"
+                caption={image.publidId}
+              />
+            </div>
+          ))}
         </div>
-        <div className="w-64 h-44 mx-auto mb-12 rounded-lg cursor-pointer md:mx-2">
-          <Image
-            className="w-full h-full bg-cover"
-            src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixid=MnwyNjEwMzZ8MHwxfHNlYXJjaHwxfHxibG9nfGVufDB8MHx8fDE2NTAzOTc4NjQ&amp;ixlib=rb-1.2.1&amp;w=200&amp;q=80&amp;fit=crop"
-            alt="MacBook Pro, white ceramic mug,and black smartphone on table"
-            withPlaceholder
-            radius="md"
-            caption="My dog begging for treats"
-          />
-        </div>
-        <div className="w-64 h-44 mx-auto mb-12 rounded-lg cursor-pointer md:mx-2">
-          <Image
-            className="w-full h-full bg-cover"
-            src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixid=MnwyNjEwMzZ8MHwxfHNlYXJjaHwxfHxibG9nfGVufDB8MHx8fDE2NTAzOTc4NjQ&amp;ixlib=rb-1.2.1&amp;w=200&amp;q=80&amp;fit=crop"
-            alt="MacBook Pro, white ceramic mug,and black smartphone on table"
-            withPlaceholder
-            radius="md"
-            caption="My dog begging for treats"
-          />
-        </div>
-        <div className="w-64 h-44 mx-auto mb-12 rounded-lg cursor-pointer md:mx-2">
-          <Image
-            className="w-full h-full bg-cover"
-            src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixid=MnwyNjEwMzZ8MHwxfHNlYXJjaHwxfHxibG9nfGVufDB8MHx8fDE2NTAzOTc4NjQ&amp;ixlib=rb-1.2.1&amp;w=200&amp;q=80&amp;fit=crop"
-            alt="MacBook Pro, white ceramic mug,and black smartphone on table"
-            withPlaceholder
-            radius="md"
-            caption="My dog begging for treats"
-          />
-        </div>
-      </div>
-    </Modal>
+      )}
+    </Wapper>
   );
 };
 

@@ -91,6 +91,10 @@ export interface MediaSchema {
   contentUrl: string;
   publidId: string;
   version: string;
+  type: string;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UserSchema {
@@ -198,6 +202,7 @@ export interface SignupInput {
 export interface StoryInput {
   title: string;
   description: string;
+  media: { idx: number; name?: string; contentUrl: string } | null;
   backgroundColor?: string;
   externalSite?: string;
   rangeDate: Date[];

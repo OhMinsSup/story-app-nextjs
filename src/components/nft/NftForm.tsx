@@ -36,7 +36,8 @@ const UploadModal = dynamic(() => import('@components/ui/Modal/UploadModal'), {
 });
 
 const NftForm = () => {
-  const { editor, setVisibleTags, setVisibleUpload } = useModuleContext();
+  const { editor, setVisibleTags, setVisibleUpload, upload } =
+    useModuleContext();
   const isMobile = useMediaQuery('(max-width: 768px)');
   const ref = useRef<HTMLFormElement | null>(null);
 
@@ -45,6 +46,7 @@ const NftForm = () => {
       title: '',
       description: '',
       tags: [],
+      media: null,
       backgroundColor: '#ffffff',
       externalSite: '',
       rangeDate: [],
@@ -76,6 +78,18 @@ const NftForm = () => {
 
   const onSubmit = async (values: typeof form.values) => {
     console.log(values);
+    const body = {
+      title: values.title,
+      description: values.description,
+      backgroundColor: values.backgroundColor,
+      externalSite: values.externalSite,
+      isPublic: values.isPublic,
+      price: values.price,
+      beginDate: values.rangeDate[0].getTime(),
+      endDate: values.rangeDate[1].getTime(),
+      tags: values.tags,
+      mediaId: upload.image?.idx,
+    };
   };
 
   const onPipelineSubmit = useCallback(() => {

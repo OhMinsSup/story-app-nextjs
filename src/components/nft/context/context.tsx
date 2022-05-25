@@ -4,6 +4,7 @@ import { createContext } from '@libs/react-utils/context';
 enum Action {
   SET_VISIBLE_TAGS = 'SET_VISIBLE_TAGS',
   SET_VISIBLE_UPLOAD = 'SET_VISIBLE_UPLOAD',
+  SET_UPLOADED_IMAGE = 'SET_UPLOADED_IMAGE',
 }
 
 type SetVisibleTagsType = {
@@ -16,18 +17,36 @@ type SetVisibleUploadType = {
   payload: boolean;
 };
 
-type ActionType = SetVisibleTagsType | SetVisibleUploadType;
+type SetUploadedImageType = {
+  type: Action.SET_UPLOADED_IMAGE;
+  payload: UploadImage;
+};
+
+type ActionType =
+  | SetVisibleTagsType
+  | SetVisibleUploadType
+  | SetUploadedImageType;
+
+interface UploadImage {
+  idx: number;
+  name: string;
+  contentUrl: string;
+}
 
 interface ModuleState {
   editor: {
     tags: boolean;
     upload: boolean;
   };
+  upload: {
+    image: UploadImage | null;
+  };
 }
 
 interface ModuleContext extends ModuleState {
   setVisibleTags: (payload: boolean) => void;
   setVisibleUpload: (payload: boolean) => void;
+  setUploadedImage: (payload: UploadImage) => void;
   dispatch: React.Dispatch<ActionType>;
 }
 
@@ -35,6 +54,9 @@ const initialState: ModuleState = {
   editor: {
     tags: false,
     upload: false,
+  },
+  upload: {
+    image: null,
   },
 };
 
@@ -66,6 +88,14 @@ function reducer(state = initialState, action: ActionType) {
           upload: action.payload,
         },
       };
+    case Action.SET_UPLOADED_IMAGE:
+      return {
+        ...state,
+        upload: {
+          ...state.upload,
+          image: action.payload,
+        },
+      };
     default:
       return state;
   }
@@ -88,11 +118,19 @@ function ModuleProvider({ children }: Props) {
     });
   };
 
+  const setUploadedImage = (payload: UploadImage) => {
+    dispatch({
+      type: Action.SET_UPLOADED_IMAGE,
+      payload,
+    });
+  };
+
   const actions = useMemo(
     () => ({
       ...state,
       setVisibleTags,
       setVisibleUpload,
+      setUploadedImage,
       dispatch,
     }),
     [state],

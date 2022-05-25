@@ -48,6 +48,7 @@ export const API_ENDPOINTS = {
     },
     FILE: {
       ROOT: '/files/upload',
+      LIST: '/files',
     },
     SEARCH: {
       ROOT: '/search',
