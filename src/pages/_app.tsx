@@ -6,7 +6,6 @@ import React from 'react';
 
 // components
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
-import { Noop } from '@components/ui/Noop';
 import { Provider } from '@contexts/index';
 import { DefaultSeo } from '@components/ui/Seo';
 
@@ -27,8 +26,6 @@ interface AppPageProps extends AppProps {
 }
 
 const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
-  const ErrorBoundary = Component.ErrorBoundary || Noop;
-
   const createStore = useCreateStore(pageProps.initialZustandState);
 
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -50,12 +47,10 @@ const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
             toggleColorScheme={toggleColorScheme}
           >
             <MantineProvider
-              withGlobalStyles
-              withNormalizeCSS
               theme={{
                 fontFamily: 'Verdana, sans-serif',
                 fontFamilyMonospace: 'Monaco, Courier, monospace',
-                colorScheme: colorScheme,
+                colorScheme: colorScheme || 'light',
                 colors: {
                   // override dark colors to change them for all components
                   dark: [
@@ -85,10 +80,10 @@ const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
                 },
                 primaryColor: 'brand',
               }}
+              withGlobalStyles
+              withNormalizeCSS
             >
-              <ErrorBoundary>
-                <Component {...pageProps} />
-              </ErrorBoundary>
+              <Component {...pageProps} />
             </MantineProvider>
           </ColorSchemeProvider>
         </Provider>
