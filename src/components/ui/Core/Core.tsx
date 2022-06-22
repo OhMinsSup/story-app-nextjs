@@ -29,48 +29,48 @@ const Core: React.FC<React.PropsWithChildren<CoreProps>> = ({
   children,
   ...props
 }) => {
-  const { setAuth } = useUserHook();
-  const queryClient = useQueryClient();
+  // const { setAuth } = useUserHook();
+  // const queryClient = useQueryClient();
 
-  const permission = usePermission({ name: 'notifications' });
+  // const permission = usePermission({ name: 'notifications' });
 
-  const [stateForUser, doFetchForUser] = useAsyncFn(async () => {
-    let user: UserSchema | undefined = undefined;
+  // const [stateForUser, doFetchForUser] = useAsyncFn(async () => {
+  //   let user: UserSchema | undefined = undefined;
 
-    try {
-      const queryKey = [API_ENDPOINTS.LOCAL.USER.ME];
-      await queryClient.prefetchQuery(queryKey, fetchMe);
-      user = queryClient.getQueryData<UserSchema>(queryKey);
-      if (user) setAuth?.(user);
-    } catch (error) {
-      return null;
-    }
+  //   try {
+  //     const queryKey = [API_ENDPOINTS.LOCAL.USER.ME];
+  //     await queryClient.prefetchQuery(queryKey, fetchMe);
+  //     user = queryClient.getQueryData<UserSchema>(queryKey);
+  //     if (user) setAuth?.(user);
+  //   } catch (error) {
+  //     return null;
+  //   }
 
-    return user ?? null;
-  }, []);
+  //   return user ?? null;
+  // }, []);
 
-  const [, doFetchForDevice] = useAsyncFn(
-    async (permission: PermissionState) => {
-      if (permission !== 'granted') return false;
-      if (isEmpty(stateForUser.value)) return false;
+  // const [, doFetchForDevice] = useAsyncFn(
+  //   async (permission: PermissionState) => {
+  //     if (permission !== 'granted') return false;
+  //     if (isEmpty(stateForUser.value)) return false;
 
-      const firebase = await hydrateFirebase();
+  //     const firebase = await hydrateFirebase();
 
-      await firebase.refreshMessaging();
+  //     await firebase.refreshMessaging();
 
-      return true;
-    },
-    [stateForUser.value],
-  );
+  //     return true;
+  //   },
+  //   [stateForUser.value],
+  // );
 
-  useIsomorphicLayoutEffect(() => {
-    doFetchForUser();
-  }, []);
+  // useIsomorphicLayoutEffect(() => {
+  //   doFetchForUser();
+  // }, []);
 
-  useIsomorphicLayoutEffect(() => {
-    if (!permission) return;
-    doFetchForDevice(permission);
-  }, [permission, doFetchForDevice]);
+  // useIsomorphicLayoutEffect(() => {
+  //   if (!permission) return;
+  //   doFetchForDevice(permission);
+  // }, [permission, doFetchForDevice]);
 
   return (
     <>

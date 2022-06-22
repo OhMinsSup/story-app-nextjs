@@ -4,6 +4,8 @@ import 'dayjs/locale/ko';
 
 import React from 'react';
 
+import { useAtomsDebugValue } from 'jotai/devtools';
+
 // components
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { Provider } from '@contexts/index';
@@ -24,6 +26,11 @@ const THEME_KEY = 'story-color-scheme';
 interface AppPageProps extends AppProps {
   Component: any;
 }
+
+const DebugAtoms = () => {
+  useAtomsDebugValue();
+  return null;
+};
 
 const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
   const createStore = useCreateStore(pageProps.initialZustandState);
@@ -88,6 +95,7 @@ const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
           </ColorSchemeProvider>
         </Provider>
       </ZustandProvider>
+      <DebugAtoms />
     </>
   );
 };

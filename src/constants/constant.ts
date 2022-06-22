@@ -96,6 +96,10 @@ export const STORAGE_KEY = {
   PUSH_TOKEN_KEY: 'pushToken',
 };
 
+export const COOKIE_KEY = {
+  ACCESS_TOKEN: 'access_token',
+};
+
 export const STATUS_CODE = {
   OK: 200,
   CREATED: 201,

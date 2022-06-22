@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import * as Sentry from '@sentry/browser';
 import { IS_DEPLOY_GROUP_PROD, IS_PROD } from '@constants/env';
-import NetworkErrorScreen from './NetworkErrorScreen';
-import CrashErrorScreen from './CrashErrorScreen';
 
-class ErrorBoundary extends Component {
+import NetworkErrorScreen from './components/NetworkErrorScreen';
+import CrashErrorScreen from './components/CrashErrorScreen';
+
+class ErrorBoundary extends Component<Record<string, any>> {
   state = {
     hasError: false,
     networkError: false,
@@ -21,9 +21,7 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error: Error) {
-    if (IS_PROD && IS_DEPLOY_GROUP_PROD) {
-      Sentry.captureException(error);
-    }
+    console.log(error);
   }
 
   handleClearError = () => {

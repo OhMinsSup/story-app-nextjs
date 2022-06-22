@@ -83,15 +83,13 @@ const LoginPage = () => {
       throw new ApiError(result.data);
     } catch (error) {
       if (ApiError.isAxiosError(error)) {
-        if (ApiError.isAxiosError(error)) {
-          const { response } = error;
-          switch (response?.status) {
-            case STATUS_CODE.SERVER_ERROR:
-            case STATUS_CODE.BAD_GATEWAY:
-              throw error;
-            default:
-              break;
-          }
+        const { response } = error;
+        switch (response?.status) {
+          case STATUS_CODE.SERVER_ERROR:
+          case STATUS_CODE.BAD_GATEWAY:
+            throw error;
+          default:
+            break;
         }
       }
 

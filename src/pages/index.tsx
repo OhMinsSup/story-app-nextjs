@@ -23,6 +23,8 @@ import type { GetServerSidePropsContext } from 'next';
 import { Layout } from '@components/ui/Layout';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  console.log('ctx', ctx.res.getHeader('Set-Cookie'));
+  console.log('??', ctx.req.headers.cookie);
   //   const queryClient = new QueryClient();
 
   //   const cookie = ctx.req ? ctx.req.headers.cookie : '';

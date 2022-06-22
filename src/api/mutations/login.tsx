@@ -1,15 +1,11 @@
 // hooks
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation } from 'react-query';
 
 // api
 import { api } from '@api/module';
-import { fetchMe } from '@api/queries';
 
 // constants
-import { API_ENDPOINTS, RESULT_CODE } from '@constants/constant';
-
-// utils
-import { isEmpty } from '@utils/assertion';
+import { API_ENDPOINTS } from '@constants/constant';
 
 // types
 import type {
@@ -17,44 +13,28 @@ import type {
   LoginSchema,
   StoryErrorApi,
   StoryApi,
-  UserSchema,
 } from '@api/schema/story-api';
-import { useUserHook } from '@store/hook';
+import { useAtom } from 'jotai';
+import { asyncWriteOnlyUserAtom } from '@atoms/authAtom';
 
-const fetchPostLogin = async (body: LoginInput) => {
-  return api.post({
+const postLogin = (body: LoginInput) =>
+  api.post({
     url: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
     body,
   });
-};
 
 export function useLoginMutation() {
-  const queryClient = useQueryClient();
-
-  const { setAuth } = useUserHook();
-
-  const onSuccess = async (data: StoryApi<LoginSchema>) => {
-    const {
-      data: { result, resultCode },
-    } = data;
-
-    if (RESULT_CODE.OK === resultCode && !isEmpty(result)) {
-      const queryKey = [API_ENDPOINTS.LOCAL.USER.ME];
-      await queryClient.prefetchQuery(queryKey, fetchMe);
-      const user = queryClient.getQueryData<UserSchema>(queryKey);
-      if (user) setAuth?.(user);
-    }
-  };
+  const [, update] = useAtom(asyncWriteOnlyUserAtom);
 
   const res = useMutation<StoryApi<LoginSchema>, StoryErrorApi, LoginInput>(
-    fetchPostLogin,
+    postLogin,
     {
-      onSuccess,
+      onSuccess: () => update(),
     },
   );
 
   return {
     ...res,
-    fetchPostLogin,
+    postLogin,
   };
 }

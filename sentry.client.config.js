@@ -10,6 +10,7 @@ const SENTRY_DSN = process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN;
 
 Sentry.init({
   enabled: [SENTRY_DSN, PRODUCTION, DEPLOY_GROUP].every(Boolean),
+  enabled: false,
   dsn: SENTRY_DSN,
   tracesSampleRate: 1.0,
   // Note: if you want to override the automatic release value, do not set a

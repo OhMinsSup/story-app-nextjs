@@ -8,13 +8,13 @@ import { useUserHook } from '@store/hook';
 import { getUserThumbnail } from '@utils/utils';
 
 // components
-import { UnstyledButton, Group, Avatar } from '@mantine/core';
+import { Box, Group, Avatar } from '@mantine/core';
 
 interface UserAvatarProps {}
 
 const UserAvatar = (
   { ...others }: UserAvatarProps,
-  ref: React.ForwardedRef<HTMLButtonElement>,
+  ref: React.ForwardedRef<HTMLDivElement>,
 ) => {
   const theme = useMantineTheme();
   const { userInfo } = useUserHook();
@@ -22,22 +22,24 @@ const UserAvatar = (
   const url = getUserThumbnail(userInfo?.profile);
 
   return (
-    <UnstyledButton
-      ref={ref}
-      sx={{
-        display: 'block',
-        width: '100%',
-        borderRadius: theme.radius.sm,
-        color:
-          theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-      }}
-      {...others}
-    >
-      <Group align="center" className="md:p-0 p-1">
-        <Avatar src={url} radius="xl" />
-      </Group>
-    </UnstyledButton>
+    <>
+      <Box
+        ref={ref}
+        sx={{
+          display: 'block',
+          width: '100%',
+          borderRadius: theme.radius.sm,
+          color:
+            theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+        }}
+        {...others}
+      >
+        <Group align="center" className="md:p-0 p-1">
+          <Avatar src={url} radius="xl" />
+        </Group>
+      </Box>
+    </>
   );
 };
 
-export default React.forwardRef<HTMLButtonElement, UserAvatarProps>(UserAvatar);
+export default React.forwardRef<HTMLDivElement, UserAvatarProps>(UserAvatar);

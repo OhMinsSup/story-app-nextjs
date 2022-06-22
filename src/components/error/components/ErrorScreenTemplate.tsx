@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@mui/material';
+// import { Button } from '@mui/material';
 
 export interface ErrorScreenTemplateProps {
   image: string;
@@ -21,14 +21,14 @@ const ErrorScreenTemplate: React.FC<ErrorScreenTemplateProps> = ({
         <div className="message">{message}</div>
         {buttonText && (
           <div className="button-wrapper">
-            <Button
+            {/* <Button
               size="large"
               variant="contained"
               color="primary"
               onClick={onButtonClick}
             >
               {buttonText}
-            </Button>
+            </Button> */}
           </div>
         )}
       </div>
