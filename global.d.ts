@@ -1,4 +1,5 @@
 import { FireBaseManager } from '@libs/firebase-manager';
+import { NotifyManager } from '@libs/state/notifyManager';
 
 /* eslint-disable @typescript-eslint/ban-types */
 declare module '@multiavatar/multiavatar/esm' {
@@ -14,5 +15,6 @@ declare module 'react-query/types/react/QueryClientProvider' {
 declare global {
   interface Window {
     firebaseManager: FireBaseManager;
+    notifyManager: NotifyManager;
   }
 }

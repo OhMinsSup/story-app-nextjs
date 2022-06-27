@@ -1,12 +1,12 @@
 // constants
 import { STATUS_CODE } from '@constants/constant';
+import { IS_PROD } from '@constants/env';
 
 // utils
 import { isFunction } from '@utils/assertion';
 
 // types
 import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
-import { IS_PROD } from '@constants/env';
 
 export interface AxiosErrorOptions {
   statusCodes?: Array<number>; // http status과 일치할 경우 refresh token 발급
@@ -36,7 +36,7 @@ const shouldInterceptError = (
   return statusCodes.includes(error.response.status);
 };
 
-export const createErrorInterceptor = (
+export const createInterceptor = (
   instance: AxiosInstance,
   options: AxiosErrorOptions & {
     shouldUnauthorizedBlock?(error: AxiosError): boolean;

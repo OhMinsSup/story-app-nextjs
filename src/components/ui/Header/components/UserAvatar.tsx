@@ -2,7 +2,6 @@ import React from 'react';
 
 // hooks
 import { useMantineTheme } from '@mantine/core';
-import { useUserHook } from '@store/hook';
 
 // utils
 import { getUserThumbnail } from '@utils/utils';
@@ -10,15 +9,18 @@ import { getUserThumbnail } from '@utils/utils';
 // components
 import { Box, Group, Avatar } from '@mantine/core';
 
-interface UserAvatarProps {}
+// types
+import type { UserSchema } from '@api/schema/story-api';
+
+interface UserAvatarProps {
+  userInfo?: UserSchema;
+}
 
 const UserAvatar = (
-  { ...others }: UserAvatarProps,
+  { userInfo, ...others }: UserAvatarProps,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) => {
   const theme = useMantineTheme();
-  const { userInfo } = useUserHook();
-
   const url = getUserThumbnail(userInfo?.profile);
 
   return (

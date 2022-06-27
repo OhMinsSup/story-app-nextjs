@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 
 // components
+import Link from 'next/link';
 import { MantineLogo } from '@components/ui/Logo';
 import { HeaderControls } from '@components/ui/Header';
 import { Header as MantineHeader, Group, Container } from '@mantine/core';
-import Link from 'next/link';
 
 // hooks
 import useStyles, { HEADER_HEIGHT } from './styles/Header.styles';
-import { ErrorBoundary } from '@components/error';
 
 const links = [
   {
@@ -45,11 +44,7 @@ const Header = () => {
           {items}
         </Group>
         <Group spacing={5} className={classes.links}>
-          <ErrorBoundary>
-            <React.Suspense fallback={<div>Loading</div>}>
-              <HeaderControls />
-            </React.Suspense>
-          </ErrorBoundary>
+          <HeaderControls />
         </Group>
       </Container>
     </MantineHeader>

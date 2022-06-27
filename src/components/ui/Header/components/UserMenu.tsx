@@ -2,16 +2,13 @@ import React from 'react';
 
 // hooks
 import { useRouter } from 'next/router';
-import { useUserHook } from '@store/hook';
+import { useMeQuery } from '@api/queries';
 
 // api
 import { api } from '@api/module';
 
-// storage
-import { StoryStorage } from '@libs/storage';
-
 // constants
-import { PAGE_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
+import { PAGE_ENDPOINTS } from '@constants/constant';
 
 // components
 import { Text, Group, Menu, Divider, Avatar, Box } from '@mantine/core';
@@ -25,14 +22,10 @@ interface UserMenuProps extends Pick<MenuProps, 'control'> {}
 
 const UserMenu: React.FC<UserMenuProps> = (props) => {
   const router = useRouter();
-  const { userInfo, setAuth, setLoggedIn } = useUserHook();
+  const { userInfo } = useMeQuery();
 
   const onLogout = async () => {
-    await StoryStorage.removeItem(STORAGE_KEY.IS_LOGGED_IN_KEY);
-    await api.logout().then(() => {
-      setAuth?.(null);
-      setLoggedIn?.(false);
-    });
+    await api.logout();
   };
 
   const onMoveToSetting = () => {

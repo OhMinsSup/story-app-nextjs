@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 // hooks
 import { useMantineColorScheme } from '@mantine/core';
@@ -20,13 +20,13 @@ function HeaderControls() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { userInfo } = useMeQuery();
 
-  const onToggleColorScheme = () => {
+  const onToggleColorScheme = useCallback(() => {
     toggleColorScheme();
-  };
+  }, [toggleColorScheme]);
 
-  const onMoveToLogin = () => {
+  const onMoveToLogin = useCallback(() => {
     router.push(PAGE_ENDPOINTS.LOGIN);
-  };
+  }, [router]);
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -43,7 +43,7 @@ function HeaderControls() {
           <UserMenu control={<UserAvatar />} />
         ) : (
           <HeaderControl onClick={onMoveToLogin}>
-            <UserAvatar />
+            <UserAvatar userInfo={userInfo} />
           </HeaderControl>
         )}
       </Group>

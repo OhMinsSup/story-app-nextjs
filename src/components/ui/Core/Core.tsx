@@ -1,7 +1,7 @@
 import React from 'react';
 
 // api
-import { fetchMe } from '@api/queries';
+// import { fetchMe } from '@api/queries';
 
 // hooks
 import { useQueryClient } from 'react-query';
@@ -13,7 +13,7 @@ import {
 } from 'react-use';
 
 // messages
-import { hydrateFirebase } from '@libs/firebase-manager/firebase-manager';
+import { hydrateFirebase } from '@libs/state/firebaseManager';
 
 // utils
 import { isEmpty } from '@utils/assertion';
