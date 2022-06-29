@@ -15,7 +15,7 @@ import type {
   StoryApi,
 } from '@api/schema/story-api';
 import { useAtom } from 'jotai';
-import { asyncWriteOnlyUserAtom } from '@atoms/authAtom';
+import { asyncWriteOnlyUserAtom } from '@atoms/userAtom';
 
 const postLogin = (body: LoginInput) =>
   api.post({
@@ -26,15 +26,16 @@ const postLogin = (body: LoginInput) =>
 export function useLoginMutation() {
   const [, update] = useAtom(asyncWriteOnlyUserAtom);
 
-  const res = useMutation<StoryApi<LoginSchema>, StoryErrorApi, LoginInput>(
-    postLogin,
-    {
-      onSuccess: () => update(),
-    },
-  );
+  const mutation = useMutation<
+    StoryApi<LoginSchema>,
+    StoryErrorApi,
+    LoginInput
+  >(postLogin, {
+    onSuccess: () => update(),
+  });
 
   return {
-    ...res,
+    ...mutation,
     postLogin,
   };
 }

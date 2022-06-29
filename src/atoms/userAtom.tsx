@@ -6,7 +6,7 @@ import { authAtom } from './authAtom';
 
 // query
 import { SharedQueryClient } from '@contexts/provider';
-import { keyLoader, staleTimeByMe, getMe } from '@api/queries';
+import { keyLoaderByMe, staleTimeByMe, getMe } from '@api/queries';
 
 // types
 import type { UserSchema } from '@api/schema/story-api';
@@ -21,10 +21,10 @@ export const asyncReadOnlyUserAtom = atom(async (get) => {
   const oldAuthtication = get(authAtom);
 
   if (!oldAtom && oldAuthtication) {
-    await SharedQueryClient.prefetchQuery(keyLoader, getMe, {
+    await SharedQueryClient.prefetchQuery(keyLoaderByMe, getMe, {
       staleTime: staleTimeByMe,
     });
-    return SharedQueryClient.getQueryData<UserSchema>(keyLoader);
+    return SharedQueryClient.getQueryData<UserSchema>(keyLoaderByMe);
   }
 
   return oldAtom;
@@ -37,11 +37,11 @@ export const asyncWriteOnlyUserAtom = atom<
   const oldAtom = get(userAtom);
 
   if (!update) {
-    await SharedQueryClient.prefetchQuery(keyLoader, getMe, {
+    await SharedQueryClient.prefetchQuery(keyLoaderByMe, getMe, {
       staleTime: staleTimeByMe,
     });
 
-    const user = SharedQueryClient.getQueryData<UserSchema>(keyLoader);
+    const user = SharedQueryClient.getQueryData<UserSchema>(keyLoaderByMe);
     if (user) {
       set(userAtom, user);
       set(authAtom, true);
@@ -51,10 +51,13 @@ export const asyncWriteOnlyUserAtom = atom<
     return;
   }
 
-  const user = SharedQueryClient.setQueryData<UserSchema>(keyLoader, (old) => {
-    const optimisticData = merge({ ...(old || {}) }, oldAtom);
-    return merge(optimisticData, update);
-  });
+  const user = SharedQueryClient.setQueryData<UserSchema>(
+    keyLoaderByMe,
+    (old) => {
+      const optimisticData = merge({ ...(old || {}) }, oldAtom);
+      return merge(optimisticData, update);
+    },
+  );
 
   if (user) {
     set(userAtom, user);

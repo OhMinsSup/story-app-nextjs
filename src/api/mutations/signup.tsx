@@ -14,22 +14,21 @@ import type {
   StoryApi,
 } from '@api/schema/story-api';
 
-const fetchPostSignup = async (body: SignupInput) => {
-  return api.post({
+const postSignup = (body: SignupInput) =>
+  api.post({
     url: API_ENDPOINTS.LOCAL.AUTH.SIGNUP,
     body,
   });
-};
 
 export function useSignupMutation() {
-  const res = useMutation<
+  const mutation = useMutation<
     StoryApi<string | boolean>,
     StoryErrorApi,
     SignupInput
-  >(fetchPostSignup);
+  >(postSignup);
 
   return {
-    ...res,
-    fetchPostSignup,
+    ...mutation,
+    postSignup,
   };
 }

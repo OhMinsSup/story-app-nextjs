@@ -27,7 +27,7 @@ export const getMe = async () => {
   return response.data.result;
 };
 
-export const keyLoader = [API_ENDPOINTS.LOCAL.USER.ME];
+export const keyLoaderByMe = [API_ENDPOINTS.LOCAL.USER.ME];
 
 export const staleTimeByMe = 10 * 60 * 1000; // 10 minute
 
@@ -38,11 +38,10 @@ export const useMeQuery = () => {
   const setAsyncUserAtom = useSetAtom(asyncWriteOnlyUserAtom);
 
   const { data, ...fields } = useQuery<UserSchema, StoryErrorApi<Schema>>(
-    keyLoader,
+    keyLoaderByMe,
     getMe,
     {
       enabled: hasSession,
-      keepPreviousData: true,
       staleTime: staleTimeByMe,
       onSuccess: (data) => {
         if (isEmpty(data)) return;

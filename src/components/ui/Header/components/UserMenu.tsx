@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 // hooks
 import { useRouter } from 'next/router';
 import { useMeQuery } from '@api/queries';
-
-// api
-import { api } from '@api/module';
+import { useLogoutMutation } from '@api/mutations';
 
 // constants
 import { PAGE_ENDPOINTS } from '@constants/constant';
@@ -23,22 +21,23 @@ interface UserMenuProps extends Pick<MenuProps, 'control'> {}
 const UserMenu: React.FC<UserMenuProps> = (props) => {
   const router = useRouter();
   const { userInfo } = useMeQuery();
+  const { mutateAsync } = useLogoutMutation();
 
-  const onLogout = async () => {
-    await api.logout();
-  };
+  const onLogout = useCallback(() => {
+    mutateAsync();
+  }, [mutateAsync]);
 
-  const onMoveToSetting = () => {
+  const onMoveToSetting = useCallback(() => {
     console.log('onSetting');
-  };
+  }, []);
 
-  const onMoveToMyPage = () => {
+  const onMoveToMyPage = useCallback(() => {
     console.log('onMoveToMyPage');
-  };
+  }, []);
 
-  const onMoveToPublish = () => {
+  const onMoveToPublish = useCallback(() => {
     router.push(PAGE_ENDPOINTS.NFT.REGIST);
-  };
+  }, [router]);
 
   const url = getUserThumbnail(userInfo?.profile);
 

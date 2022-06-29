@@ -69,6 +69,7 @@ class APIMoudle {
       API_ENDPOINTS.LOCAL.AUTH.LOGOUT,
       {},
       {
+        withCredentials: true,
         baseURL: API_HOST,
       },
     );
