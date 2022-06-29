@@ -4,8 +4,6 @@ import 'dayjs/locale/ko';
 
 import React from 'react';
 
-import { useAtomsDebugValue } from 'jotai/devtools';
-
 // components
 import { Provider } from '@contexts/index';
 import { DefaultSeo } from '@components/ui/Seo';
@@ -20,11 +18,6 @@ interface AppPageProps extends AppProps {
   Component: any;
 }
 
-const DebugAtoms = () => {
-  useAtomsDebugValue();
-  return null;
-};
-
 const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
   const createStore = useCreateStore(pageProps.initialZustandState);
 
@@ -36,7 +29,6 @@ const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
           <Component {...pageProps} />
         </Provider>
       </ZustandProvider>
-      <DebugAtoms />
     </>
   );
 };

@@ -56,7 +56,7 @@ export const createInterceptor = (
           response.config.url
         } 유형:${response.config.method?.toUpperCase()} \nAPI상태코드:0`,
         'color: #69db7c;',
-        response,
+        response.data?.result ?? '',
       );
 
     return response;
@@ -71,7 +71,7 @@ export const createInterceptor = (
           error.response.status
         }`,
         'color: #e03131;',
-        error.response,
+        error.response.statusText ?? '',
       );
 
     if (

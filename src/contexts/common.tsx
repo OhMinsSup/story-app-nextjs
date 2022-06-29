@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
 
 // hooks
 import { useLocalStorage } from '@mantine/hooks';
 import { useMeQuery } from '@api/queries';
+import { useNotfiyManager } from '@libs/state/notifyManager';
 
 // types
 import type { ColorScheme } from '@mantine/core';
@@ -25,6 +26,15 @@ export const CommonProvider: React.FC<
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
   const { userInfo } = useMeQuery();
+
+  const notfiy = useNotfiyManager();
+
+  useEffect(() => {
+    notfiy.setNotifyFunction((fn) => {
+      fn();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <ColorSchemeProvider

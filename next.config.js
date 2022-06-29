@@ -30,7 +30,15 @@ const nextConfig = {
   trailingSlash: true,
 
   compiler: {
-    removeConsole: IS_PROD,
+    compiler: {
+      removeConsole: IS_PROD
+        ? {
+            exclude: ['error'],
+          }
+        : {
+            exclude: ['error', 'info', 'log'],
+          },
+    },
     emotion: true,
   },
 

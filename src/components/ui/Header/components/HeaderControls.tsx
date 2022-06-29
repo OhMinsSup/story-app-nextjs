@@ -40,10 +40,10 @@ function HeaderControls() {
           {colorScheme === 'dark' ? <Sun size={22} /> : <Moon size={22} />}
         </HeaderControl>
         {userInfo ? (
-          <UserMenu control={<UserAvatar />} />
+          <UserMenu control={<UserAvatar userInfo={userInfo} />} />
         ) : (
           <HeaderControl onClick={onMoveToLogin}>
-            <UserAvatar userInfo={userInfo} />
+            <UserAvatar />
           </HeaderControl>
         )}
       </Group>
