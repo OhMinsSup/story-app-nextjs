@@ -53,10 +53,7 @@ export const useMeQuery = () => {
             case STATUS_CODE.FORBIDDEN:
             case STATUS_CODE.UNAUTHORIZED: {
               notfiy.schedule(() => {
-                setSession(false);
-              });
-              notfiy.schedule(() => {
-                api.logout();
+                api.logout().then(() => setSession(false));
               });
               break;
             }

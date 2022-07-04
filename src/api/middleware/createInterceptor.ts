@@ -1,9 +1,12 @@
 // constants
-import { STATUS_CODE } from '@constants/constant';
+import { RESULT_CODE, STATUS_CODE } from '@constants/constant';
 import { IS_PROD } from '@constants/env';
 
 // utils
 import { isFunction } from '@utils/assertion';
+
+// error
+import { ApiError } from 'next/dist/server/api-utils';
 
 // types
 import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
@@ -50,7 +53,7 @@ export const createInterceptor = (
   } = options || {};
 
   const responseCallback = (response: AxiosResponse) => {
-    if (!IS_PROD)
+    if (!IS_PROD) {
       console.log(
         `%c📫 API 응답 수신 주소:${
           response.config.url
@@ -58,6 +61,13 @@ export const createInterceptor = (
         'color: #69db7c;',
         response.data?.result ?? '',
       );
+    }
+
+    const { data, statusText } = response;
+    const message = data?.message ?? statusText;
+    if (data.resultCode !== RESULT_CODE.OK) {
+      throw new ApiError(message, data?.result?.data);
+    }
 
     return response;
   };

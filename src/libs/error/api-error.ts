@@ -18,12 +18,12 @@ interface ErrorResultData<S = any> extends Schema<S> {}
 type ErrorMessagePath = NestedKeyOf<typeof message>;
 
 class ApiError extends Error {
-  constructor(apiError: Record<string, any>, ...args: any[]) {
+  private _data: any = null;
+  constructor(message: string, data: any, ...args: any[]) {
     super(...args);
     this.name = 'ApiError';
-    if (!isEmpty(apiError)) {
-      this.message = JSON.stringify(apiError);
-    }
+    this.message = message;
+    this._data = data;
 
     // Maintains proper stack trace for where our error was thrown (only available on V8)
     if (Error.captureStackTrace) {
@@ -61,6 +61,22 @@ class ApiError extends Error {
       return message.alert.common;
     }
     return result as unknown as string;
+  }
+
+  toApiErrorJSON<Data = any>() {
+    let message: ErrorResultData<Data> | null = null;
+    try {
+      message =
+        this._data && typeof this._data === 'string'
+          ? JSON.parse(this._data)
+          : null;
+    } catch (error) {
+      message = null;
+    }
+
+    return {
+      message,
+    };
   }
 
   static toApiErrorJSON<Schema = any>(error: string) {
