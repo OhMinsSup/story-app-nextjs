@@ -15,9 +15,6 @@ import {
   TextInput,
 } from '@mantine/core';
 
-// utils
-import { isObject } from '@utils/assertion';
-
 // validation
 import { useForm, yupResolver } from '@mantine/form';
 import { schema } from '@libs/validation/schema';
@@ -26,26 +23,21 @@ import { schema } from '@libs/validation/schema';
 import { useLoginMutation } from '@api/mutations';
 import { useRouter } from 'next/router';
 import { useAlert } from '@hooks/useAlert';
+import { useAtomValue } from 'jotai';
 
-// error
-import { ApiError } from '@libs/error';
+// atom
+import { authAtom } from '@atoms/authAtom';
 
 // constants
-import {
-  PAGE_ENDPOINTS,
-  RESULT_CODE,
-  STATUS_CODE,
-  STORAGE_KEY,
-} from '@constants/constant';
-
-// storage
-import { StoryStorage } from '@libs/storage';
+import { PAGE_ENDPOINTS } from '@constants/constant';
 
 // types
 import type { LoginInput } from '@api/schema/story-api';
 
 const LoginPage = () => {
   const router = useRouter();
+  const session = useAtomValue(authAtom);
+
   const form = useForm<LoginInput>({
     schema: yupResolver(schema.login),
     initialValues: {
@@ -58,22 +50,16 @@ const LoginPage = () => {
   const { Alert, showAlert } = useAlert();
 
   const onSubmit = async (input: LoginInput) => {
-    // const deviceInfo = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
-    // const body = {
-    //   ...input,
-    // };
-
-    // if (deviceInfo && isObject(deviceInfo)) {
-    //   const { deviceId } = deviceInfo;
-    //   Object.assign(body, { deviceId });
-    // }
-
-    const result = await trigger(input);
+    await trigger(input);
   };
 
   const onMoveToSignUp = () => {
     router.push(PAGE_ENDPOINTS.SIGNUP);
   };
+
+  if (session) {
+    router.replace(PAGE_ENDPOINTS.INDEX);
+  }
 
   return (
     <>

@@ -5,7 +5,7 @@ import 'dayjs/locale/ko';
 import React from 'react';
 
 // components
-import { Provider } from '@contexts/index';
+import { RootProvider } from '@contexts/provider';
 import { DefaultSeo } from '@components/ui/Seo';
 
 // type
@@ -19,10 +19,9 @@ const AppPage: React.FC<AppPageProps> = ({ Component, pageProps }) => {
   return (
     <>
       <DefaultSeo />
-
-      <Provider pageProps={pageProps}>
+      <RootProvider pageProps={pageProps}>
         <Component {...pageProps} />
-      </Provider>
+      </RootProvider>
     </>
   );
 };

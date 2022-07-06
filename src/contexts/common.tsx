@@ -1,13 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
+
+// atom
+import { authAtom } from '@atoms/authAtom';
+import { useSetAtom } from 'jotai';
 
 // hooks
 import { useLocalStorage } from '@mantine/hooks';
 import { useMeQuery } from '@api/queries';
 import { useNotfiyManager } from '@libs/state/notifyManager';
+import { useMount } from 'react-use';
 
 // types
 import type { ColorScheme } from '@mantine/core';
+import { api } from '@api/module';
 
 interface CommonProviderProps {}
 
@@ -16,6 +22,12 @@ const THEME_KEY = 'story-color-scheme';
 export const CommonProvider: React.FC<
   React.PropsWithChildren<CommonProviderProps>
 > = ({ children }) => {
+  const notify = useNotfiyManager();
+
+  const setSession = useSetAtom(authAtom);
+
+  const lockRef = useRef(false);
+
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: THEME_KEY,
     defaultValue: 'light',
@@ -25,16 +37,27 @@ export const CommonProvider: React.FC<
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
-  const { userInfo } = useMeQuery();
+  const _ = useMeQuery();
 
-  const notfiy = useNotfiyManager();
-
-  useEffect(() => {
-    notfiy.setNotifyFunction((fn) => {
-      fn();
+  useMount(() => {
+    notify.setNotifyFunction((fn) => {
+      const result = fn();
+      if (result) {
+        switch (result.type) {
+          case 'SESSION': {
+            if (!lockRef.current) {
+              lockRef.current = true;
+              setSession(false);
+              api.logout().then(() => (lockRef.current = false));
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   return (
     <ColorSchemeProvider

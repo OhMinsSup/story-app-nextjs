@@ -4,9 +4,23 @@ import { isBrowser } from '@utils/utils';
 
 type NotifyCallback = () => void;
 
-type NotifyFunction = (callback: () => void) => void;
+type NotifyCallbackData = {
+  type: 'SESSION';
+  payload: unknown;
+};
+
+type NotifyFunction = (callback: () => void | NotifyCallbackData) => void;
 
 type BatchNotifyFunction = (callback: () => void) => void;
+
+export const NOFIFY_DATA = {
+  SESSION: (error: unknown) => {
+    return {
+      type: 'SESSION',
+      payload: error,
+    };
+  },
+};
 
 export class NotifyManager {
   private queue: NotifyCallback[];

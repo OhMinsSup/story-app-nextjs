@@ -65,7 +65,7 @@ export const createInterceptor = (
 
     const { data, statusText } = response;
     const message = data?.message ?? statusText;
-    if (data.resultCode !== RESULT_CODE.OK) {
+    if (data.resultCode !== RESULT_CODE.OK && data.resultCode >= 4000) {
       throw new ApiError(message, data?.result?.data);
     }
 

@@ -1,6 +1,5 @@
 import { useQuery } from 'react-query';
-import { useNotfiyManager } from '@libs/state/notifyManager';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 
 // atom
 import { asyncWriteOnlyUserAtom } from '@atoms/userAtom';
@@ -8,9 +7,6 @@ import { authAtom } from '@atoms/authAtom';
 
 // api
 import { api } from '@api/module';
-
-// error
-import { ApiError } from '@libs/error';
 
 // constants
 import { API_ENDPOINTS, STATUS_CODE } from '@constants/constant';
@@ -32,8 +28,7 @@ export const keyLoaderByMe = [API_ENDPOINTS.LOCAL.USER.ME];
 export const staleTimeByMe = 10 * 60 * 1000; // 10 minute
 
 export const useMeQuery = () => {
-  const notfiy = useNotfiyManager();
-  const [hasSession, setSession] = useAtom(authAtom);
+  const session = useAtomValue(authAtom);
 
   const setAsyncUserAtom = useSetAtom(asyncWriteOnlyUserAtom);
 
@@ -41,26 +36,11 @@ export const useMeQuery = () => {
     keyLoaderByMe,
     getMe,
     {
-      enabled: hasSession,
+      enabled: session,
       staleTime: staleTimeByMe,
       onSuccess: (data) => {
         if (isEmpty(data)) return;
         setAsyncUserAtom(data);
-      },
-      onError: (err) => {
-        if (ApiError.isAxiosError(err)) {
-          switch (err.response?.status) {
-            case STATUS_CODE.FORBIDDEN:
-            case STATUS_CODE.UNAUTHORIZED: {
-              notfiy.schedule(() => {
-                api.logout().then(() => setSession(false));
-              });
-              break;
-            }
-            default:
-              break;
-          }
-        }
       },
     },
   );

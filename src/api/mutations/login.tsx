@@ -5,7 +5,7 @@ import { useMutation } from 'react-query';
 import { api } from '@api/module';
 
 // constants
-import { API_ENDPOINTS, PAGE_ENDPOINTS } from '@constants/constant';
+import { API_ENDPOINTS } from '@constants/constant';
 
 // types
 import type {
@@ -15,9 +15,6 @@ import type {
   StoryApi,
 } from '@api/schema/story-api';
 
-// hooks
-import { useAlert } from '@hooks/useAlert';
-import { useRouter } from 'next/router';
 import { useAtom } from 'jotai';
 
 // atom
@@ -31,20 +28,20 @@ export const postLogin = (body: LoginInput) =>
   });
 
 export function useLoginMutation() {
-  const router = useRouter();
   const [, update] = useAtom(asyncWriteOnlyUserAtom);
 
-  const m = useMutation<StoryApi<LoginSchema>, StoryErrorApi, LoginInput>(
+  const config = useMutation<StoryApi<LoginSchema>, StoryErrorApi, LoginInput>(
     postLogin,
     {
-      onSuccess: () => update(),
+      onSuccess: () => {
+        update();
+      },
     },
   );
 
   const trigger = async (input: LoginInput) => {
     try {
-      await m.mutateAsync(input);
-      router.replace(PAGE_ENDPOINTS.INDEX);
+      await config.mutateAsync(input);
     } catch (error) {
       if (ApiError.isApiError(error)) {
         const { message } = error.toApiErrorJSON();
@@ -67,6 +64,6 @@ export function useLoginMutation() {
 
   return {
     trigger,
-    ...m,
+    ...config,
   };
 }

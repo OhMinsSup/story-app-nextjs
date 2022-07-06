@@ -122,7 +122,7 @@ export const RESULT_CODE = {
   // 성공
   OK: 0,
   // 잘못된 패스워드
-  INCORRECT_PASSWORD: 4004,
+  INCORRECT_PASSWORD: 2000,
   // 존재하지 않음
   NOT_EXIST: 2001,
   // 삭제됨
@@ -152,4 +152,13 @@ export const RESULT_CODE = {
   NFT_FAIL: 4006,
   // PUSH_TOKEN 만료
   PUSH_TOKEN_EXPIRED: 4007,
+
+  // 가격이 존재하지 않는 경우
+  NO_PRICE: 5000,
+  // 가격을 제시할 수 없음
+  NO_PRICE_ACTION: 5001,
+  // 가격을 비교했을 떄 너무 낮음
+  PRICE_TOO_LOW: 5002,
+  // Klaytn 단위가 올바르지 않는 경우
+  INVALID_PARAM: 5003,
 };

@@ -1,6 +1,9 @@
 import { atom } from 'jotai';
 import merge from 'lodash-es/merge';
 
+// utils
+import { isEmpty } from '@utils/assertion';
+
 // atom
 import { authAtom } from './authAtom';
 
@@ -20,9 +23,10 @@ export const asyncReadOnlyUserAtom = atom(async (get) => {
   const oldAtom = get(userAtom);
   const oldAuthtication = get(authAtom);
 
-  if (!oldAtom && oldAuthtication) {
+  if (oldAuthtication && isEmpty(oldAtom)) {
     await SharedQueryClient.prefetchQuery(keyLoaderByMe, getMe, {
       staleTime: staleTimeByMe,
+      retry: false,
     });
     return SharedQueryClient.getQueryData<UserSchema>(keyLoaderByMe);
   }
