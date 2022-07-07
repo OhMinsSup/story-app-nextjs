@@ -8,7 +8,7 @@ import { useSetAtom } from 'jotai';
 // hooks
 import { useLocalStorage } from '@mantine/hooks';
 import { useMeQuery } from '@api/queries';
-import { useNotfiyManager } from '@libs/state/notifyManager';
+import { useNotfiyManager } from '@libs/state/notify';
 import { useMount } from 'react-use';
 
 // types

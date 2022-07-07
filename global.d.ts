@@ -1,5 +1,5 @@
 import { FireBaseManager } from '@libs/firebase-manager';
-import { NotifyManager } from '@libs/state/notifyManager';
+import { NotifyManager } from '@libs/state/notify';
 
 /* eslint-disable @typescript-eslint/ban-types */
 declare module '@multiavatar/multiavatar/esm' {

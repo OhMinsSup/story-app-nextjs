@@ -10,7 +10,7 @@ import { Provider as JotaiProvider } from 'jotai';
 import { useAtomsDebugValue } from 'jotai/devtools';
 
 // utils
-import { notifyManager, NOFIFY_DATA } from '@libs/state/notifyManager';
+import { notifyManager, NOFIFY_DATA } from '@libs/state/notify';
 
 // error
 import { ApiError } from '@libs/error';

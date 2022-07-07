@@ -1,4 +1,4 @@
-import React, { useRef, useId } from 'react';
+import React, { useRef, useId, useEffect } from 'react';
 
 // hooks
 import { fetchNftList, useNftListQuery } from '@api/queries';
@@ -21,9 +21,11 @@ import { API_ENDPOINTS } from '@constants/constant';
 // types
 import type { GetServerSidePropsContext } from 'next';
 import { Layout } from '@components/ui/Layout';
+import { useMount } from 'react-use';
+import { data } from './api/me';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  console.log('??', ctx.req.headers.cookie);
+  console.log('server side props server', data);
   //   const queryClient = new QueryClient();
 
   //   const cookie = ctx.req ? ctx.req.headers.cookie : '';
@@ -61,6 +63,9 @@ const IndexPage = () => {
   // });
 
   // const id = useId();
+  useMount(() => {
+    fetch('http://localhost:3000/api/me');
+  });
 
   return (
     <Layout>

@@ -5,7 +5,7 @@ import React from 'react';
 
 // hooks
 import { useQueryClient } from 'react-query';
-import { useUserHook } from '@store/hook';
+// import { useUserHook } from '@store/hook';
 import {
   useAsyncFn,
   useIsomorphicLayoutEffect,
@@ -13,7 +13,7 @@ import {
 } from 'react-use';
 
 // messages
-import { hydrateFirebase } from '@libs/state/firebaseManager';
+import { hydrateFirebase } from '@libs/state/firebase';
 
 // utils
 import { isEmpty } from '@utils/assertion';
