@@ -4,6 +4,8 @@ import { client } from './client';
 
 // common
 import { API_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
+import { API_HOST } from '@constants/env';
+import { isBrowser } from '@utils/utils';
 
 // types
 import type { AxiosRequestConfig } from 'axios';
@@ -14,7 +16,6 @@ import type {
   FileUploadParams,
   StoryUploadApi,
 } from '@api/schema/story-api';
-import { API_HOST } from '@constants/env';
 
 class APIMoudle {
   withCredentials: boolean;
@@ -28,7 +29,7 @@ class APIMoudle {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   authorized = (options?: Partial<Options>) => {
-    if (typeof window === 'undefined') return null;
+    if (!isBrowser) return null;
     const authorization = localStorage.getItem(STORAGE_KEY.TOKEN_KEY);
     if (!authorization) return null;
     return authorization;

@@ -1,18 +1,14 @@
 import { useQuery } from 'react-query';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 
 // atom
-import { asyncWriteOnlyUserAtom } from '@atoms/userAtom';
 import { authAtom } from '@atoms/authAtom';
 
 // api
 import { api } from '@api/module';
 
 // constants
-import { API_ENDPOINTS, STATUS_CODE } from '@constants/constant';
-
-// utils
-import { isEmpty } from '@utils/assertion';
+import { API_ENDPOINTS, QUERIES_KEY } from '@constants/constant';
 
 import type { Schema, StoryErrorApi, UserSchema } from '@api/schema/story-api';
 
@@ -23,31 +19,27 @@ export const getMe = async () => {
   return response.data.result;
 };
 
-export const keyLoaderByMe = [API_ENDPOINTS.LOCAL.USER.ME];
-
 export const staleTimeByMe = 10 * 60 * 1000; // 10 minute
 
 export const useMeQuery = () => {
-  const session = useAtomValue(authAtom);
+  const isAuthication = useAtomValue(authAtom);
 
-  const setAsyncUserAtom = useSetAtom(asyncWriteOnlyUserAtom);
-
-  const { data, ...fields } = useQuery<UserSchema, StoryErrorApi<Schema>>(
-    keyLoaderByMe,
+  const resp = useQuery<UserSchema, StoryErrorApi<Schema>>(
+    QUERIES_KEY.ME,
     getMe,
     {
-      enabled: session,
+      enabled: isAuthication,
       staleTime: staleTimeByMe,
-      onSuccess: (data) => {
-        if (isEmpty(data)) return;
-        setAsyncUserAtom(data);
-      },
     },
   );
 
   return {
-    userInfo: data,
-    getMe,
-    ...fields,
+    get userInfo() {
+      return resp.data;
+    },
+    get fetch() {
+      return getMe;
+    },
+    ...resp,
   };
 };

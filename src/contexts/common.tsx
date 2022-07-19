@@ -7,17 +7,19 @@ import { useSetAtom } from 'jotai';
 
 // hooks
 import { useLocalStorage } from '@mantine/hooks';
-import { useMeQuery } from '@api/queries';
 import { useNotfiyManager } from '@libs/state/notify';
 import { useMount } from 'react-use';
 
-// types
-import type { ColorScheme } from '@mantine/core';
+// constants
+import { STORAGE_KEY } from '@constants/constant';
+
+// api
 import { api } from '@api/module';
 
-interface CommonProviderProps {}
+// types
+import type { ColorScheme } from '@mantine/core';
 
-const THEME_KEY = 'story-color-scheme';
+interface CommonProviderProps {}
 
 export const CommonProvider: React.FC<
   React.PropsWithChildren<CommonProviderProps>
@@ -29,15 +31,13 @@ export const CommonProvider: React.FC<
   const lockRef = useRef(false);
 
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: THEME_KEY,
+    key: STORAGE_KEY.THEME_KEY,
     defaultValue: 'light',
     getInitialValueInEffect: true,
   });
 
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
-
-  const _ = useMeQuery();
 
   useMount(() => {
     notify.setNotifyFunction((fn) => {

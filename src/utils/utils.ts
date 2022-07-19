@@ -144,3 +144,7 @@ export const klayUnits = [
   'MKLAY',
   'GKLAY',
 ];
+
+export function now() {
+  return Math.floor(Date.now() / 1000);
+}

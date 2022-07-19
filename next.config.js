@@ -81,7 +81,7 @@ const nextConfig = {
 
 const composeEnhancers = [
   withNextEnv,
-  withSentryConfig,
+  // withSentryConfig,
   withBundleAnalyzer,
   [
     withPWA,

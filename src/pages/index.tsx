@@ -22,10 +22,8 @@ import { API_ENDPOINTS } from '@constants/constant';
 import type { GetServerSidePropsContext } from 'next';
 import { Layout } from '@components/ui/Layout';
 import { useMount } from 'react-use';
-import { data } from './api/me';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  console.log('server side props server', data);
   //   const queryClient = new QueryClient();
 
   //   const cookie = ctx.req ? ctx.req.headers.cookie : '';
@@ -63,9 +61,6 @@ const IndexPage = () => {
   // });
 
   // const id = useId();
-  useMount(() => {
-    fetch('http://localhost:3000/api/me');
-  });
 
   return (
     <Layout>

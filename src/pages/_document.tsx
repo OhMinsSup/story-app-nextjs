@@ -1,5 +1,5 @@
 import np from 'nprogress';
-import Document, { Head, Html, Main, NextScript } from 'next/document';
+import Document from 'next/document';
 import { Router } from 'next/router';
 import { createGetInitialProps } from '@mantine/next';
 

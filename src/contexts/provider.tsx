@@ -6,9 +6,6 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import { CommonProvider } from './common';
 import { Provider as JotaiProvider } from 'jotai';
 
-// atom
-import { useAtomsDebugValue } from 'jotai/devtools';
-
 // utils
 import { notifyManager, NOFIFY_DATA } from '@libs/state/notify';
 
@@ -22,9 +19,11 @@ interface ProviderProps {
   pageProps: any;
 }
 
-export const SharedQueryClient = new QueryClient({
+export const globalClient = new QueryClient({
   defaultOptions: {
     queries: {
+      // 백오프지수
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       retry(failureCount, error) {
         if (ApiError.isAxiosError(error)) {
           const statusCode = error.response?.status ?? -1;
@@ -56,24 +55,18 @@ export const SharedQueryClient = new QueryClient({
   },
 });
 
-const DebugAtoms = () => {
-  useAtomsDebugValue();
-  return null;
-};
-
 export const RootProvider: React.FC<React.PropsWithChildren<ProviderProps>> = ({
   children,
   pageProps,
 }) => {
   return (
     <JotaiProvider>
-      <QueryClientProvider client={SharedQueryClient}>
+      <QueryClientProvider client={globalClient}>
         <Hydrate state={pageProps.dehydratedState}>
           <CommonProvider>{children}</CommonProvider>
         </Hydrate>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
-      <DebugAtoms />
     </JotaiProvider>
   );
 };

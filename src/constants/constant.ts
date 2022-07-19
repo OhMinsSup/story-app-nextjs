@@ -31,9 +31,6 @@ export const PAGE_ENDPOINTS = {
 };
 
 export const API_ENDPOINTS = {
-  MOCK: {
-    ILLUSTRATION: '/mock-list.json',
-  },
   LOCAL: {
     AUTH: {
       LOGIN: '/users/signin',
@@ -87,13 +84,17 @@ export const API_ENDPOINTS = {
   },
 };
 
+export const QUERIES_KEY = {
+  ME: [API_ENDPOINTS.LOCAL.USER.ME],
+};
+
 export const WEB_APP = '@@StoryFront';
 
 export const STORAGE_KEY = {
   TOKEN_KEY: `${WEB_APP}/authToken`,
   USER_KEY: `${WEB_APP}/userInfo`,
-  IS_LOGGED_IN_KEY: 'isLoggedIn',
-  PUSH_TOKEN_KEY: 'pushToken',
+  PUSH_TOKEN_KEY: `${WEB_APP}/pushToken`,
+  THEME_KEY: `${WEB_APP}/story-color-scheme`,
 };
 
 export const COOKIE_KEY = {
