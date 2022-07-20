@@ -26,7 +26,7 @@ export const CommonProvider: React.FC<
 > = ({ children }) => {
   const notify = useNotfiyManager();
 
-  const setSession = useSetAtom(authAtom);
+  const setAuth = useSetAtom(authAtom);
 
   const lockRef = useRef(false);
 
@@ -47,7 +47,7 @@ export const CommonProvider: React.FC<
           case 'SESSION': {
             if (!lockRef.current) {
               lockRef.current = true;
-              setSession(false);
+              setAuth(false);
               api.logout().then(() => (lockRef.current = false));
             }
             break;

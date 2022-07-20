@@ -1,69 +1,100 @@
 // hooks
 import { useMutation } from 'react-query';
+import { useMethods } from 'react-use';
+import { useRouter } from 'next/router';
+import { useSetAtom } from 'jotai';
 
 // api
 import { api } from '@api/module';
-
-// constants
-import { API_ENDPOINTS } from '@constants/constant';
-
-// types
-import type {
-  LoginInput,
-  LoginSchema,
-  StoryErrorApi,
-  StoryApi,
-} from '@api/schema/story-api';
-
-import { useAtom } from 'jotai';
+import { globalClient } from '@api/client';
+import { getMe } from '@api/queries';
 
 // atom
-import { asyncWriteOnlyUserAtom } from '@atoms/userAtom';
+import { authAtom } from '@atoms/authAtom';
+
+// constants
+import {
+  API_ENDPOINTS,
+  PAGE_ENDPOINTS,
+  QUERIES_KEY,
+} from '@constants/constant';
+
+// types
 import { ApiError } from '@libs/error';
 
-export const postLogin = (body: LoginInput) =>
+// types
+import type { ErrorApi } from '@api/schema/story-api';
+import type { SigninResp } from '@api/schema/resp';
+import type { LoginBody } from '@api/schema/body';
+
+interface ErrorState {
+  message: string;
+}
+
+const initialState: ErrorState = {
+  message: '',
+};
+
+function createMethods(state: ErrorState) {
+  return {
+    reset() {
+      return initialState;
+    },
+    setErrorMessage(message: string) {
+      return {
+        ...state,
+        message,
+      };
+    },
+  };
+}
+
+export const postLogin = (body: LoginBody) =>
   api.post({
     url: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
     body,
   });
 
 export function useLoginMutation() {
-  const [, update] = useAtom(asyncWriteOnlyUserAtom);
+  const router = useRouter();
+  const setAuth = useSetAtom(authAtom);
 
-  const config = useMutation<StoryApi<LoginSchema>, StoryErrorApi, LoginInput>(
-    postLogin,
-    {
-      onSuccess: () => {
-        update();
-      },
+  const [state, methods] = useMethods<
+    ReturnType<typeof createMethods>,
+    ErrorState
+  >(createMethods, initialState);
+
+  const resp = useMutation<SigninResp, ErrorApi, LoginBody>(postLogin, {
+    onMutate() {
+      methods.reset();
     },
-  );
+    async onSuccess(data) {
+      const { ok } = data.data;
+      if (!ok) return;
 
-  const trigger = async (input: LoginInput) => {
-    try {
-      await config.mutateAsync(input);
-    } catch (error) {
+      await globalClient.prefetchQuery(QUERIES_KEY.ME, getMe);
+      setAuth(true);
+      router.replace(PAGE_ENDPOINTS.INDEX);
+    },
+    onError(error) {
       if (ApiError.isApiError(error)) {
         const { message } = error.toApiErrorJSON();
-        // switch (message?.resultCode) {
-        //   case RESULT_CODE.INCORRECT_PASSWORD: {
-        //     msg = '비밀번호가 일치하지 않습니다.';
-        //     break;
-        //   }
-        //   case RESULT_CODE.NOT_EXIST: {
-        //     msg = '존재하지 않는 사용자입니다.';
-        //     break;
-        //   }
-        // }
-        console.log(message);
+        methods.setErrorMessage(message?.message);
         return;
       }
-      throw error;
-    }
-  };
+    },
+  });
 
   return {
-    trigger,
-    ...config,
+    ...resp,
+    get fetcher() {
+      return postLogin;
+    },
+    get state() {
+      return state;
+    },
+    get method() {
+      return methods;
+    },
   };
 }

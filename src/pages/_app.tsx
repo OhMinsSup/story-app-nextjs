@@ -14,7 +14,9 @@ import { RootProvider } from '@contexts/provider';
 import { DefaultSeo } from '@components/ui/Seo';
 
 // utils
+import { isString } from '@utils/assertion';
 import { getCookie } from 'cookies-next';
+import jwtDecode, { JwtPayload } from 'jwt-decode';
 
 // constants
 import { API_ENDPOINTS, COOKIE_KEY, QUERIES_KEY } from '@constants/constant';
@@ -63,34 +65,44 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
     res: ctx.res,
   });
 
-  if (!token) {
+  if (!token || !isString(token)) {
     return { pageProps, isAuthication: false };
   }
 
-  const client = new QueryClient();
+  const decoded = jwtDecode<JwtPayload>(token); // Returns with the JwtPayload type
+  const exp = decoded.exp ?? 0;
+  const diff = exp - Math.floor(Date.now() / 1000);
+  if (diff > 0) {
+    const client = new QueryClient();
 
-  const cookie = ctx?.req?.headers?.cookie ?? '';
+    const cookie = ctx?.req?.headers?.cookie ?? '';
 
-  try {
-    // server side user info prefetch react query
-    await client.prefetchQuery(QUERIES_KEY.ME, async () => {
-      const response = await api.get<UserSchema>({
-        url: API_ENDPOINTS.LOCAL.USER.ME,
-        config: {
-          headers: {
-            Cookie: cookie,
+    try {
+      // server side user info prefetch react query
+      await client.prefetchQuery(QUERIES_KEY.ME, async () => {
+        const response = await api.get<UserSchema>({
+          url: API_ENDPOINTS.LOCAL.USER.ME,
+          config: {
+            headers: {
+              Cookie: cookie,
+            },
           },
-        },
+        });
+        return response.data.result;
       });
-      return response.data.result;
-    });
 
-    const session = client.getQueryData<UserSchema>(QUERIES_KEY.ME);
-    Object.assign(pageProps, {
-      dehydratedState: dehydrate(client),
-    });
-    return { pageProps, isAuthication: !!session };
-  } catch (error) {
-    return { pageProps, isAuthication: false };
+      const session = client.getQueryData<UserSchema>(QUERIES_KEY.ME);
+      Object.assign(pageProps, {
+        dehydratedState: dehydrate(client),
+      });
+      return { pageProps, isAuthication: !!session };
+    } catch (error) {
+      return { pageProps, isAuthication: false };
+    }
   }
+
+  return {
+    pageProps,
+    isAuthication: false,
+  };
 };

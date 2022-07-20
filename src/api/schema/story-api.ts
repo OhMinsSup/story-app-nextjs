@@ -23,7 +23,7 @@ export interface FileModel {
   contentUrl: string;
 }
 
-interface FileSchema {
+export interface FileSchema {
   id: number;
   name: string;
   fileType: string;
@@ -36,7 +36,7 @@ export interface FileUploadParams {
   file: File;
 }
 
-export type StoryUploadApi = AxiosResponse<Schema<FileSchema>>;
+export type UploadApi = AxiosResponse<Schema<FileSchema>>;
 
 // ================== Common =================== //
 
@@ -74,15 +74,13 @@ export interface ListSchema<Result = any> {
 
 export type DataIdParams = number | string | null | undefined;
 
-export type StoryApi<Result = any> = AxiosResponse<Schema<Result>>;
+export type Api<Result = any> = AxiosResponse<Schema<Result>>;
 
-export type StoryListApi<Result = any> = AxiosResponse<
-  Schema<ListSchema<Result>>
->;
+export type ListApi<Result = any> = AxiosResponse<Schema<ListSchema<Result>>>;
 
-export type StoryErrorApi<Result = any> = AxiosError<Schema<Result>>;
+export type ErrorApi<Result = any> = AxiosError<Schema<Result>>;
 
-export type StoryDataIdApi = AxiosResponse<Schema<DataIdSchema>>;
+export type DataIdApi = AxiosResponse<Schema<DataIdSchema>>;
 
 // ================== Model =================== //
 
@@ -174,12 +172,6 @@ export interface ProfileInput {
 }
 
 // ================== Login ================== //
-
-export interface LoginInput {
-  email: string;
-  password: string;
-  deviceId?: number;
-}
 
 export interface LoginSchema {
   accessToken: string;

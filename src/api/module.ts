@@ -14,7 +14,7 @@ import type {
   Options,
   Params,
   FileUploadParams,
-  StoryUploadApi,
+  UploadApi,
 } from '@api/schema/story-api';
 
 class APIMoudle {
@@ -81,7 +81,7 @@ class APIMoudle {
     form.append('file', file);
     form.append('storyType', storyType);
     const authorization = this.authorized();
-    const result: StoryUploadApi = await client.post(
+    const result: UploadApi = await client.post(
       API_ENDPOINTS.LOCAL.FILE.ROOT,
       form,
       {

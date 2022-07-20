@@ -1,21 +1,23 @@
 // hooks
 import { useMutation } from 'react-query';
-import { useRouter } from 'next/router';
 import { useMethods } from 'react-use';
 
 // api
 import { api } from '@api/module';
 
 // constants
-import { API_ENDPOINTS, PAGE_ENDPOINTS } from '@constants/constant';
+import { PAGE_ENDPOINTS } from '@constants/constant';
 
 // error
 import { ApiError } from '@libs/error';
 
 // types
-import type { ErrorApi } from '@api/schema/story-api';
-import type { SignupResp } from '@api/schema/resp';
-import type { SignupBody } from '@api/schema/body';
+import type {
+  ErrorApi,
+  FileUploadParams,
+  UploadApi,
+  FileSchema,
+} from '@api/schema/story-api';
 
 interface ErrorState {
   message: string;
@@ -39,32 +41,34 @@ function createMethods(state: ErrorState) {
   };
 }
 
-const postSignup = (body: SignupBody) =>
-  api.post({
-    url: API_ENDPOINTS.LOCAL.AUTH.SIGNUP,
-    body,
+const postUpload = (body: FileUploadParams) =>
+  api.upload({
+    file: body.file,
+    storyType: body.storyType,
   });
 
-export function useSignupMutation() {
-  const router = useRouter();
+interface Options {
+  onSuccess: (data: FileSchema) => void;
+}
+
+export function useUploadMutation(opts?: Options) {
   const [state, methods] = useMethods<
     ReturnType<typeof createMethods>,
     ErrorState
   >(createMethods, initialState);
 
-  const resp = useMutation<SignupResp, ErrorApi, SignupBody>(postSignup, {
+  const resp = useMutation<UploadApi, ErrorApi, FileUploadParams>(postUpload, {
     onMutate() {
       methods.reset();
     },
     onSuccess(data) {
-      const { ok } = data.data;
+      const { ok, result } = data.data;
       if (!ok) return;
-      router.replace(PAGE_ENDPOINTS.INDEX);
+      opts?.onSuccess?.(result);
     },
     onError(error) {
-      if (ApiError.isApiError(error)) {
-        const { message } = error.toApiErrorJSON();
-        methods.setErrorMessage(message?.message);
+      if (ApiError.isAxiosError(error)) {
+        methods.setErrorMessage('에러가 발생했습니다.\n다시 시도해주세요.');
         return;
       }
     },
@@ -73,7 +77,7 @@ export function useSignupMutation() {
   return {
     ...resp,
     get fetcher() {
-      return postSignup;
+      return postUpload;
     },
     get state() {
       return state;

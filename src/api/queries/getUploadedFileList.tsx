@@ -4,7 +4,7 @@ import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 
 import type { QueryFunctionContext, QueryKey } from 'react-query';
-import type { Schema, StoryErrorApi, MediaSchema } from '@api/schema/story-api';
+import type { Schema, ErrorApi, MediaSchema } from '@api/schema/story-api';
 
 export const fetchUploadedFile = async (
   _: QueryFunctionContext<QueryKey, any>,
@@ -17,7 +17,7 @@ export const fetchUploadedFile = async (
 
 export const useUploadedFileListQuery = () => {
   const queryKey = useMemo(() => [API_ENDPOINTS.LOCAL.FILE.LIST], []);
-  const { data, ...fields } = useQuery<Schema<MediaSchema[]>, StoryErrorApi>(
+  const { data, ...fields } = useQuery<Schema<MediaSchema[]>, ErrorApi>(
     queryKey,
     fetchUploadedFile,
     {

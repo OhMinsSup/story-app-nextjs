@@ -1,7 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+// components
 import { Button, Avatar } from '@mantine/core';
-import { generateAvatar, getTargetElement } from '@utils/utils';
+
+// utils
+import { generateAvatar } from '@utils/utils';
 import { isEmpty } from '@utils/assertion';
+import { getTargetElement } from '@libs/browser-utils';
 
 export type UserProfileProps = {
   loading?: boolean;
@@ -26,14 +31,9 @@ const UserProfile: React.FC<UserProfileProps> = ({
   accept = ['image/gif', 'image/jpeg', 'image/png', 'image/webp'],
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [url, setUrl] = useState<string | null>(null);
 
-  const url = thumbnail
-    ? thumbnail
-    : avatarkey
-    ? `data:image/svg+xml;utf8,${encodeURIComponent(generateAvatar(avatarkey))}`
-    : null;
-
-  const fileReader = (file: File | Blob) => {
+  const fileReader = useCallback((file: File | Blob) => {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (e: ProgressEvent<FileReader>) => {
@@ -43,9 +43,9 @@ const UserProfile: React.FC<UserProfileProps> = ({
       };
       reader.readAsDataURL(file);
     });
-  };
+  }, []);
 
-  const onUploadStart = () => {
+  const onUploadStart = useCallback(() => {
     try {
       const ele = getTargetElement(inputRef);
       if (!ele) {
@@ -59,25 +59,39 @@ const UserProfile: React.FC<UserProfileProps> = ({
     } catch (error) {
       onError?.(error);
     }
-  };
+  }, [onError]);
 
-  const onUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      const files = e.target.files;
-      if (!files || isEmpty(files)) {
-        throw new Error('No file');
-      }
-      const file = files[0];
-      if (!file) {
-        throw new Error('No file');
-      }
+  const onUploadChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        const files = e.target.files;
+        if (!files || isEmpty(files)) {
+          throw new Error('No file');
+        }
+        const file = files[0];
+        if (!file) {
+          throw new Error('No file');
+        }
 
-      const dataURL = await fileReader(file);
-      onUpload?.(file, dataURL);
-    } catch (error) {
-      onError?.(error);
-    }
-  };
+        const dataURL = await fileReader(file);
+        onUpload?.(file, dataURL);
+      } catch (error) {
+        onError?.(error);
+      }
+    },
+    [onError, onUpload, fileReader],
+  );
+
+  useEffect(() => {
+    const url = thumbnail
+      ? thumbnail
+      : avatarkey
+      ? `data:image/svg+xml;utf8,${encodeURIComponent(
+          generateAvatar(avatarkey),
+        )}`
+      : null;
+    setUrl(url);
+  }, [thumbnail]);
 
   return (
     <div className="my-6">

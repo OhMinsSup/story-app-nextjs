@@ -4,6 +4,7 @@ import { IS_PROD } from '@constants/env';
 
 // utils
 import { isFunction } from '@utils/assertion';
+import { isBrowser } from '@utils/utils';
 
 // error
 import { ApiError } from 'next/dist/server/api-utils';
@@ -53,7 +54,7 @@ export const createInterceptor = (
   } = options || {};
 
   const responseCallback = (response: AxiosResponse) => {
-    if (!IS_PROD) {
+    if (!IS_PROD && isBrowser) {
       console.log(
         `%c📫 API 응답 수신 주소:${
           response.config.url
@@ -73,7 +74,13 @@ export const createInterceptor = (
   };
 
   return instance.interceptors.response.use(responseCallback, (error: any) => {
-    if (!IS_PROD && error && error.response && error.response.config)
+    if (
+      !IS_PROD &&
+      isBrowser &&
+      error &&
+      error.response &&
+      error.response.config
+    ) {
       console.log(
         `%c🚫 HTTP Error 응답 수신 주소:${
           error.response.config?.url
@@ -83,6 +90,7 @@ export const createInterceptor = (
         'color: #e03131;',
         error.response.statusText ?? '',
       );
+    }
 
     if (
       shouldInterceptError(error, {

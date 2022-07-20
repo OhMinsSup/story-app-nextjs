@@ -15,8 +15,6 @@ export type BasicTarget<T = HTMLElement> =
   | null
   | MutableRefObject<T | null | undefined>;
 
-type TargetElement = HTMLElement | Element | Document | Window;
-
 export const makeQueryString = (params: any) => {
   const stringify = qs.stringify(params, {
     arrayFormat: 'comma',
@@ -25,27 +23,6 @@ export const makeQueryString = (params: any) => {
   });
   return stringify;
 };
-
-export function getTargetElement(
-  target?: BasicTarget<TargetElement>,
-  defaultElement?: TargetElement,
-): TargetElement | undefined | null {
-  if (!target) {
-    return defaultElement;
-  }
-
-  let targetElement: TargetElement | undefined | null;
-
-  if (typeof target === 'function') {
-    targetElement = target();
-  } else if ('current' in target) {
-    targetElement = target.current;
-  } else {
-    targetElement = target;
-  }
-
-  return targetElement;
-}
 
 // valid check key store file
 export const validKeystore = (keystore?: string | ArrayBuffer | null) => {

@@ -6,7 +6,7 @@ import type { QueryFunctionContext, QueryKey } from 'react-query';
 import type {
   DataIdParams,
   Schema,
-  StoryErrorApi,
+  ErrorApi,
   StorySchema,
 } from '@api/schema/story-api';
 
@@ -23,7 +23,7 @@ export const fetchNftDetail = async ({
 };
 
 export const useNftQuery = (id: DataIdParams) => {
-  const { data, ...fields } = useQuery<Schema<StorySchema>, StoryErrorApi>(
+  const { data, ...fields } = useQuery<Schema<StorySchema>, ErrorApi>(
     [
       API_ENDPOINTS.LOCAL.STORY.DETAIL,
       id ? parseInt(id.toString(), 10) : undefined,
