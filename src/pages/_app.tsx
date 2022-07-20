@@ -29,7 +29,6 @@ import type { UserSchema } from '@api/schema/story-api';
 interface AppPageProps extends AppProps {
   Component: any;
   isAuthication: boolean;
-  session?: UserSchema;
 }
 
 function AppPage({ Component, pageProps, ...resetProps }: AppPageProps) {
@@ -65,7 +64,7 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
   });
 
   if (!token) {
-    return { pageProps, isAuthication: false, session: null };
+    return { pageProps, isAuthication: false };
   }
 
   const client = new QueryClient();
@@ -90,8 +89,8 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
     Object.assign(pageProps, {
       dehydratedState: dehydrate(client),
     });
-    return { pageProps, isAuthication: !!session, session };
+    return { pageProps, isAuthication: !!session };
   } catch (error) {
-    return { pageProps, isAuthication: false, session: null };
+    return { pageProps, isAuthication: false };
   }
 };
