@@ -4,7 +4,7 @@ import React from 'react';
 // import { fetchMe } from '@api/queries';
 
 // hooks
-import { useQueryClient } from 'react-query';
+import { useQueryClient } from '@tanstack/react-query';
 // import { useUserHook } from '@store/hook';
 import {
   useAsyncFn,

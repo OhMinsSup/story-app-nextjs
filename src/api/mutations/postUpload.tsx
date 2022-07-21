@@ -1,12 +1,9 @@
 // hooks
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useMethods } from 'react-use';
 
 // api
 import { api } from '@api/module';
-
-// constants
-import { PAGE_ENDPOINTS } from '@constants/constant';
 
 // error
 import { ApiError } from '@libs/error';

@@ -86,6 +86,7 @@ export const API_ENDPOINTS = {
 
 export const QUERIES_KEY = {
   ME: [API_ENDPOINTS.LOCAL.USER.ME],
+  FILE_LIST: [API_ENDPOINTS.LOCAL.FILE.LIST],
 };
 
 export const WEB_APP = '@@StoryFront';

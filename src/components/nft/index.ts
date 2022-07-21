@@ -1,1 +1,1 @@
-export { default as NftForm } from './NftForm';
+export { default as Form } from './Form';

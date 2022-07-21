@@ -1,5 +1,5 @@
 // hooks
-import { useInfiniteQuery } from 'react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 // api
 import { api } from '@api/module';
@@ -11,7 +11,7 @@ import { API_ENDPOINTS } from '@constants/constant';
 import { isEmpty } from '@utils/assertion';
 import { makeQueryString } from '@utils/utils';
 
-import type { QueryFunctionContext } from 'react-query';
+import type { QueryFunctionContext } from '@tanstack/react-query';
 import type { ListSchema, StorySchema } from '@api/schema/story-api';
 
 const SIZE = 25;

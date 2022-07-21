@@ -16,7 +16,7 @@ import { Container } from '@mantine/core';
 import { API_ENDPOINTS } from '@constants/constant';
 
 // react-query
-import { QueryClient, dehydrate } from 'react-query';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
 
 // types
 import type { GetServerSidePropsContext } from 'next';

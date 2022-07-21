@@ -10,7 +10,7 @@ import { Header } from '@components/ui/Header';
 import { AppShell, SimpleGrid } from '@mantine/core';
 
 // react-query
-import { dehydrate, QueryClient } from 'react-query';
+import { dehydrate, QueryClient } from '@tanstack/react-query';
 
 // api
 import { client } from '@api/client';

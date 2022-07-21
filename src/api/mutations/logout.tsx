@@ -1,5 +1,5 @@
 // hooks
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 // api
 import { api } from '@api/module';

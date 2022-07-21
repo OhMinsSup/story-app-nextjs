@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { QueryClient } from 'react-query';
+import { QueryClient } from '@tanstack/react-query';
 import { API_HOST } from '@constants/env';
 import { createInterceptor } from './middleware/createInterceptor';
 

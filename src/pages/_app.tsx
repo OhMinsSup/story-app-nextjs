@@ -5,7 +5,7 @@ import 'dayjs/locale/ko';
 import React from 'react';
 
 // hooks
-import { QueryClient, dehydrate } from 'react-query';
+import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { useHydrateAtoms } from 'jotai/utils';
 import { authAtom } from '@atoms/authAtom';
 

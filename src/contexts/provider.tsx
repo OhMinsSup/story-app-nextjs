@@ -1,8 +1,8 @@
 import React from 'react';
 
 // provider
-import { QueryClientProvider, Hydrate } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { QueryClientProvider, Hydrate } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { CommonProvider } from './common';
 import { Provider as JotaiProvider } from 'jotai';
 import { globalClient } from '@api/client';

@@ -125,3 +125,12 @@ export const klayUnits = [
 export function now() {
   return Math.floor(Date.now() / 1000);
 }
+
+export const placeholderDataFn = (result: any): Schema<any> => {
+  return {
+    ok: true,
+    resultCode: 0,
+    message: '',
+    result,
+  };
+};

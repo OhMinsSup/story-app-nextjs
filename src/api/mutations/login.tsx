@@ -1,5 +1,5 @@
 // hooks
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useMethods } from 'react-use';
 import { useRouter } from 'next/router';
 import { useSetAtom } from 'jotai';

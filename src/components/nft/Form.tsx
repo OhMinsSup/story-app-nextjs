@@ -22,24 +22,29 @@ import { useForm, yupResolver } from '@mantine/form';
 import { schema } from '@libs/validation/schema';
 
 // utils
-import { getTargetElement } from '@utils/utils';
+import { getTargetElement } from '@libs/browser-utils';
 
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
-import { useModuleContext } from '@components/nft/context/context';
+import { imageAtom, useEditorAtom } from '@atoms/editorAtom';
+import { useAtomValue } from 'jotai';
 
 // types
 import type { StoryInput } from '@api/schema/story-api';
 
-const UploadModal = dynamic(() => import('@components/ui/Modal/UploadModal'), {
-  ssr: false,
-});
+const UploadModal = dynamic(
+  () => import('@components/ui/Modal/Upload/Upload'),
+  {
+    ssr: false,
+  },
+);
 
-const NftForm = () => {
-  const { editor, setVisibleTags, setVisibleUpload, upload } =
-    useModuleContext();
+const Form = () => {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const ref = useRef<HTMLFormElement | null>(null);
+
+  const [editor, setEditor] = useEditorAtom();
+  const image = useAtomValue(imageAtom);
 
   const initialValues: StoryInput = useMemo(() => {
     return {
@@ -60,24 +65,21 @@ const NftForm = () => {
     initialValues,
   });
 
-  const onClickForOpenTags = useCallback(() => {
-    setVisibleTags(!editor.tags);
-  }, [editor.tags, setVisibleTags]);
+  const onClickTags = useCallback(() => {
+    setEditor((old) => ({
+      ...old,
+      tags: !old.tags,
+    }));
+  }, [setEditor]);
 
-  const onClickForCloseTags = useCallback(() => {
-    setVisibleTags(false);
-  }, [setVisibleTags]);
-
-  const onClickForOpenUpload = useCallback(() => {
-    setVisibleUpload(true);
-  }, [setVisibleUpload]);
-
-  const onClickForCloseUpload = useCallback(() => {
-    setVisibleUpload(false);
-  }, [setVisibleUpload]);
+  const onClickUpload = useCallback(() => {
+    setEditor((old) => ({
+      ...old,
+      upload: !old.upload,
+    }));
+  }, [setEditor]);
 
   const onSubmit = async (values: typeof form.values) => {
-    console.log(values);
     const body = {
       title: values.title,
       description: values.description,
@@ -88,8 +90,9 @@ const NftForm = () => {
       beginDate: values.rangeDate[0].getTime(),
       endDate: values.rangeDate[1].getTime(),
       tags: values.tags,
-      mediaId: upload.image?.idx,
+      mediaId: image?.idx,
     };
+    console.log('body', body);
   };
 
   const onPipelineSubmit = useCallback(() => {
@@ -116,11 +119,11 @@ const NftForm = () => {
                 <Group className="mb-10" grow={isMobile}>
                   <Button
                     leftIcon={<CloudUpload />}
-                    onClick={onClickForOpenUpload}
+                    onClick={onClickUpload}
                     text="파일 업로드"
                   />
                   <Button
-                    onClick={onClickForOpenTags}
+                    onClick={onClickTags}
                     leftIcon={<Tags />}
                     text="태그 추가"
                   />
@@ -164,7 +167,7 @@ const NftForm = () => {
                         rightSection={
                           <ActionIcon
                             className="px-2 text-xl"
-                            onClick={onClickForCloseTags}
+                            onClick={onClickTags}
                           >
                             <X size={30} />
                           </ActionIcon>
@@ -239,9 +242,9 @@ const NftForm = () => {
         <Button type="button" text="등록하기" onClick={onPipelineSubmit} />
       </Group>
 
-      <UploadModal opened={editor.upload} onClose={onClickForCloseUpload} />
+      <UploadModal onClose={onClickUpload} />
     </>
   );
 };
 
-export default NftForm;
+export default Form;

@@ -1,8 +1,8 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '@api/module';
 import { API_ENDPOINTS } from '@constants/constant';
 
-import type { QueryFunctionContext, QueryKey } from 'react-query';
+import type { QueryFunctionContext, QueryKey } from '@tanstack/react-query';
 import type {
   DataIdParams,
   Schema,
