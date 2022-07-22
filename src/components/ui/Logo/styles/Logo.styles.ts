@@ -12,6 +12,6 @@ export default createStyles((theme) => ({
   },
 
   image: {
-    height: 30,
+    height: 24,
   },
 }));

@@ -1,50 +1,45 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import dynamic from 'next/dynamic';
+import React, { useCallback, useMemo } from 'react';
 
 // components
 import {
-  Group,
   Textarea,
-  ActionIcon,
-  Space,
+  NumberInput,
   MultiSelect,
   ColorInput,
-  InputWrapper,
-  Input,
+  TextInput,
   Switch,
+  InputWrapper,
+  useMantineTheme,
 } from '@mantine/core';
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { DateRangePicker } from '@mantine/dates';
-import { CloudUpload, Paint, Tags, X } from 'tabler-icons-react';
+import { Paint } from 'tabler-icons-react';
 import { Button } from '@components/ui/Button';
+import { DropzoneChildren } from './_internal';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
 import { schema } from '@libs/validation/schema';
 
-// utils
-import { getTargetElement } from '@libs/browser-utils';
-
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
-import { imageAtom, useEditorAtom } from '@atoms/editorAtom';
-import { useAtomValue } from 'jotai';
+import { useImageAtom } from '@atoms/editorAtom';
+import { useUploadMutation } from '@api/mutations';
+
+// utils
+import { isEmpty } from '@utils/assertion';
+
+// enum
+import { StoryUploadTypeEnum } from '@api/schema/enum';
 
 // types
 import type { StoryInput } from '@api/schema/story-api';
 
-const UploadModal = dynamic(
-  () => import('@components/ui/Modal/Upload/Upload'),
-  {
-    ssr: false,
-  },
-);
-
 const Form = () => {
+  const theme = useMantineTheme();
   const isMobile = useMediaQuery('(max-width: 768px)');
-  const ref = useRef<HTMLFormElement | null>(null);
 
-  const [editor, setEditor] = useEditorAtom();
-  const image = useAtomValue(imageAtom);
+  const [image, setImage] = useImageAtom();
 
   const initialValues: StoryInput = useMemo(() => {
     return {
@@ -65,20 +60,6 @@ const Form = () => {
     initialValues,
   });
 
-  const onClickTags = useCallback(() => {
-    setEditor((old) => ({
-      ...old,
-      tags: !old.tags,
-    }));
-  }, [setEditor]);
-
-  const onClickUpload = useCallback(() => {
-    setEditor((old) => ({
-      ...old,
-      upload: !old.upload,
-    }));
-  }, [setEditor]);
-
   const onSubmit = async (values: typeof form.values) => {
     const body = {
       title: values.title,
@@ -95,154 +76,178 @@ const Form = () => {
     console.log('body', body);
   };
 
-  const onPipelineSubmit = useCallback(() => {
-    const ele = getTargetElement(ref);
-    ele?.dispatchEvent(
-      new Event('submit', {
-        bubbles: true,
-        cancelable: true,
-      }),
-    );
-  }, []);
+  const { mutateAsync, isLoading } = useUploadMutation({
+    onSuccess: (data) => {
+      setImage({
+        idx: data.id,
+        name: data.name,
+        contentUrl: data.path,
+      });
+    },
+  });
+
+  const onUploadStart = useCallback(
+    async (files: File[]) => {
+      const file = files[0];
+      if (!file || isEmpty(file)) return;
+
+      await mutateAsync({
+        file,
+        storyType: StoryUploadTypeEnum.STORY,
+      });
+    },
+    [mutateAsync],
+  );
 
   return (
     <>
-      <div className="container grid grid-cols-12 mx-auto 2xl:grid-cols-10 2xl:px-5 md:h-full">
-        <div className="col-span-12 xl:col-span-10 xl:col-start-2 2xl:col-start-3 2xl:col-span-6">
-          <div className="w-full pt-5">
-            <form
-              ref={ref}
-              className="form-area"
-              onSubmit={form.onSubmit(onSubmit)}
-            >
-              <div className="px-4">
-                <Group className="mb-10" grow={isMobile}>
-                  <Button
-                    leftIcon={<CloudUpload />}
-                    onClick={onClickUpload}
-                    text="파일 업로드"
-                  />
-                  <Button
-                    onClick={onClickTags}
-                    leftIcon={<Tags />}
-                    text="태그 추가"
-                  />
-                </Group>
-                <div className="relative mb-4 mt-5">
-                  <InputWrapper id="title" required label="제목">
-                    <Textarea
-                      id="title"
-                      autosize={true}
-                      spellCheck="false"
-                      aria-label="title"
-                      className="w-full mt-2 mb-5"
-                      maxRows={7}
-                      {...form.getInputProps('title')}
-                    />
-                  </InputWrapper>
-                </div>
-                {editor.tags && (
-                  <div className="relative mb-4 mt-5">
-                    <InputWrapper id="tags" required label="태그">
-                      <MultiSelect
-                        id="tags"
-                        data={form.values.tags}
-                        className="w-full"
-                        placeholder="태그 (옵션)"
-                        searchable
-                        size="md"
-                        limit={5}
-                        nothingFound="Nothing found"
-                        withinPortal
-                        creatable
-                        error={form.errors.tags}
-                        getCreateLabel={(query) => `+ Create ${query}`}
-                        onCreate={(query) => {
-                          console.log(query);
-                          form.setFieldValue('tags', [
-                            ...form.values.tags,
-                            query,
-                          ]);
-                        }}
-                        rightSection={
-                          <ActionIcon
-                            className="px-2 text-xl"
-                            onClick={onClickTags}
-                          >
-                            <X size={30} />
-                          </ActionIcon>
-                        }
-                      />
-                    </InputWrapper>
-                  </div>
-                )}
-                <InputWrapper id="description" required label="NFT 설명">
-                  <Textarea
-                    id="description"
-                    autosize={true}
-                    maxRows={7}
-                    spellCheck="false"
-                    {...form.getInputProps('description')}
-                  />
-                </InputWrapper>
-                <Space h="md" />
-                <InputWrapper
-                  id="backgroundColor"
-                  label="배경색"
-                  description="NFT 배경색을 선택해주세요. 아래 컬러칩을 눌러 색을 지정하거나, 컬러 코드(6자리 HEX값)를 직접 입력할 수 있습니다."
-                >
-                  <ColorInput
-                    icon={<Paint size={16} />}
-                    {...form.getInputProps('backgroundColor')}
-                  />
-                </InputWrapper>
-                <Space h="md" />
-                <InputWrapper required label="판매기간">
-                  <DateRangePicker
-                    locale="ko"
-                    dropdownType={isMobile ? 'modal' : 'popover'}
-                    {...form.getInputProps('rangeDate')}
-                  />
-                </InputWrapper>
-                <Space h="md" />
-                <InputWrapper id="price" label="판매가격" required>
-                  <Input id="price" {...form.getInputProps('price')} />
-                </InputWrapper>
-                <Space h="md" />
-                <InputWrapper
-                  id="externalSite"
-                  label="연관 사이트"
-                  description="연관 사이트를 입력해주세여. Story 또는 다른 관련 마켓을 적을 수 있습니다."
-                >
-                  <Input
-                    id="externalSite"
-                    {...form.getInputProps('externalSite')}
-                  />
-                </InputWrapper>
-                <Space h="md" />
-                <InputWrapper id="private" label="공개여부">
-                  <Switch size="lg" {...form.getInputProps('isPublic')} />
-                </InputWrapper>
-                <Space h="xl" />
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <Group
-        position="right"
-        className="p-5"
-        sx={(theme) => ({
-          backgroundColor:
-            theme.colorScheme === 'dark'
-              ? theme.colors.dark[6]
-              : theme.colors.gray[0],
-        })}
+      <InputWrapper
+        required
+        classNames={{
+          root: 'w-full md:w-96 max-h-96',
+          label: 'font-bold',
+        }}
+        label="Image, Video, Audio, or 3D Model"
+        description={`File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG,
+                  GLB, GLTF. Max size: 20 MB`}
       >
-        <Button type="button" text="등록하기" onClick={onPipelineSubmit} />
-      </Group>
+        <Dropzone
+          className="w-full h-80"
+          loading={isLoading}
+          onDrop={onUploadStart}
+          onReject={(files) => console.log('rejected files', files)}
+          maxSize={3 * 1024 ** 2}
+          accept={IMAGE_MIME_TYPE}
+        >
+          {(status) => DropzoneChildren(status, theme)}
+        </Dropzone>
+      </InputWrapper>
+      <form
+        className="form-area mt-4 space-y-4"
+        onSubmit={form.onSubmit(onSubmit)}
+      >
+        <TextInput
+          id="title"
+          required
+          label="제목"
+          classNames={{
+            label: 'font-bold',
+          }}
+          placeholder="Item name"
+          spellCheck="false"
+          aria-label="title"
+          {...form.getInputProps('title')}
+        />
 
-      <UploadModal onClose={onClickUpload} />
+        <TextInput
+          label="연관 사이트"
+          id="externalSite"
+          classNames={{
+            label: 'font-bold',
+          }}
+          placeholder="https://yoursite.io/item/123"
+          description="Story는 이 항목의 세부 사항 페이지에 이 URL에 대한 링크를 포함하므로 사용자가 클릭하여 자세히 알아볼 수 있습니다. 자세한 내용은 자신의 웹페이지에 링크할 수 있습니다."
+          {...form.getInputProps('externalSite')}
+        />
+
+        <Textarea
+          label="설명"
+          id="description"
+          autosize
+          classNames={{
+            label: 'font-bold',
+          }}
+          minRows={7}
+          description="설명은 이미지 아래 항목의 세부 정보 페이지에 포함됩니다."
+          placeholder="Provide a detailed description of your item."
+          spellCheck="false"
+          {...form.getInputProps('description')}
+        />
+
+        <MultiSelect
+          id="tags"
+          label="태그"
+          description="NFT에 연관된 키워드를 등록해주세요."
+          data={form.values.tags}
+          placeholder="태그 (옵션)"
+          searchable
+          limit={5}
+          classNames={{ label: 'font-bold' }}
+          nothingFound="Nothing found"
+          withinPortal
+          creatable
+          error={form.errors.tags}
+          getCreateLabel={(query) => `+ Create ${query}`}
+          onCreate={(query) => {
+            form.setFieldValue('tags', [...form.values.tags, query]);
+          }}
+        />
+
+        <ColorInput
+          label="배경색"
+          classNames={{
+            label: 'font-bold',
+          }}
+          description="컬러 코드(6자리 HEX값)를 직접 입력할 수 있습니다."
+          icon={<Paint size={16} />}
+          {...form.getInputProps('backgroundColor')}
+        />
+
+        <NumberInput
+          label="가격"
+          required
+          hideControls
+          description="실제 사용자에게 판매되는 가격입니다. 신중하게 입력해주세요!"
+          classNames={{
+            label: 'font-bold',
+          }}
+          parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
+          {...form.getInputProps('price')}
+          formatter={(value: any) =>
+            !Number.isNaN(parseFloat(value))
+              ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+              : ''
+          }
+        />
+
+        <NumberInput
+          label="Supply"
+          hideControls
+          description="발행할 수 있는 항목의 수입니다. 가스 비용이 들지 않습니다!"
+          classNames={{
+            label: 'font-bold',
+          }}
+          parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
+          formatter={(value: any) =>
+            !Number.isNaN(parseFloat(value))
+              ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+              : ''
+          }
+        />
+
+        <DateRangePicker
+          locale="ko"
+          required
+          label="판매기간"
+          classNames={{
+            label: 'font-bold',
+          }}
+          dropdownType={isMobile ? 'modal' : 'popover'}
+          {...form.getInputProps('rangeDate')}
+        />
+
+        <InputWrapper
+          required
+          classNames={{
+            label: 'font-bold',
+          }}
+          label="공개여부"
+          description="발행시 화면에 공개할지 안할지 선택해주세요."
+        >
+          <Switch size="lg" {...form.getInputProps('isPublic')} />
+        </InputWrapper>
+        <Button type="submit" text="등록하기" />
+      </form>
     </>
   );
 };

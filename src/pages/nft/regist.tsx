@@ -1,17 +1,27 @@
 import React from 'react';
 
 // components
+import { Title } from '@mantine/core';
 import { Form } from '@components/nft';
-
-// hooks
 import { Layout } from '@components/ui/Layout';
+import { NFTsRegisterSeo } from '@components/ui/Seo';
 
-const NftRegistPage = () => {
+const NFTsRegisterPage = () => {
   return (
     <Layout>
-      <Form />
+      <NFTsRegisterSeo />
+      <div className="container grid grid-cols-12 mx-auto 2xl:grid-cols-10 2xl:px-5 md:h-full">
+        <div className="col-span-12 xl:col-span-10 xl:col-start-2 2xl:col-start-3 2xl:col-span-6">
+          <Title order={1} className="mb-4">
+            Create New Item
+          </Title>
+          <div className="w-full px-4 sm:px-2 mb-6">
+            <Form />
+          </div>
+        </div>
+      </div>
     </Layout>
   );
 };
 
-export default NftRegistPage;
+export default NFTsRegisterPage;

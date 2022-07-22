@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { useImageAtom } from '@atoms/editorAtom';
 
 // components
-import { Image } from '@mantine/core';
+import { BlurImage } from '@components/ui/Image';
 
 // types
 import type { MediaSchema } from '@api/schema/story-api';
@@ -16,8 +16,6 @@ interface FileImageProps {
 
 const FileImage: React.FC<FileImageProps> = ({ item }) => {
   const [state, setState] = useImageAtom();
-
-  const source = item.contentUrl;
 
   const onClick = useCallback(() => {
     setState({
@@ -39,13 +37,14 @@ const FileImage: React.FC<FileImageProps> = ({ item }) => {
       )}
       onClick={onClick}
     >
-      <Image
-        className="w-full h-full bg-cover"
-        src={source}
+      <BlurImage
+        layout="responsive"
+        src={item.contentUrl}
+        className="bg-cover"
         alt={`nft content ${item.publidId}`}
-        withPlaceholder
-        radius="md"
-        caption={item.publidId}
+        width={256}
+        height={256}
+        objectFit="cover"
       />
     </div>
   );

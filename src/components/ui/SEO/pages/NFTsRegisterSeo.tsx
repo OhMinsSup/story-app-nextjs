@@ -3,9 +3,9 @@ import { SITE_URL } from '@constants/env';
 import React from 'react';
 import Seo from '../Seo';
 
-const SignupSeo = () => {
-  const title = 'Signup | story';
-  const url = `${SITE_URL}${PAGE_ENDPOINTS.SIGNUP}`;
+const NFTsRegister = () => {
+  const title = 'Create NFTs | story';
+  const url = `${SITE_URL}${PAGE_ENDPOINTS.NFT.REGIST}`;
 
   return (
     <Seo
@@ -19,4 +19,4 @@ const SignupSeo = () => {
   );
 };
 
-export default SignupSeo;
+export default NFTsRegister;

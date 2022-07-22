@@ -4,7 +4,7 @@ import React from 'react';
 import Seo from '../Seo';
 
 const LoginSeo = () => {
-  const title = 'Story - 로그인';
+  const title = 'Login | story';
   const url = `${SITE_URL}${PAGE_ENDPOINTS.LOGIN}`;
 
   return (
