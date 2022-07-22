@@ -100,6 +100,7 @@ export const STORAGE_KEY = {
 
 export const COOKIE_KEY = {
   ACCESS_TOKEN: 'access_token',
+  THEME: 'theme_schema',
 };
 
 export const STATUS_CODE = {

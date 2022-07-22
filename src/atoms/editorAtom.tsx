@@ -1,20 +1,5 @@
 import { atom, useAtom } from 'jotai';
 
-interface EditorAtom {
-  tags: boolean;
-  upload: boolean;
-}
-
-// editor
-export const editorAtom = atom<EditorAtom>({
-  tags: false,
-  upload: false,
-});
-
-export function useEditorAtom() {
-  return useAtom(editorAtom);
-}
-
 // image
 
 interface ImageAtom {

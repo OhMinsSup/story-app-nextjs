@@ -7,7 +7,7 @@ import React from 'react';
 // hooks
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { useHydrateAtoms } from 'jotai/utils';
-import { authAtom } from '@atoms/authAtom';
+import { authAtom, themeAtom } from '@atoms/authAtom';
 
 // components
 import { RootProvider } from '@contexts/provider';
@@ -15,7 +15,7 @@ import { DefaultSeo } from '@components/ui/Seo';
 
 // utils
 import { isString } from '@utils/assertion';
-import { getCookie } from 'cookies-next';
+import { getCookie, setCookie } from 'cookies-next';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 
 // constants
@@ -31,11 +31,17 @@ import type { UserSchema } from '@api/schema/story-api';
 interface AppPageProps extends AppProps {
   Component: any;
   isAuthication: boolean;
+  theme: 'light' | 'dark';
 }
 
 function AppPage({ Component, pageProps, ...resetProps }: AppPageProps) {
   useHydrateAtoms(
-    resetProps.isAuthication ? [[authAtom, resetProps.isAuthication]] : [],
+    resetProps.isAuthication
+      ? [
+          [authAtom, resetProps.isAuthication],
+          [themeAtom, resetProps.theme],
+        ]
+      : [[themeAtom, resetProps.theme]],
   );
 
   return (
@@ -65,8 +71,25 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
     res: ctx.res,
   });
 
+  let theme = getCookie(COOKIE_KEY.THEME, {
+    req: ctx.req,
+    res: ctx.res,
+  });
+
+  if (!theme) {
+    setCookie(COOKIE_KEY.THEME, 'ligth', {
+      sameSite: 'lax',
+      domain: 'localhost',
+      path: '/',
+      maxAge: 2147483647,
+      req: ctx.req,
+      res: ctx.res,
+    });
+    theme = 'ligth';
+  }
+
   if (!token || !isString(token)) {
-    return { pageProps, isAuthication: false };
+    return { pageProps, isAuthication: false, theme };
   }
 
   const decoded = jwtDecode<JwtPayload>(token); // Returns with the JwtPayload type
@@ -95,9 +118,9 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
       Object.assign(pageProps, {
         dehydratedState: dehydrate(client),
       });
-      return { pageProps, isAuthication: !!session };
+      return { pageProps, isAuthication: !!session, theme };
     } catch (error) {
-      return { pageProps, isAuthication: false };
+      return { pageProps, isAuthication: false, theme };
     }
   }
 

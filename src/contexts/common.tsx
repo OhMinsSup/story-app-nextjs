@@ -1,17 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
 
 // atom
-import { authAtom } from '@atoms/authAtom';
-import { useSetAtom } from 'jotai';
+import { authAtom, themeAtom } from '@atoms/authAtom';
+import { useAtom, useSetAtom } from 'jotai';
 
 // hooks
-import { useLocalStorage } from '@mantine/hooks';
 import { useNotfiyManager } from '@libs/state/notify';
 import { useMount } from 'react-use';
-
-// constants
-import { STORAGE_KEY } from '@constants/constant';
 
 // api
 import { api } from '@api/module';
@@ -30,14 +26,13 @@ export const CommonProvider: React.FC<
 
   const lockRef = useRef(false);
 
-  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: STORAGE_KEY.THEME_KEY,
-    defaultValue: 'light',
-    getInitialValueInEffect: true,
-  });
+  const [colorScheme, setColorScheme] = useAtom(themeAtom);
 
-  const toggleColorScheme = (value?: ColorScheme) =>
-    setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+  const toggleColorScheme = useCallback(
+    (value?: ColorScheme) =>
+      setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark')),
+    [colorScheme, setColorScheme],
+  );
 
   useMount(() => {
     notify.setNotifyFunction((fn) => {
@@ -68,7 +63,7 @@ export const CommonProvider: React.FC<
         theme={{
           fontFamily: 'Verdana, sans-serif',
           fontFamilyMonospace: 'Monaco, Courier, monospace',
-          colorScheme: colorScheme || 'light',
+          colorScheme: colorScheme,
           colors: {
             // override dark colors to change them for all components
             dark: [

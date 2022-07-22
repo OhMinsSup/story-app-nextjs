@@ -38,21 +38,6 @@ const SEO_CONSTANTS: DefaultSeoProps = {
       href: '/images/favicon.ico',
     },
     {
-      rel: 'icon',
-      sizes: '32x32',
-      href: '/images/favicon-32x32.png',
-    },
-    {
-      rel: 'icon',
-      sizes: '16x16',
-      href: '/images/favicon-16x16.png',
-    },
-    {
-      rel: 'apple-touch-icon',
-      href: '/images/apple-touch-icon.png',
-      sizes: '152x152',
-    },
-    {
       rel: 'manifest',
       href: '/site.webmanifest',
     },
