@@ -2,7 +2,8 @@ import React, { useCallback, useRef } from 'react';
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
 
 // atom
-import { authAtom, themeAtom } from '@atoms/authAtom';
+import { authAtom } from '@atoms/authAtom';
+import { readWriteThemaAtom } from '@atoms/commonAtom';
 import { useAtom, useSetAtom } from 'jotai';
 
 // hooks
@@ -26,12 +27,11 @@ export const CommonProvider: React.FC<
 
   const lockRef = useRef(false);
 
-  const [colorScheme, setColorScheme] = useAtom(themeAtom);
+  const [colorScheme, setColorScheme] = useAtom(readWriteThemaAtom);
 
   const toggleColorScheme = useCallback(
-    (value?: ColorScheme) =>
-      setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark')),
-    [colorScheme, setColorScheme],
+    (value?: ColorScheme) => setColorScheme(value),
+    [setColorScheme],
   );
 
   useMount(() => {

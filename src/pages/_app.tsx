@@ -7,7 +7,8 @@ import React from 'react';
 // hooks
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { useHydrateAtoms } from 'jotai/utils';
-import { authAtom, themeAtom } from '@atoms/authAtom';
+import { authAtom } from '@atoms/authAtom';
+import { themeAtom } from '@atoms/commonAtom';
 
 // components
 import { RootProvider } from '@contexts/provider';
@@ -25,29 +26,32 @@ import { API_ENDPOINTS, COOKIE_KEY, QUERIES_KEY } from '@constants/constant';
 import { api } from '@api/module';
 
 // type
+import type { ThemeType } from '@atoms/commonAtom';
 import type { AppContext, AppProps } from 'next/app';
 import type { UserSchema } from '@api/schema/story-api';
 
 interface AppPageProps extends AppProps {
   Component: any;
   isAuthication: boolean;
-  theme: 'light' | 'dark';
+  theme: ThemeType;
 }
 
+import { useAtomsDebugValue } from 'jotai/devtools';
+
 function AppPage({ Component, pageProps, ...resetProps }: AppPageProps) {
-  useHydrateAtoms(
-    resetProps.isAuthication
-      ? [
-          [authAtom, resetProps.isAuthication],
-          [themeAtom, resetProps.theme],
-        ]
-      : [[themeAtom, resetProps.theme]],
-  );
+  useHydrateAtoms([[authAtom, resetProps.isAuthication]]);
+  useHydrateAtoms([[themeAtom, resetProps.theme]]);
+
+  useAtomsDebugValue();
 
   return (
     <>
       <DefaultSeo />
-      <RootProvider pageProps={pageProps}>
+      <RootProvider
+        pageProps={pageProps}
+        isAuthication={resetProps.isAuthication}
+        theme={resetProps.theme}
+      >
         <Component {...pageProps} />
       </RootProvider>
     </>
