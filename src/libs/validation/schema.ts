@@ -1,4 +1,4 @@
-import { isInvalidDate, Nullable } from '@utils/assertion';
+import { isInvalidDate } from '@utils/assertion';
 import dayjs from 'dayjs';
 import * as yup from 'yup';
 
@@ -34,6 +34,15 @@ export const common = {
     name: yup.string().optional().notRequired(),
     idx: yup.number().required('미디어 주소를 입력해주세요.'),
   }),
+  price: yup.string().test('price', '숫자만 입력이 가능합니다', (price) => {
+    if (!price) return false;
+    // 정규식 소수점 및 숫자만 입력 (수수점은 존재 할 수도 없을 수 도 있음)
+    const regex = /^[0-9]+(\.[0-9]+)?$/;
+    if (price.match(regex)) {
+      return true;
+    }
+    return false;
+  }),
 };
 
 export const schema = {
@@ -56,11 +65,17 @@ export const schema = {
     password: yup.string().required('비밀번호를 입력해 주세요.'),
   }),
   story: yup.object().shape({
+    media: common.media.required('미디어를 등록해주세요.'),
     title: yup
       .string()
       .max(100, '최대 100자 내외로 입력해주세요.')
       .required('제목을 입력해주세요.'),
-    media: common.media.required('미디어를 등록해주세요.'),
+    externalSite: yup
+      .string()
+      .url('연관 사이트는 URL 형식으로 입력해주세요.')
+      .nullable()
+      .optional()
+      .notRequired(),
     description: yup
       .string()
       .max(1000, '최대 1000자 내외로 입력해주세요.')
@@ -70,21 +85,29 @@ export const schema = {
       .matches(/^#[0-9a-fA-F]{6}$/, '색상 형식으로 입력해주세요.')
       .nullable()
       .optional(),
-    externalSite: yup
-      .string()
-      .nullable()
-      .transform((value?: string | null) => {
-        if (!value) return value;
-        // 마지막 문자가 , 이면 제거
-        if (value.endsWith(',')) return value.slice(0, -1);
-        return value.trim();
-      })
-      .optional(),
     tags: yup
       .array()
       .of(yup.string().required())
       .max(5, '최대 5개까지 입력해주세요.')
       .optional(),
+    price: yup
+      .number()
+      .test('invalid_price', '가격 형식으로 입력해주세요.', (value) => {
+        if (value && isNaN(value)) return false;
+        if (value === 0) return false;
+        return true;
+      })
+      .required('가격을 입력해주세요.'),
+    supply: yup
+      .number()
+      .min(1, '발행 수는 최소 1개 입니다.')
+      .test('invalid_price', '발행 수는 최소 1개 입니다.', (value) => {
+        if (!value) return false;
+        if (isNaN(value)) return false;
+        if (value <= 0) return false;
+        return true;
+      })
+      .required('발행 수를 입력해주세요.'),
     isPublic: yup
       .boolean()
       .oneOf([true, false])
@@ -113,17 +136,5 @@ export const schema = {
         return true;
       })
       .required('공개 기간을 선택해주세요.'),
-    price: yup
-      .string()
-      .test('price', '숫자만 입력이 가능합니다', (price) => {
-        if (!price) return false;
-        // 정규식 소수점 및 숫자만 입력 (수수점은 존재 할 수도 없을 수 도 있음)
-        const regex = /^[0-9]+(\.[0-9]+)?$/;
-        if (price.match(regex)) {
-          return true;
-        }
-        return false;
-      })
-      .required('가격을 입력해주세요.'),
   }),
 };

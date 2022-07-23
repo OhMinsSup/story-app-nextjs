@@ -60,6 +60,7 @@
     "jwt-decode": "^3.1.2",
     "localforage": "^1.10.0",
     "lodash-es": "^4.17.21",
+    "magic-bytes.js": "^1.0.12",
     "next": "^12.2.2",
     "next-env": "^1.1.1",
     "next-pwa": "^5.5.4",

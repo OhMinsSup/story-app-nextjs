@@ -4747,6 +4747,11 @@ lru_map@^0.3.3:
   resolved "https://registry.yarnpkg.com/lru_map/-/lru_map-0.3.3.tgz#b5c8351b9464cbd750335a79650a0ec0e56118dd"
   integrity sha512-Pn9cox5CsMYngeDbmChANltQl+5pi6XmTrraMSzhPmMBbmgcxmqWry0U3PGapCU1yB4/LqCcom7qhHZiF/jGfQ==
 
+magic-bytes.js@^1.0.12:
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/magic-bytes.js/-/magic-bytes.js-1.0.12.tgz#6287de1070f4c33da4a6e8bffb2752d513a2d287"
+  integrity sha512-Rkukya32FnY3dF5nJeAS4Qcry76tXeOe2sXIQGAt969sV04QLormWHXmHn4o/yIbb4wRlnCqWu8fpVg3TU7sFg==
+
 magic-string@^0.25.0, magic-string@^0.25.7:
   version "0.25.9"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.9.tgz#de7f9faf91ef8a1c91d02c2e5314c8277dbcdd1c"

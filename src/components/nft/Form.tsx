@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 
 // components
 import {
@@ -10,8 +10,9 @@ import {
   Switch,
   InputWrapper,
   useMantineTheme,
+  Loader,
 } from '@mantine/core';
-import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { Dropzone, IMAGE_MIME_TYPE, MIME_TYPES } from '@mantine/dropzone';
 import { DateRangePicker } from '@mantine/dates';
 import { Paint } from 'tabler-icons-react';
 import { Button } from '@components/ui/Button';
@@ -23,25 +24,39 @@ import { schema } from '@libs/validation/schema';
 
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
-import { useImageAtom } from '@atoms/editorAtom';
 import { useUploadMutation } from '@api/mutations';
 
 // utils
 import { isEmpty } from '@utils/assertion';
+import parseByBytes from 'magic-bytes.js';
 
 // enum
 import { StoryUploadTypeEnum } from '@api/schema/enum';
 
-// types
-import type { StoryInput } from '@api/schema/story-api';
+interface MediaFieldValue {
+  idx: number;
+  name?: string;
+  contentUrl: string;
+}
+
+interface FormFieldValues {
+  title: string;
+  media: MediaFieldValue | null;
+  externalSite: string;
+  description: string;
+  tags: string[];
+  backgroundColor: string;
+  price: number;
+  supply: number;
+  rangeDate: Date[];
+  isPublic: boolean;
+}
 
 const Form = () => {
   const theme = useMantineTheme();
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  const [image, setImage] = useImageAtom();
-
-  const initialValues: StoryInput = useMemo(() => {
+  const initialValues: FormFieldValues = useMemo(() => {
     return {
       title: '',
       description: '',
@@ -51,11 +66,12 @@ const Form = () => {
       externalSite: '',
       rangeDate: [],
       isPublic: false,
-      price: '',
+      supply: 1,
+      price: 0,
     };
   }, []);
 
-  const form = useForm<StoryInput>({
+  const form = useForm<FormFieldValues>({
     schema: yupResolver(schema.story),
     initialValues,
   });
@@ -71,14 +87,14 @@ const Form = () => {
       beginDate: values.rangeDate[0].getTime(),
       endDate: values.rangeDate[1].getTime(),
       tags: values.tags,
-      mediaId: image?.idx,
+      mediaId: values.media?.idx,
     };
     console.log('body', body);
   };
 
   const { mutateAsync, isLoading } = useUploadMutation({
     onSuccess: (data) => {
-      setImage({
+      form.setFieldValue('media', {
         idx: data.id,
         name: data.name,
         contentUrl: data.path,
@@ -86,15 +102,67 @@ const Form = () => {
     },
   });
 
+  const workerRef = useRef<Worker | null>(null);
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL('../../workers/video-worker.js', import.meta.url),
+      {
+        type: 'module',
+      },
+    );
+    workerRef.current.onmessage = (evt) =>
+      console.log(`WebWorker Response =>`, evt.data);
+    return () => {
+      if (workerRef.current) workerRef.current.terminate();
+    };
+  }, []);
+
   const onUploadStart = useCallback(
     async (files: File[]) => {
       const file = files[0];
       if (!file || isEmpty(file)) return;
 
-      await mutateAsync({
-        file,
-        storyType: StoryUploadTypeEnum.STORY,
-      });
+      function getReader() {
+        return new Promise<string | null>((resolve) => {
+          const fileReader = new FileReader();
+          fileReader.onloadend = (e) => {
+            if (!e.target) return resolve(null);
+            const bytes = new Uint8Array(e.target.result as ArrayBuffer);
+            // https://en.wikipedia.org/wiki/List_of_file_signatures.
+            // https://github.com/sindresorhus/file-type
+            // https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
+            // https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
+            const result = parseByBytes(bytes);
+            const guessedFile = result[0];
+            if (!guessedFile) return resolve(null);
+            if (!guessedFile.mime) return resolve(null);
+            resolve(guessedFile.mime);
+          };
+          fileReader.onerror = () => {
+            return resolve(null);
+          };
+          fileReader.readAsArrayBuffer(file);
+        });
+      }
+
+      const mimeType = await getReader();
+      console.log('mimeType', mimeType);
+      if (!mimeType) {
+        return;
+      }
+
+      if (mimeType.includes('image')) {
+        await mutateAsync({
+          file,
+          storyType: StoryUploadTypeEnum.STORY,
+        });
+      } else if (mimeType.includes('video')) {
+        if (workerRef.current) {
+          workerRef.current.postMessage({
+            file: file,
+          });
+        }
+      }
     },
     [mutateAsync],
   );
@@ -117,9 +185,11 @@ const Form = () => {
           onDrop={onUploadStart}
           onReject={(files) => console.log('rejected files', files)}
           maxSize={3 * 1024 ** 2}
-          accept={IMAGE_MIME_TYPE}
+          accept={[MIME_TYPES.mp4, ...IMAGE_MIME_TYPE]}
         >
-          {(status) => DropzoneChildren(status, theme)}
+          {(status) => {
+            return <>{DropzoneChildren(status, theme)}</>;
+          }}
         </Dropzone>
       </InputWrapper>
       <form
@@ -217,6 +287,7 @@ const Form = () => {
           classNames={{
             label: 'font-bold',
           }}
+          {...form.getInputProps('supply')}
           parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
           formatter={(value: any) =>
             !Number.isNaN(parseFloat(value))
