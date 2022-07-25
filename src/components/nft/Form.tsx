@@ -8,16 +8,17 @@ import {
   ColorInput,
   TextInput,
   Switch,
-  InputWrapper,
+  Input,
   useMantineTheme,
   Loader,
   Center,
+  Group,
+  Text,
 } from '@mantine/core';
 import { Dropzone, IMAGE_MIME_TYPE, MIME_TYPES } from '@mantine/dropzone';
 import { DateRangePicker } from '@mantine/dates';
-import { Paint } from 'tabler-icons-react';
+import { Paint, Upload, Photo, X } from 'tabler-icons-react';
 import { Button } from '@components/ui/Button';
-import { DropzoneChildren } from './_internal';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
@@ -142,7 +143,7 @@ const Form = () => {
   }, []);
 
   const form = useForm<FormFieldValues>({
-    schema: yupResolver(schema.story),
+    validate: yupResolver(schema.story),
     initialValues,
   });
 
@@ -207,7 +208,7 @@ const Form = () => {
 
   return (
     <>
-      <InputWrapper
+      <Input.Wrapper
         required
         classNames={{
           root: 'w-full md:w-96 max-h-96',
@@ -230,18 +231,43 @@ const Form = () => {
           maxSize={20 * 1024 ** 2}
           accept={[MIME_TYPES.mp4, ...IMAGE_MIME_TYPE]}
         >
-          {(status) => {
-            // return (
-            //   <>
-            //     <Center className="h-full">
-            //       <Loader />
-            //     </Center>
-            //   </>
-            // );
-            return <>{DropzoneChildren(status, theme)}</>;
-          }}
+          <Group
+            position="center"
+            spacing="xl"
+            style={{ minHeight: 220, pointerEvents: 'none' }}
+          >
+            <Dropzone.Accept>
+              <Upload
+                size={50}
+                color={
+                  theme.colors[theme.primaryColor][
+                    theme.colorScheme === 'dark' ? 4 : 6
+                  ]
+                }
+              />
+            </Dropzone.Accept>
+            <Dropzone.Reject>
+              <X
+                size={50}
+                color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+              />
+            </Dropzone.Reject>
+            <Dropzone.Idle>
+              <Photo size={50} />
+            </Dropzone.Idle>
+
+            <div>
+              <Text size="xl" inline>
+                Drag images here or click to select files
+              </Text>
+              <Text size="sm" color="dimmed" inline mt={7}>
+                Attach as many files as you like, each file should not exceed
+                5mb
+              </Text>
+            </div>
+          </Group>
         </Dropzone>
-      </InputWrapper>
+      </Input.Wrapper>
       <form
         className="form-area mt-4 space-y-4"
         onSubmit={form.onSubmit(onSubmit)}
@@ -298,9 +324,9 @@ const Form = () => {
           creatable
           error={form.errors.tags}
           getCreateLabel={(query) => `+ Create ${query}`}
-          onCreate={(query) => {
-            form.setFieldValue('tags', [...form.values.tags, query]);
-          }}
+          // onCreate={(query) => {
+          //   form.setFieldValue('tags', [...form.values.tags, query]);
+          // }}
         />
 
         <ColorInput
@@ -357,7 +383,7 @@ const Form = () => {
           {...form.getInputProps('rangeDate')}
         />
 
-        <InputWrapper
+        <Input.Wrapper
           required
           classNames={{
             label: 'font-bold',
@@ -366,7 +392,7 @@ const Form = () => {
           description="발행시 화면에 공개할지 안할지 선택해주세요."
         >
           <Switch size="lg" {...form.getInputProps('isPublic')} />
-        </InputWrapper>
+        </Input.Wrapper>
         <Button
           className="float-right top-[-10px]"
           type="submit"

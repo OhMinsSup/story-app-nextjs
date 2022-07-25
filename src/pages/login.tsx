@@ -41,13 +41,13 @@ const LoginPage = () => {
 
   const initialValues = useMemo(() => {
     return {
-      email: '',
-      password: '',
+      email: 'veloss@email.io',
+      password: '1q2w3e4r!@',
     };
   }, []);
 
   const form = useForm<FormFieldValues>({
-    schema: yupResolver(schema.login),
+    validate: yupResolver(schema.login),
     initialValues,
   });
 
@@ -78,7 +78,7 @@ const LoginPage = () => {
         </Group>
         <Divider label="Or" labelPosition="center" my="lg" />
         <form onSubmit={form.onSubmit(onSubmit)}>
-          <Group direction="column" grow>
+          <div className="flex flex-col space-y-3">
             <TextInput
               label={
                 <Text size="md" weight={500}>
@@ -86,6 +86,7 @@ const LoginPage = () => {
                 </Text>
               }
               id="email"
+              className="w-full max-w-full"
               autoComplete="email"
               placeholder="이메일"
               {...form.getInputProps('email')}
@@ -108,12 +109,13 @@ const LoginPage = () => {
                   </Anchor>
                 </div>
               }
+              className="w-full max-w-full"
               {...form.getInputProps('password')}
               id="password"
               autoComplete="password"
               placeholder="비밀번호"
             />
-          </Group>
+          </div>
 
           <Button type="submit" fullWidth mt="xl" loading={isLoading}>
             로그인

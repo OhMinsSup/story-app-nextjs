@@ -44,7 +44,7 @@ const Header = () => {
           {items}
         </Group>
         <Group spacing={5} className={classes.links}>
-          <HeaderControls />
+          {/* <HeaderControls /> */}
         </Group>
       </Container>
     </MantineHeader>

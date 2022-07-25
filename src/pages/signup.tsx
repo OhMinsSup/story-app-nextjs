@@ -20,7 +20,6 @@ import {
   Group,
   PasswordInput,
   Radio,
-  RadioGroup,
   Text,
   TextInput,
 } from '@mantine/core';
@@ -65,7 +64,7 @@ const SignupPage = () => {
   });
 
   const form = useForm<FormFieldValues>({
-    schema: yupResolver(schema.signup),
+    validate: yupResolver(schema.signup),
     initialValues,
   });
 
@@ -108,7 +107,7 @@ const SignupPage = () => {
             onUpload={onUpload}
             onRemove={onRemove}
           />
-          <Group direction="column" grow>
+          <div className="flex flex-col space-y-3">
             <TextInput
               label={
                 <Text size="md" weight={500}>
@@ -154,7 +153,7 @@ const SignupPage = () => {
               placeholder="비밀번호 확인"
             />
 
-            <RadioGroup
+            <Radio.Group
               defaultValue={'react'}
               label={
                 <Text size="md" weight={500}>
@@ -165,8 +164,8 @@ const SignupPage = () => {
             >
               <Radio value={GenderEnum.M} label="남성" />
               <Radio value={GenderEnum.F} label="여성" />
-            </RadioGroup>
-          </Group>
+            </Radio.Group>
+          </div>
 
           <Button type="submit" fullWidth mt="xl" loading={sIsLoading}>
             회원가입

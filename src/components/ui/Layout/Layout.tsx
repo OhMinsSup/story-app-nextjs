@@ -10,7 +10,6 @@ const Layout: React.FC<React.PropsWithChildren<LayoutProps>> = ({
     <AppShell
       padding="md"
       className="h-full"
-      navbarOffsetBreakpoint="sm"
       header={<Header />}
       styles={() => ({
         body: {
