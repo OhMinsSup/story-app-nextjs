@@ -4,8 +4,8 @@ import { SITE_URL } from '@constants/env';
 
 import type { DefaultSeoProps } from 'next-seo';
 
-export const Title = 'Story';
-export const Description = '나만의 Story를 만들어 보세요.';
+export const Title = 'story';
+export const Description = '나만의 story를 만들어 보세요.';
 export const DefaultImageUrl = '/images/card.jpg';
 
 const SEO_CONSTANTS: DefaultSeoProps = {

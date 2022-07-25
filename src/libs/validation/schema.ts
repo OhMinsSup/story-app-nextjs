@@ -43,6 +43,7 @@ export const common = {
     }
     return false;
   }),
+  file: yup.object().shape({}),
 };
 
 export const schema = {

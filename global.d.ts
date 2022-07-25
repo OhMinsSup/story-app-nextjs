@@ -46,7 +46,7 @@ declare namespace mp4box {
 
   type MP4Track = MP4VideoTrack | MP4AudioTrack;
 
-  interface MP4Info {
+  export interface MP4Info {
     duration: number;
     timescale: number;
     fragment_duration: number;

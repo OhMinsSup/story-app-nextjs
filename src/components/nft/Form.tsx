@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 // components
 import {
@@ -11,6 +11,7 @@ import {
   InputWrapper,
   useMantineTheme,
   Loader,
+  Center,
 } from '@mantine/core';
 import { Dropzone, IMAGE_MIME_TYPE, MIME_TYPES } from '@mantine/dropzone';
 import { DateRangePicker } from '@mantine/dates';
@@ -25,12 +26,13 @@ import { schema } from '@libs/validation/schema';
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
 import { useUploadMutation } from '@api/mutations';
+import { useWorker, WORKER_STATUS } from '@koale/useworker';
 
 // utils
 import { isEmpty } from '@utils/assertion';
 import parseByBytes from 'magic-bytes.js';
 
-// enum
+import type { mp4box } from 'global';
 import { StoryUploadTypeEnum } from '@api/schema/enum';
 
 interface MediaFieldValue {
@@ -52,8 +54,76 @@ interface FormFieldValues {
   isPublic: boolean;
 }
 
+function getReader(file: File) {
+  return new Promise<string | null>((resolve) => {
+    const fileReader = new FileReader();
+    fileReader.onloadend = (e) => {
+      if (!e.target) return resolve(null);
+      const bytes = new Uint8Array(e.target.result as ArrayBuffer);
+      // https://en.wikipedia.org/wiki/List_of_file_signatures.
+      // https://github.com/sindresorhus/file-type
+      // https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
+      // https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
+      const result = parseByBytes(bytes);
+      const guessedFile = result[0];
+      if (!guessedFile) return resolve(null);
+      if (!guessedFile.mime) return resolve(null);
+      resolve(guessedFile.mime);
+    };
+    fileReader.onerror = () => {
+      return resolve(null);
+    };
+    fileReader.readAsArrayBuffer(file);
+  });
+}
+
+// web worker env
+const webcodecsFn = (blob: File) => {
+  return new Promise<mp4box.MP4Info>((resolve, reject) => {
+    const objectURL = URL.createObjectURL(blob);
+    self.fetch(objectURL).then((resp) => {
+      const file = self.MP4Box.createFile();
+      file.onError = (e: unknown) => {
+        URL.revokeObjectURL(objectURL);
+        return reject(e);
+      };
+
+      file.onReady = (info: any) => {
+        URL.revokeObjectURL(objectURL);
+        return resolve(info);
+      };
+
+      const reader = resp.body?.getReader();
+      let offset = 0;
+      // eslint-disable-next-line prefer-const
+      let mp4File = file;
+
+      function appendBuffers({ done, value }: Record<string, any>): any {
+        if (done) {
+          mp4File.flush();
+          return;
+        }
+
+        // eslint-disable-next-line prefer-const
+        let buf = value.buffer;
+        buf.fileStart = offset;
+
+        offset += buf.byteLength;
+
+        mp4File.appendBuffer(buf);
+
+        return reader?.read().then(appendBuffers);
+      }
+
+      reader?.read().then(appendBuffers);
+    });
+  });
+};
+
+// browser env
 const Form = () => {
   const theme = useMantineTheme();
+  const [isUploading, setUploading] = useState(false);
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   const initialValues: FormFieldValues = useMemo(() => {
@@ -102,53 +172,22 @@ const Form = () => {
     },
   });
 
-  const workerRef = useRef<Worker | null>(null);
-  useEffect(() => {
-    workerRef.current = new Worker(
-      new URL('../../workers/video-worker.js', import.meta.url),
-      {
-        type: 'module',
-      },
-    );
-    workerRef.current.onmessage = (evt) =>
-      console.log(`WebWorker Response =>`, evt.data);
-    return () => {
-      if (workerRef.current) workerRef.current.terminate();
-    };
-  }, []);
+  const [worker, { status: status, kill: killWorker }] = useWorker(
+    webcodecsFn,
+    {
+      autoTerminate: true,
+      remoteDependencies: ['http://localhost:3000/js/mp4box.all.min.js'],
+    },
+  );
 
   const onUploadStart = useCallback(
     async (files: File[]) => {
       const file = files[0];
       if (!file || isEmpty(file)) return;
-
-      function getReader() {
-        return new Promise<string | null>((resolve) => {
-          const fileReader = new FileReader();
-          fileReader.onloadend = (e) => {
-            if (!e.target) return resolve(null);
-            const bytes = new Uint8Array(e.target.result as ArrayBuffer);
-            // https://en.wikipedia.org/wiki/List_of_file_signatures.
-            // https://github.com/sindresorhus/file-type
-            // https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
-            // https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
-            const result = parseByBytes(bytes);
-            const guessedFile = result[0];
-            if (!guessedFile) return resolve(null);
-            if (!guessedFile.mime) return resolve(null);
-            resolve(guessedFile.mime);
-          };
-          fileReader.onerror = () => {
-            return resolve(null);
-          };
-          fileReader.readAsArrayBuffer(file);
-        });
-      }
-
-      const mimeType = await getReader();
-      console.log('mimeType', mimeType);
+      setUploading(true);
+      const mimeType = await getReader(file);
       if (!mimeType) {
-        return;
+        throw new Error('file mime type is empty');
       }
 
       if (mimeType.includes('image')) {
@@ -157,14 +196,13 @@ const Form = () => {
           storyType: StoryUploadTypeEnum.STORY,
         });
       } else if (mimeType.includes('video')) {
-        if (workerRef.current) {
-          workerRef.current.postMessage({
-            file: file,
-          });
-        }
+        const webcodecs = await worker(file);
+        const codecs = webcodecs.tracks.map((t) => t.codec);
+        // https://developer.mozilla.org/ko/docs/Web/Media/Formats/Video_codecs
+        console.log(codecs); // AV1, HEVC (H.265), AVC (H.264), VP9, MPEG-2, MP4V-ES
       }
     },
-    [mutateAsync],
+    [mutateAsync, worker],
   );
 
   return (
@@ -183,11 +221,23 @@ const Form = () => {
           className="w-full h-80"
           loading={isLoading}
           onDrop={onUploadStart}
-          onReject={(files) => console.log('rejected files', files)}
-          maxSize={3 * 1024 ** 2}
+          multiple={false}
+          // disabled
+          onReject={(files) => {
+            console.log('rejected files', files);
+            setUploading(false);
+          }}
+          maxSize={20 * 1024 ** 2}
           accept={[MIME_TYPES.mp4, ...IMAGE_MIME_TYPE]}
         >
           {(status) => {
+            // return (
+            //   <>
+            //     <Center className="h-full">
+            //       <Loader />
+            //     </Center>
+            //   </>
+            // );
             return <>{DropzoneChildren(status, theme)}</>;
           }}
         </Dropzone>
@@ -317,7 +367,11 @@ const Form = () => {
         >
           <Switch size="lg" {...form.getInputProps('isPublic')} />
         </InputWrapper>
-        <Button type="submit" text="등록하기" />
+        <Button
+          className="float-right top-[-10px]"
+          type="submit"
+          text="등록하기"
+        />
       </form>
     </>
   );
