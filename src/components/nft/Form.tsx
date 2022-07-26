@@ -7,18 +7,18 @@ import {
   MultiSelect,
   ColorInput,
   TextInput,
+  Text,
   Switch,
   Input,
   useMantineTheme,
-  Loader,
-  Center,
   Group,
-  Text,
+  Button,
+  Image,
 } from '@mantine/core';
-import { Dropzone, IMAGE_MIME_TYPE, MIME_TYPES } from '@mantine/dropzone';
+import { Dropzone } from '@mantine/dropzone';
+import { openModal, closeAllModals } from '@mantine/modals';
 import { DateRangePicker } from '@mantine/dates';
 import { Paint, Upload, Photo, X } from 'tabler-icons-react';
-import { Button } from '@components/ui/Button';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
@@ -27,13 +27,16 @@ import { schema } from '@libs/validation/schema';
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
 import { useUploadMutation } from '@api/mutations';
-import { useWorker, WORKER_STATUS } from '@koale/useworker';
+import { useWorker } from '@koale/useworker';
 
 // utils
 import { isEmpty } from '@utils/assertion';
 import parseByBytes from 'magic-bytes.js';
 
+// types
 import type { mp4box } from 'global';
+
+// enum
 import { StoryUploadTypeEnum } from '@api/schema/enum';
 
 interface MediaFieldValue {
@@ -55,7 +58,7 @@ interface FormFieldValues {
   isPublic: boolean;
 }
 
-function getReader(file: File) {
+function getmimeFn(file: File) {
   return new Promise<string | null>((resolve) => {
     const fileReader = new FileReader();
     fileReader.onloadend = (e) => {
@@ -173,12 +176,32 @@ const Form = () => {
     },
   });
 
-  const [worker, { status: status, kill: killWorker }] = useWorker(
-    webcodecsFn,
-    {
-      autoTerminate: true,
-      remoteDependencies: ['http://localhost:3000/js/mp4box.all.min.js'],
-    },
+  const [worker] = useWorker(webcodecsFn, {
+    autoTerminate: true,
+    remoteDependencies: [
+      'https://cdn.jsdelivr.net/npm/mp4box@0.5.2/dist/mp4box.all.min.js',
+    ],
+  });
+
+  const openUploadErrorModal = useCallback(
+    (message: string) =>
+      openModal({
+        title: '업로드 에러',
+        centered: true,
+        children: (
+          <>
+            <Text size="sm">{message}</Text>
+            <Button
+              onClick={() => closeAllModals()}
+              mt="md"
+              className="float-right"
+            >
+              확인
+            </Button>
+          </>
+        ),
+      }),
+    [],
   );
 
   const onUploadStart = useCallback(
@@ -186,24 +209,51 @@ const Form = () => {
       const file = files[0];
       if (!file || isEmpty(file)) return;
       setUploading(true);
-      const mimeType = await getReader(file);
+      const mimeType = await getmimeFn(file);
       if (!mimeType) {
-        throw new Error('file mime type is empty');
+        return openUploadErrorModal(
+          '올바른 업로드 형식의 파일을 등록해주세요.',
+        );
       }
 
+      const body = {
+        file,
+        storyType: StoryUploadTypeEnum.STORY,
+      };
+
       if (mimeType.includes('image')) {
-        await mutateAsync({
-          file,
-          storyType: StoryUploadTypeEnum.STORY,
-        });
-      } else if (mimeType.includes('video')) {
-        const webcodecs = await worker(file);
-        const codecs = webcodecs.tracks.map((t) => t.codec);
+        await mutateAsync(body);
+      } else if (mimeType.includes('video') || mimeType.includes('audio')) {
+        // https://caniuse.com/mdn-api_mediasource_istypesupported
         // https://developer.mozilla.org/ko/docs/Web/Media/Formats/Video_codecs
-        console.log(codecs); // AV1, HEVC (H.265), AVC (H.264), VP9, MPEG-2, MP4V-ES
+        // https://developer.mozilla.org/ko/docs/Web/Media/Formats/codecs_parameter
+        const webcodecs = await worker(file);
+        const tracks = webcodecs.tracks
+          .filter((t) => ['video', 'audio'].includes(t.type))
+          .map((t) => ({
+            type: t.type,
+            codec: t.codec,
+          }));
+        // 'video/mp4; codecs="avc1.4d400c,mp4a.40.2,mp4a.40.2"'
+        const mimeCodec = `${file.type}; codecs="${tracks
+          .map((t) => t.codec)
+          .join(',')}"`;
+        if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
+          console.log('supported MIME type or codec:', mimeCodec);
+          await mutateAsync(body);
+        } else {
+          console.error('Unsupported MIME type or codec: ', mimeCodec);
+          return openUploadErrorModal(
+            '브라우저에서 지원하지 않는 코덱 형식입니다.',
+          );
+        }
+      } else {
+        return openUploadErrorModal(
+          '올바른 업로드 형식의 파일을 등록해주세요.',
+        );
       }
     },
-    [mutateAsync, worker],
+    [mutateAsync, openUploadErrorModal, worker],
   );
 
   return (
@@ -219,7 +269,7 @@ const Form = () => {
                   GLB, GLTF. Max size: 20 MB`}
       >
         <Dropzone
-          className="w-full h-80"
+          className="w-full h-80 flex justify-center items-center"
           loading={isLoading}
           onDrop={onUploadStart}
           multiple={false}
@@ -228,15 +278,21 @@ const Form = () => {
             console.log('rejected files', files);
             setUploading(false);
           }}
-          maxSize={20 * 1024 ** 2}
-          accept={[MIME_TYPES.mp4, ...IMAGE_MIME_TYPE]}
+          maxFiles={1}
+          maxSize={1 * 1024 ** 2}
         >
           <Group
             position="center"
             spacing="xl"
             style={{ minHeight: 220, pointerEvents: 'none' }}
           >
-            <Dropzone.Accept>
+            <Dropzone.Reject>
+              <X
+                size={50}
+                color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+              />
+            </Dropzone.Reject>
+            <Dropzone.Idle>
               <Upload
                 size={50}
                 color={
@@ -245,26 +301,12 @@ const Form = () => {
                   ]
                 }
               />
-            </Dropzone.Accept>
-            <Dropzone.Reject>
-              <X
-                size={50}
-                color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-              />
-            </Dropzone.Reject>
-            <Dropzone.Idle>
-              <Photo size={50} />
             </Dropzone.Idle>
-
-            <div>
-              <Text size="xl" inline>
-                Drag images here or click to select files
-              </Text>
-              <Text size="sm" color="dimmed" inline mt={7}>
-                Attach as many files as you like, each file should not exceed
-                5mb
-              </Text>
-            </div>
+            {/* <Image
+              src={
+                'https://velog.velcdn.com/images/taehyunkim/post/567e29e1-7442-4dc8-9b5e-32a2bfd13737/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202020-12-27%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%202.52.12.png'
+              }
+            /> */}
           </Group>
         </Dropzone>
       </Input.Wrapper>
@@ -357,7 +399,7 @@ const Form = () => {
         />
 
         <NumberInput
-          label="Supply"
+          label="발행수"
           hideControls
           description="발행할 수 있는 항목의 수입니다. 가스 비용이 들지 않습니다!"
           classNames={{
@@ -393,11 +435,9 @@ const Form = () => {
         >
           <Switch size="lg" {...form.getInputProps('isPublic')} />
         </Input.Wrapper>
-        <Button
-          className="float-right top-[-10px]"
-          type="submit"
-          text="등록하기"
-        />
+        <Button className="float-right top-[-10px]" type="submit">
+          등록하기
+        </Button>
       </form>
     </>
   );

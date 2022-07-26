@@ -44,7 +44,7 @@ declare namespace mp4box {
     audio: MP4AudioData;
   }
 
-  type MP4Track = MP4VideoTrack | MP4AudioTrack;
+  type MP4Track = (MP4VideoTrack | MP4AudioTrack) & { type: string };
 
   export interface MP4Info {
     duration: number;
@@ -55,6 +55,7 @@ declare namespace mp4box {
     hasIOD: boolean;
     brands: string[];
     created: Date;
+    mime: string;
     modified: Date;
     tracks: MP4Track[];
   }
