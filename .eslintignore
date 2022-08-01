@@ -21,3 +21,6 @@ truffle-config.js
 scripts/
 
 legacy_pages/
+
+# tailwind
+tailwind.config.js

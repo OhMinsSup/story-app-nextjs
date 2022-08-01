@@ -1,87 +1,41 @@
 import React from 'react';
 
 // hooks
-import { fetchNftDetail, useNftQuery } from '@api/queries';
 import { useRouter } from 'next/router';
 
 // api
-import { client } from '@api/client';
 
 // components
-import { AppShell } from '@mantine/core';
-import { Header } from '@components/ui/Header';
-import { Container } from '@mantine/core';
+import { NFTsMedia, AccordionInfo, RightSection } from '@components/nft';
 
-// constants
-import { API_ENDPOINTS } from '@constants/constant';
-
-// react-query
-import { QueryClient, dehydrate } from '@tanstack/react-query';
-
-// types
-import type { GetServerSidePropsContext } from 'next';
-
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const id = ctx.query.id?.toString();
-
-  const queryClient = new QueryClient();
-  const cookie = ctx.req ? ctx.req.headers.cookie : '';
-  if (client.defaults.headers) {
-    (client.defaults.headers as any).Cookie = '';
-    if (ctx.req && cookie) {
-      (client.defaults.headers as any).Cookie = cookie;
-    }
-  }
-
-  if (id) {
-    await Promise.all([
-      queryClient.prefetchQuery(
-        [API_ENDPOINTS.LOCAL.STORY.ROOT, parseInt(id.toString(), 10)],
-        fetchNftDetail,
-      ),
-      // queryClient.prefetchQuery(
-      //   [API_ENDPOINTS.LOCAL.STORY.ROOT, Number(id), 'OFFERS'],
-      //   fetcherOffers,
-      // ),
-      // queryClient.prefetchQuery(
-      //   [API_ENDPOINTS.LOCAL.STORY.ROOT, Number(id), 'HISTORIES'],
-      //   fetcherHistories,
-      // ),
-    ]);
-  }
-
-  return {
-    props: {
-      dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
-    },
-  };
-};
-
-function NftDetailPage() {
+function NFTsDetailPage() {
   const router = useRouter();
   const id = router.query.id?.toString();
 
-  const { data } = useNftQuery(id);
-  console.log(data);
-
   return (
-    <AppShell
-      padding="md"
-      navbarOffsetBreakpoint="sm"
-      className="h-full"
-      header={<Header />}
-      styles={(theme) => ({
-        main: {
-          backgroundColor:
-            theme.colorScheme === 'dark' ? theme.colors.dark[8] : undefined,
-        },
-      })}
+    <div
+      className={`nc-NftDetailPage  ${'className'}`}
+      data-nc-id="NftDetailPage"
     >
-      <Container size="lg" className="h-full">
-        ???
-      </Container>
-    </AppShell>
+      {/* MAIn */}
+      <main className="container mt-11 flex ">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14">
+          {/* CONTENT */}
+          <div className="space-y-8 lg:space-y-10">
+            {/* HEADING */}
+            <NFTsMedia />
+
+            <AccordionInfo />
+          </div>
+
+          {/* SIDEBAR */}
+          <div className="pt-10 lg:pt-0 xl:pl-10 border-t-2 border-neutral-200 dark:border-neutral-700 lg:border-t-0">
+            <RightSection />
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }
 
-export default NftDetailPage;
+export default NFTsDetailPage;

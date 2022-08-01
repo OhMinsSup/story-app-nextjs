@@ -1,5 +1,4 @@
 import '@assets/main.css';
-import 'swiper/css';
 import 'dayjs/locale/ko';
 
 import React from 'react';
@@ -39,8 +38,10 @@ interface AppPageProps extends AppProps {
 import { useAtomsDebugValue } from 'jotai/devtools';
 
 function AppPage({ Component, pageProps, ...resetProps }: AppPageProps) {
-  useHydrateAtoms([[authAtom, resetProps.isAuthication]]);
-  useHydrateAtoms([[themeAtom, resetProps.theme]]);
+  useHydrateAtoms([
+    [authAtom, resetProps.isAuthication],
+    [themeAtom, resetProps.theme],
+  ]);
 
   useAtomsDebugValue();
 

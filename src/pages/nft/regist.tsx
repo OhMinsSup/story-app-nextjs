@@ -7,7 +7,7 @@ import { Layout } from '@components/ui/Layout';
 import { NFTsRegisterSeo } from '@components/ui/Seo';
 import { ModalsProvider } from '@mantine/modals';
 
-const NFTsRegisterPage = () => {
+function NFTsRegisterPage() {
   return (
     <Layout>
       <NFTsRegisterSeo />
@@ -25,6 +25,6 @@ const NFTsRegisterPage = () => {
       </ModalsProvider>
     </Layout>
   );
-};
+}
 
 export default NFTsRegisterPage;
