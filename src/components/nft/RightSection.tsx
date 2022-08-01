@@ -1,7 +1,8 @@
 import { Avatar, Badge } from '@components/ui/Display';
 import { VerifyIcon } from '@components/ui/Icon';
+import { Button } from '@mantine/core';
 import React from 'react';
-import { LikeSaveGroupButton, TimeCountDown } from './_components';
+import { LikeSaveGroupButton, TabDetail, TimeCountDown } from './_components';
 
 const RightSection = () => {
   return (
@@ -53,27 +54,17 @@ const RightSection = () => {
 
       {/* ---------- 7 ----------  */}
       {/* PRICE */}
-      <div className="pb-9 pt-14">
+      <div className="pb-9 pt-9 flex items-center">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between">
-          <div className="flex-1 flex flex-col sm:flex-row items-baseline p-6 border-2 border-green-500 rounded-xl relative">
-            <span className="absolute bottom-full translate-y-1 py-1 px-1.5 bg-white dark:bg-neutral-900 text-sm text-neutral-500 dark:text-neutral-400">
-              Current Bid
-            </span>
+          <div className="flex-1 flex flex-col sm:flex-row items-baseline border-2 border-green-500 rounded-xl relative">
             <span className="text-3xl xl:text-4xl font-semibold text-green-500">
               1.000 ETH
             </span>
-            <span className="text-lg text-neutral-400 sm:ml-5">
-              ( ≈ $3,221.22)
-            </span>
           </div>
-
-          <span className="text-sm text-neutral-500 dark:text-neutral-400 ml-5 mt-2 sm:mt-0 sm:ml-10">
-            [96 in stock]
-          </span>
         </div>
 
         <div className="mt-8 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-          {/* <ButtonPrimary href={'/connect-wallet'} className="flex-1">
+          {/* <Button className="flex-1">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
                 d="M18.04 13.55C17.62 13.96 17.38 14.55 17.44 15.18C17.53 16.26 18.52 17.05 19.6 17.05H21.5V18.24C21.5 20.31 19.81 22 17.74 22H6.26C4.19 22 2.5 20.31 2.5 18.24V11.51C2.5 9.44001 4.19 7.75 6.26 7.75H17.74C19.81 7.75 21.5 9.44001 21.5 11.51V12.95H19.48C18.92 12.95 18.41 13.17 18.04 13.55Z"
@@ -106,8 +97,8 @@ const RightSection = () => {
             </svg>
 
             <span className="ml-2.5">Place a bid</span>
-          </ButtonPrimary>
-          <ButtonSecondary href={'/connect-wallet'} className="flex-1">
+          </Button>
+          <Button className="flex-1">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path
                 d="M8.57007 15.27L15.11 8.72998"
@@ -140,12 +131,14 @@ const RightSection = () => {
             </svg>
 
             <span className="ml-2.5"> Make offer</span>
-          </ButtonSecondary> */}
+          </Button> */}
         </div>
       </div>
 
       {/* ---------- 9 ----------  */}
-      <div className="pt-9">{/* <TabDetail /> */}</div>
+      <div className="pt-9">
+        <TabDetail />
+      </div>
     </div>
   );
 };
