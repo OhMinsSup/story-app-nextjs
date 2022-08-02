@@ -408,7 +408,7 @@ const Form = () => {
             required
             hideControls
             icon={<KlaytnIcon className="w-4 h-4 fill-current" />}
-            description="실제 사용자에게 판매되는 가격입니다. 신중하게 입력해주세요!"
+            description="실제 사용자에게 판매되는 가격입니다."
             classNames={{
               label: 'font-bold',
             }}
@@ -425,7 +425,7 @@ const Form = () => {
             label="발행수"
             required
             hideControls
-            description="발행할 수 있는 항목의 수입니다. 가스 비용이 들지 않습니다!"
+            description="발행할 수 있는 항목의 수입니다."
             classNames={{
               label: 'font-bold',
             }}
@@ -443,7 +443,7 @@ const Form = () => {
             required
             label="판매기간"
             icon={<Calendar size={16} />}
-            description="NFT가 사용자에게 판매되는 기간을 선택해주세요."
+            description="NFT가 판매되는 기간입니다."
             classNames={{
               label: 'font-bold',
             }}
