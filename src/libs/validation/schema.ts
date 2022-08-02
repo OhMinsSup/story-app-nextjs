@@ -115,7 +115,7 @@ export const schema = {
       .required('공개 여부를 선택해주세요.'),
     rangeDate: yup
       .array()
-      .of(yup.date().required('시작일을 선택해주세요.'))
+      .of(yup.date().nullable(true).required('시작일을 선택해주세요.'))
       .length(2, '시작일과 종료일을 선택해주세요.')
       .test(
         'rangeDate_beign',

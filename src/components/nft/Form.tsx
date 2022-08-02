@@ -13,12 +13,13 @@ import {
   useMantineTheme,
   Group,
   Button,
+  SimpleGrid,
   Image,
 } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
 import { openModal, closeAllModals } from '@mantine/modals';
 import { DateRangePicker } from '@mantine/dates';
-import { Paint, Upload, Photo, X } from 'tabler-icons-react';
+import { Paint, Upload, Network, X, Hash, Calendar } from 'tabler-icons-react';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
@@ -38,6 +39,7 @@ import type { mp4box } from 'global';
 
 // enum
 import { StoryUploadTypeEnum } from '@api/schema/enum';
+import { KlaytnIcon } from '@components/ui/Icon';
 
 interface MediaFieldValue {
   idx: number;
@@ -54,7 +56,7 @@ interface FormFieldValues {
   backgroundColor: string;
   price: number;
   supply: number;
-  rangeDate: Date[];
+  rangeDate: [Date | null, Date | null];
   isPublic: boolean;
 }
 
@@ -138,7 +140,7 @@ const Form = () => {
       media: null,
       backgroundColor: '#ffffff',
       externalSite: '',
-      rangeDate: [],
+      rangeDate: [null, null],
       isPublic: false,
       supply: 1,
       price: 0,
@@ -151,6 +153,7 @@ const Form = () => {
   });
 
   const onSubmit = async (values: typeof form.values) => {
+    const { rangeDate } = values;
     const body = {
       title: values.title,
       description: values.description,
@@ -158,8 +161,8 @@ const Form = () => {
       externalSite: values.externalSite,
       isPublic: values.isPublic,
       price: values.price,
-      beginDate: values.rangeDate[0].getTime(),
-      endDate: values.rangeDate[1].getTime(),
+      beginDate: rangeDate[0] ? rangeDate[0].getTime() : null,
+      endDate: rangeDate[1] ? rangeDate[1].getTime() : null,
       tags: values.tags,
       mediaId: values.media?.idx,
     };
@@ -273,7 +276,6 @@ const Form = () => {
           loading={isLoading}
           onDrop={onUploadStart}
           multiple={false}
-          // disabled
           onReject={(files) => {
             console.log('rejected files', files);
             setUploading(false);
@@ -333,6 +335,7 @@ const Form = () => {
           classNames={{
             label: 'font-bold',
           }}
+          icon={<Network />}
           placeholder="https://yoursite.io/item/123"
           description="Story는 이 항목의 세부 사항 페이지에 이 URL에 대한 링크를 포함하므로 사용자가 클릭하여 자세히 알아볼 수 있습니다. 자세한 내용은 자신의 웹페이지에 링크할 수 있습니다."
           {...form.getInputProps('externalSite')}
@@ -352,90 +355,116 @@ const Form = () => {
           {...form.getInputProps('description')}
         />
 
-        <MultiSelect
-          id="tags"
-          label="태그"
-          description="NFT에 연관된 키워드를 등록해주세요."
-          data={form.values.tags}
-          placeholder="태그 (옵션)"
-          searchable
-          limit={5}
-          classNames={{ label: 'font-bold' }}
-          nothingFound="Nothing found"
-          withinPortal
-          creatable
-          error={form.errors.tags}
-          getCreateLabel={(query) => `+ Create ${query}`}
-          // onCreate={(query) => {
-          //   form.setFieldValue('tags', [...form.values.tags, query]);
-          // }}
-        />
-
-        <ColorInput
-          label="배경색"
-          classNames={{
-            label: 'font-bold',
-          }}
-          description="컬러 코드(6자리 HEX값)를 직접 입력할 수 있습니다."
-          icon={<Paint size={16} />}
-          {...form.getInputProps('backgroundColor')}
-        />
-
-        <NumberInput
-          label="가격"
-          required
-          hideControls
-          description="실제 사용자에게 판매되는 가격입니다. 신중하게 입력해주세요!"
-          classNames={{
-            label: 'font-bold',
-          }}
-          parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
-          {...form.getInputProps('price')}
-          formatter={(value: any) =>
-            !Number.isNaN(parseFloat(value))
-              ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              : ''
-          }
-        />
-
-        <NumberInput
-          label="발행수"
-          hideControls
-          description="발행할 수 있는 항목의 수입니다. 가스 비용이 들지 않습니다!"
-          classNames={{
-            label: 'font-bold',
-          }}
-          {...form.getInputProps('supply')}
-          parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
-          formatter={(value: any) =>
-            !Number.isNaN(parseFloat(value))
-              ? `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              : ''
-          }
-        />
-
-        <DateRangePicker
-          locale="ko"
-          required
-          label="판매기간"
-          classNames={{
-            label: 'font-bold',
-          }}
-          dropdownType={isMobile ? 'modal' : 'popover'}
-          {...form.getInputProps('rangeDate')}
-        />
-
-        <Input.Wrapper
-          required
-          classNames={{
-            label: 'font-bold',
-          }}
-          label="공개여부"
-          description="발행시 화면에 공개할지 안할지 선택해주세요."
+        <SimpleGrid
+          cols={2}
+          breakpoints={[
+            { maxWidth: 755, cols: 2, spacing: 'sm' },
+            { maxWidth: 600, cols: 1, spacing: 'sm' },
+          ]}
         >
+          <MultiSelect
+            id="tags"
+            label="태그"
+            description="NFT에 연관된 키워드를 등록해주세요."
+            data={form.values.tags}
+            placeholder="태그 (옵션)"
+            searchable
+            icon={<Hash size={16} />}
+            limit={5}
+            classNames={{ label: 'font-bold' }}
+            nothingFound="Nothing found"
+            withinPortal
+            creatable
+            error={form.errors.tags}
+            getCreateLabel={(query) => `+ Create ${query}`}
+            onCreate={(query) => {
+              const item = { value: query, label: query };
+              form.setFieldValue('tags', [...form.values.tags, query]);
+              return item;
+            }}
+          />
+
+          <ColorInput
+            label="배경색"
+            classNames={{
+              label: 'font-bold',
+            }}
+            description="컬러 코드(6자리 HEX값)를 직접 입력할 수 있습니다."
+            icon={<Paint size={16} />}
+            {...form.getInputProps('backgroundColor')}
+          />
+        </SimpleGrid>
+
+        <SimpleGrid
+          cols={3}
+          breakpoints={[
+            { maxWidth: 980, cols: 3, spacing: 'md' },
+            { maxWidth: 755, cols: 2, spacing: 'sm' },
+            { maxWidth: 600, cols: 1, spacing: 'sm' },
+          ]}
+        >
+          <NumberInput
+            label="가격"
+            required
+            hideControls
+            icon={<KlaytnIcon className="w-4 h-4 fill-current" />}
+            description="실제 사용자에게 판매되는 가격입니다. 신중하게 입력해주세요!"
+            classNames={{
+              label: 'font-bold',
+            }}
+            parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
+            {...form.getInputProps('price')}
+            formatter={(value: any) =>
+              Number.isNaN(parseFloat(value))
+                ? ''
+                : `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
+          />
+
+          <NumberInput
+            label="발행수"
+            required
+            hideControls
+            description="발행할 수 있는 항목의 수입니다. 가스 비용이 들지 않습니다!"
+            classNames={{
+              label: 'font-bold',
+            }}
+            {...form.getInputProps('supply')}
+            parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
+            formatter={(value: any) =>
+              Number.isNaN(parseFloat(value))
+                ? ''
+                : `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
+          />
+
+          <DateRangePicker
+            locale="ko"
+            required
+            label="판매기간"
+            icon={<Calendar size={16} />}
+            description="NFT가 사용자에게 판매되는 기간을 선택해주세요."
+            classNames={{
+              label: 'font-bold',
+            }}
+            dropdownType={isMobile ? 'modal' : 'popover'}
+            {...form.getInputProps('rangeDate')}
+          />
+        </SimpleGrid>
+
+        <div
+          className={`MySwitch flex fle justify-between items-center space-x-2`}
+        >
+          <div>
+            <Text>공개여부</Text>
+            <p className="text-neutral-500 dark:text-neutral-400 text-xs m-0">
+              발행시 화면에 공개할지 안할지 선택해주세요.
+            </p>
+          </div>
           <Switch size="lg" {...form.getInputProps('isPublic')} />
-        </Input.Wrapper>
-        <Button className="float-right top-[-10px]" type="submit">
+        </div>
+
+        <Button className="float-right top-[-5px]" type="submit">
           등록하기
         </Button>
       </form>
