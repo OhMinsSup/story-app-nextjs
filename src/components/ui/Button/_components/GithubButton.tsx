@@ -4,7 +4,7 @@ import { Button, ButtonProps } from '@mantine/core';
 // icons
 import { BrandGithub } from 'tabler-icons-react';
 
-const GithubButton = (props: ButtonProps<'button'>) => {
+const GithubButton = (props: ButtonProps) => {
   return (
     <Button
       {...props}

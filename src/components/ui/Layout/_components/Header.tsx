@@ -2,8 +2,7 @@ import React from 'react';
 
 // components
 import LeftArea from './LeftArea';
-import { MantineLogo } from '@components/ui/Logo';
-import { HeaderControls } from '@components/ui/Header';
+import RightArea from './RightArea';
 import { Header as MantineHeader, Container } from '@mantine/core';
 
 // hooks
@@ -15,8 +14,8 @@ const Header = () => {
   return (
     <MantineHeader height={HEADER_HEIGHT} className={classes.root}>
       <Container className={classes.header}>
-        <MantineLogo />
-        <HeaderControls />
+        <LeftArea />
+        <RightArea />
       </Container>
     </MantineHeader>
   );

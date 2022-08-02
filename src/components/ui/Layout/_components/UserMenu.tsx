@@ -7,13 +7,14 @@ import { useLogoutMutation } from '@api/mutations';
 
 // constants
 import { PAGE_ENDPOINTS } from '@constants/constant';
+import { getUserThumbnail } from '@utils/utils';
 
 // components
 import { Text, Menu, Avatar, Box, Group } from '@mantine/core';
 import { Settings, UserCircle, Brush } from 'tabler-icons-react';
-import { getUserThumbnail } from '@utils/utils';
-import UserAvatar from './UserAvatar';
 import { UniversalButton } from '@components/ui/Button';
+
+import UserAvatar from './UserAvatar';
 
 const UserMenu = () => {
   const router = useRouter();

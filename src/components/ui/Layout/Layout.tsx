@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppShell, type AppShellProps } from '@mantine/core';
-import { Header } from '@components/ui/Header';
+import { Header } from './_components';
 
 interface ShellProps
   extends AppShellProps,
@@ -19,9 +19,7 @@ const Layout: React.FC<React.PropsWithChildren<LayoutProps>> = ({
         height: '100%',
       },
       main: {
-        paddingLeft: 0,
-        paddingRight: 0,
-        paddingBottom: 0,
+        padding: 0,
       },
     }),
   } = props || {};

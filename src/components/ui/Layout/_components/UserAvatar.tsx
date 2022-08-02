@@ -24,23 +24,21 @@ const UserAvatar = (
   const url = getUserThumbnail(userInfo?.profile);
 
   return (
-    <>
-      <Box
-        ref={ref}
-        sx={{
-          display: 'block',
-          width: '100%',
-          borderRadius: theme.radius.sm,
-          color:
-            theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-        }}
-        {...others}
-      >
-        <Group align="center" className="md:p-0 p-1">
-          <Avatar src={url} radius="xl" />
-        </Group>
-      </Box>
-    </>
+    <Box
+      ref={ref}
+      sx={{
+        display: 'block',
+        width: '100%',
+        borderRadius: theme.radius.sm,
+        color:
+          theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
+      }}
+      {...others}
+    >
+      <Group align="center" className="md:p-0 p-1">
+        <Avatar src={url} radius="xl" />
+      </Group>
+    </Box>
   );
 };
 

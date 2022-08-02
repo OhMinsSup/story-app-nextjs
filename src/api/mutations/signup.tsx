@@ -59,7 +59,7 @@ export function useSignupMutation() {
     onSuccess(data) {
       const { ok } = data.data;
       if (!ok) return;
-      router.replace(PAGE_ENDPOINTS.INDEX);
+      router.replace(PAGE_ENDPOINTS.LOGIN);
     },
     onError(error) {
       if (ApiError.isApiError(error)) {
