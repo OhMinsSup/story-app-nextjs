@@ -6,13 +6,7 @@ import React, {
   useState,
 } from 'react';
 import noop from 'lodash-es/noop';
-
-import DialogTitle from '@mui/material/DialogTitle';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import Button from '@mui/material/Button';
-import { Box } from '@mui/system';
+import { Button, Group, Text, Modal } from '@mantine/core';
 
 interface AlertOptions {
   key?: number;
@@ -50,8 +44,6 @@ export function useAlert() {
 
   const alertInstance = useMemo(() => {
     return (visible: boolean, options: AlertOptions) => {
-      console.log('current alert info:', alertManager);
-
       if (keyRef.current) {
         visible
           ? alertManager.set(keyRef.current, options)
@@ -159,40 +151,34 @@ export function useAlert() {
     }
 
     return (
-      <Dialog onClose={closeHandler} open={isAlertOpen}>
-        <Box
-          sx={{
-            width: 300,
-          }}
-        >
-          {content?.title && <DialogTitle>{content.title}</DialogTitle>}
-          <DialogContent className="font-bold text-sm">
-            {content?.text}
-          </DialogContent>
-          <DialogActions>
-            {showCancel && (
-              <Button
-                autoFocus
-                size="small"
-                onClick={cancelHandler}
-                variant="contained"
-                color="primary"
-              >
-                {content?.cancelText ?? '취소'}
-              </Button>
-            )}
+      <Modal
+        size="sm"
+        centered
+        opened={isAlertOpen}
+        closeOnClickOutside
+        withCloseButton={false}
+        closeButtonLabel="Close error modal"
+        onClose={() => closeHandler?.()}
+      >
+        <Text color="dark" size="xs">
+          {content?.text}
+        </Text>
+        <Group position="right" mt="sm">
+          {showCancel && (
             <Button
-              autoFocus
-              size="small"
-              onClick={okHandler}
-              variant="contained"
-              color="info"
+              type="button"
+              variant="default"
+              size="xs"
+              onClick={cancelHandler}
             >
-              {content?.confirmText ?? '확인'}
+              {content?.cancelText ?? '취소'}
             </Button>
-          </DialogActions>
-        </Box>
-      </Dialog>
+          )}
+          <Button type="button" variant="outline" size="xs" onClick={okHandler}>
+            {content?.confirmText ?? '확인'}
+          </Button>
+        </Group>
+      </Modal>
     );
   };
 

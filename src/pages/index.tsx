@@ -1,97 +1,99 @@
-import React, { useRef } from 'react';
-import { QueryClient, dehydrate } from 'react-query';
-import { client } from '@api/client';
+import React, { useRef, useId, useEffect } from 'react';
 
-// common
-import { API_ENDPOINTS } from '@constants/constant';
-
-// components
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-
-import AppLayout from '@components/ui/layouts/AppLayout';
-import StoriesGridItem from '@components/common/StoriesGridItem';
-import ErrorBoundary from '@components/error/ErrorBoundary';
-
-import { fetcherStories, useStoriesQuery } from '@api/story/story';
+// hooks
+import { fetchNftList, useNftListQuery } from '@api/queries';
 import { useIntersectionObserver } from '@hooks/useIntersectionObserver';
 
-import type {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-} from 'next';
+// compoments
+import { StoriesCard } from '@components/ui/Card';
+import { Header } from '@components/ui/Header';
+import { AppShell, SimpleGrid } from '@mantine/core';
+
+// react-query
+import { dehydrate, QueryClient } from '@tanstack/react-query';
+
+// api
+import { client } from '@api/client';
+
+// constants
+import { API_ENDPOINTS } from '@constants/constant';
+
+// types
+import type { GetServerSidePropsContext } from 'next';
+import { Layout } from '@components/ui/Layout';
+import { useMount } from 'react-use';
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const queryClient = new QueryClient();
+  //   const queryClient = new QueryClient();
 
-  const cookie = ctx.req ? ctx.req.headers.cookie : '';
-  if (client.defaults.headers) {
-    (client.defaults.headers as any).Cookie = '';
-    if (ctx.req && cookie) {
-      (client.defaults.headers as any).Cookie = cookie;
-    }
-  }
+  //   const cookie = ctx.req ? ctx.req.headers.cookie : '';
+  //   if (client.defaults.headers) {
+  //     (client.defaults.headers as any).Cookie = '';
+  //     if (ctx.req && cookie) {
+  //       (client.defaults.headers as any).Cookie = cookie;
+  //     }
+  //   }
 
-  await queryClient.prefetchInfiniteQuery(
-    [API_ENDPOINTS.LOCAL.STORY.ROOT],
-    fetcherStories,
-  );
+  //   await queryClient.prefetchInfiniteQuery(
+  //     [API_ENDPOINTS.LOCAL.STORY.ROOT],
+  //     fetchNftList,
+  //   );
 
+  //   return {
+  //     props: {
+  //       dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
+  //     },
+  //   };
   return {
-    props: {
-      dehydratedState: JSON.parse(JSON.stringify(dehydrate(queryClient))),
-    },
+    props: {},
   };
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function IndexPage(_: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { data, fetchNextPage, hasNextPage } = useStoriesQuery();
+const IndexPage = () => {
+  // const { data, fetchNextPage, hasNextPage } = useNftListQuery();
 
-  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  // const ref = useRef<HTMLDivElement | null>(null);
 
-  useIntersectionObserver({
-    target: loadMoreRef,
-    onIntersect: fetchNextPage,
-    enabled: hasNextPage,
-  });
+  // useIntersectionObserver({
+  //   target: ref,
+  //   onIntersect: fetchNextPage,
+  //   enabled: hasNextPage,
+  // });
+
+  // const id = useId();
 
   return (
-    <div className="main-container">
-      <Box sx={{ width: '100%' }} className="space-y-5 p-5">
-        <Grid container spacing={3}>
-          {data?.pages.map((item, i) => (
-            <React.Fragment key={i}>
-              {item.list.map((story) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={story.id}>
-                  <StoriesGridItem item={story} />
-                </Grid>
-              ))}
-            </React.Fragment>
-          ))}
-          {hasNextPage &&
-            Array.from({ length: 10 }).map((_, index) => (
-              <Grid
-                item
-                ref={index === 0 ? loadMoreRef : undefined}
-                xs={12}
-                sm={6}
-                md={4}
-                lg={3}
-                xl={2}
-                key={`nft-next-loading-${index}`}
-              >
-                <StoriesGridItem.Skeleton />
-              </Grid>
+    <Layout>
+      <SimpleGrid
+        cols={6}
+        spacing="lg"
+        breakpoints={[
+          { maxWidth: 1600, cols: 4, spacing: 'md' },
+          { maxWidth: 1024, cols: 3, spacing: 'md' },
+          { maxWidth: 768, cols: 2, spacing: 'sm' },
+          { maxWidth: 480, cols: 1, spacing: 'sm' },
+        ]}
+      >
+        {/* {data?.pages.map((item) => (
+          <React.Fragment key={`item-grid-wrapper-${id}`}>
+            {item.list.map((story) => (
+              <StoriesCard
+                item={story}
+                key={`stories-item-grid-${story.id}-${id}`}
+              />
             ))}
-        </Grid>
-      </Box>
-    </div>
+          </React.Fragment>
+        ))}
+        {hasNextPage &&
+          Array.from({ length: 10 }).map((_, index) => (
+            <div
+              key={`loading-key-${id}`}
+              ref={index === 0 ? ref : undefined}
+            />
+          ))} */}
+      </SimpleGrid>
+    </Layout>
   );
-}
+};
 
 export default IndexPage;
-
-IndexPage.Layout = AppLayout;
-
-IndexPage.ErrorBoundary = ErrorBoundary;

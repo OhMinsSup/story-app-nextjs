@@ -23,7 +23,7 @@ export interface FileModel {
   contentUrl: string;
 }
 
-interface FileSchema {
+export interface FileSchema {
   id: number;
   name: string;
   fileType: string;
@@ -36,7 +36,7 @@ export interface FileUploadParams {
   file: File;
 }
 
-export type StoryUploadApi = AxiosResponse<Schema<FileSchema>>;
+export type UploadApi = AxiosResponse<Schema<FileSchema>>;
 
 // ================== Common =================== //
 
@@ -74,37 +74,39 @@ export interface ListSchema<Result = any> {
 
 export type DataIdParams = number | string | null | undefined;
 
-export type StoryApi<Result = any> = AxiosResponse<Schema<Result>>;
+export type Api<Result = any> = AxiosResponse<Schema<Result>>;
 
-export type StoryListApi<Result = any> = AxiosResponse<
-  Schema<ListSchema<Result>>
->;
+export type ListApi<Result = any> = AxiosResponse<Schema<ListSchema<Result>>>;
 
-export type StoryErrorApi<Result = any> = AxiosError<Schema<Result>>;
+export type ErrorApi<Result = any> = AxiosError<Schema<Result>>;
 
-export type StoryDataIdApi = AxiosResponse<Schema<DataIdSchema>>;
+export type DataIdApi = AxiosResponse<Schema<DataIdSchema>>;
 
 // ================== Model =================== //
 
-export interface MediaModel {
+export interface MediaSchema {
   id: number;
   contentUrl: string;
   publidId: string;
   version: string;
+  type: string;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface UserModel {
+export interface UserSchema {
   id: number;
   email: string;
-  profile: ProfileModel;
-  account: AccountModel;
+  profile: ProfileSchema;
+  account: AccountSchema;
 }
 
-export interface AccountModel {
+export interface AccountSchema {
   address: string;
 }
 
-export interface ProfileModel {
+export interface ProfileSchema {
   nickname: string;
   profileUrl?: string | null;
   avatarSvg: string;
@@ -124,13 +126,37 @@ export interface TagSchema {
 export interface DeviceSchema {
   id: number;
   os: string;
-  clientType: string;
-  deviceType: string;
-  deviceHash: string;
   token: string | null;
   userId: number | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface HistorySchema {
+  id: number;
+  status: string;
+  blockNumber: string;
+  blockHash: string;
+  transactionHash: string;
+  createdAt: string;
+}
+
+export interface OfferSchema {
+  id: number;
+  buyer: {
+    profile: Pick<
+      ProfileSchema,
+      'nickname' | 'avatarSvg' | 'defaultProfile' | 'profileUrl'
+    >;
+  };
+  seller: {
+    profile: Pick<
+      ProfileSchema,
+      'nickname' | 'avatarSvg' | 'defaultProfile' | 'profileUrl'
+    >;
+  };
+  price: string;
+  unit: string;
 }
 
 // ================== User  ================== //
@@ -147,13 +173,7 @@ export interface ProfileInput {
 
 // ================== Login ================== //
 
-export interface LoginInput {
-  email: string;
-  password: string;
-  deviceId?: number;
-}
-
-export interface LoginSchema extends UserModel {
+export interface LoginSchema {
   accessToken: string;
 }
 
@@ -163,21 +183,24 @@ export interface SignupInput {
   nickname: string;
   email: string;
   password: string;
-  gender: GenderType;
   avatarSvg: string;
+  defaultProfile: boolean;
+  gender: GenderType;
   profileUrl?: string | null;
 }
 
 // =================== Story =================== //
 
-export interface PublishInput {
-  name: string;
-  tags: string[];
+export interface StoryInput {
+  title: string;
   description: string;
-  mediaId: number;
-  isPrivate?: boolean;
-  backgroundColor?: string | null;
-  externalUrl?: string | null;
+  media: { idx: number; name?: string; contentUrl: string } | null;
+  backgroundColor?: string;
+  externalSite?: string;
+  rangeDate: Date[];
+  tags: string[];
+  isPublic: boolean;
+  price: string;
 }
 
 export interface StorySchema {
@@ -185,28 +208,13 @@ export interface StorySchema {
   name: string;
   description: string;
   backgroundColor?: string;
+  salesStatus: 'waiting' | 'sale' | 'complete' | 'end';
   externalUrl?: string;
   createdAt: string;
   updatedAt: string;
-  media: MediaModel;
+  media: MediaSchema;
   likes: { userId: number }[];
-  user: UserModel;
-  owner: UserModel;
+  user: UserSchema;
+  owner: UserSchema;
   tags: TagSchema[];
-}
-
-export interface HistorySchema {
-  id: number;
-  status: string;
-  to: UserModel;
-  from: UserModel;
-  tokenId: number;
-  toHash: string;
-  fromHash: string;
-  blockNumber: string;
-  blockHash: string;
-  transactionHash: string;
-  senderTxHash: string;
-  type: string;
-  createdAt: string;
 }

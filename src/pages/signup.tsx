@@ -1,333 +1,178 @@
-import React, { useRef, useState } from 'react';
-import { useRouter } from 'next/router';
-import dynamic from 'next/dynamic';
+import React, { useCallback, useMemo } from 'react';
 
 // validation
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm, yupResolver } from '@mantine/form';
 import { schema } from '@libs/validation/schema';
 
-// components
-import UserProfile from '@components/common/UserProfile';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import LoadingButton from '@mui/lab/LoadingButton';
-import AuthLayout from '@components/auth/common/AuthLayout';
-import VpnKey from '@mui/icons-material/VpnKey';
-import ErrorBoundary from '@components/error/ErrorBoundary';
-
 // hooks
-import { useAlert } from '@hooks/useAlert';
+import { useSignupMutation, useUploadMutation } from '@api/mutations';
 
-// api
-import { useMutationSignUp } from '@api/story/auth';
+// utils
+import { generateKey } from '@utils/utils';
 
-// no components
-import { generateKey, isAxiosError } from '@utils/utils';
-import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
+// components
+import { SignupSeo } from '@components/ui/Seo';
+import { Layout } from '@components/ui/Layout';
+import { UserProfileUpload } from '@components/ui/Upload';
+import {
+  Button,
+  Container,
+  PasswordInput,
+  Radio,
+  Text,
+  TextInput,
+} from '@mantine/core';
 
-import { GenderEnum } from '@api/schema/enum';
+// enum
+import { GenderEnum, StoryUploadTypeEnum } from '@api/schema/enum';
 
-import type { SubmitHandler } from 'react-hook-form';
+// types
 import type { GenderType } from '@api/schema/story-api';
-
-const KeystoreLoginDialog = dynamic(
-  () => import('@components/auth/login/KeystoreLoginDialog'),
-  {
-    ssr: false,
-  },
-);
 
 interface FormFieldValues {
   nickname: string;
   email: string;
   password: string;
   confirmPassword: string;
+  avatarSvg: string;
+  profileUrl?: string;
+  defaultProfile: boolean;
   gender: GenderType;
 }
 
-const key = generateKey();
+const SignupPage = () => {
+  const initialValues = useMemo(() => {
+    return {
+      nickname: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      avatarSvg: generateKey(),
+      profileUrl: undefined,
+      defaultProfile: true,
+      gender: GenderEnum.M as const,
+    };
+  }, []);
 
-const initialState = {
-  nickname: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-  gender: GenderEnum.M,
-};
-
-function SignupPage() {
-  const router = useRouter();
-  const formRef = useRef<HTMLFormElement | null>(null);
-  const { showAlert, Alert } = useAlert();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const { mutateAsync, isLoading } = useMutationSignUp();
-
-  const {
-    handleSubmit,
-    control,
-    formState: { errors, isValid, isDirty },
-  } = useForm<FormFieldValues>({
-    mode: 'onSubmit',
-    // @ts-ignore
-    resolver: yupResolver(schema.signup),
-    criteriaMode: 'firstError',
-    reValidateMode: 'onChange',
-    defaultValues: {
-      ...initialState,
+  const { mutateAsync: signupFn, isLoading: sIsLoading } = useSignupMutation();
+  const { mutateAsync: uploadFn, isLoading: uIsLoading } = useUploadMutation({
+    onSuccess(data) {
+      form.setFieldValue('profileUrl', data.path);
+      form.setFieldValue('defaultProfile', false);
     },
   });
 
-  // 회원가입
-  const onSubmit: SubmitHandler<FormFieldValues> = async ({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    confirmPassword,
-    ...input
-  }) => {
-    try {
-      const body = {
-        ...input,
-        avatarSvg: key,
-        defaultProfile: true,
-      };
+  const form = useForm<FormFieldValues>({
+    validate: yupResolver(schema.signup),
+    initialValues,
+  });
 
-      const {
-        data: { resultCode, message },
-      } = await mutateAsync(body);
+  const onSubmit = (input: FormFieldValues) => signupFn(input);
 
-      if (resultCode === RESULT_CODE.OK) {
-        showAlert({
-          content: {
-            text: '가입에 성공하였습니다.',
-          },
-          okHandler: () => {
-            router.replace(PAGE_ENDPOINTS.LOGIN);
-          },
-        });
-        return;
-      }
-
-      const error = new Error();
-      error.name = 'ApiError';
-      error.message = JSON.stringify({ resultCode, message });
-      throw error;
-    } catch (error) {
-      if (isAxiosError(error)) {
-        const { response } = error;
-        let message = '에러가 발생했습니다.\n다시 시도해 주세요.';
-        message = response.data.message || message;
-        showAlert({
-          content: {
-            text: message,
-          },
-        });
-        throw error;
-      }
-
-      if (error instanceof Error && error.name === 'ApiError') {
-        const { message } = JSON.parse(error.message);
-        showAlert({
-          content: {
-            text: message ?? '에러가 발생했습니다.\n다시 시도해 주세요.',
-          },
-        });
-      }
+  const onRemove = useCallback(() => {
+    const currentUrl = form.values.profileUrl;
+    // 업로드한 이미지가 존재하는 경우
+    if (currentUrl) {
+      form.setFieldValue('profileUrl', undefined);
+      form.setFieldValue('defaultProfile', true);
     }
-  };
+  }, [form]);
+
+  const onUpload = useCallback(
+    (file: File) =>
+      uploadFn({
+        file,
+        storyType: StoryUploadTypeEnum.PROFILE,
+      }),
+    [uploadFn],
+  );
 
   return (
-    <>
-      <AuthLayout>
-        <Box
-          sx={{
-            marginTop: 6,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography
-            className="font-bold text-center tracking-tight text-gray-700 mb-3"
-            component="h1"
-            variant="h5"
-          >
+    <Layout>
+      <SignupSeo />
+      <Container size={420} my={40} className="space-y-3">
+        <div>
+          <Text size="lg" weight={700}>
+            Story
+          </Text>
+          <Text weight={400}>에 오신걸 환영합니다.</Text>
+        </div>
+
+        <form onSubmit={form.onSubmit(onSubmit)}>
+          <UserProfileUpload
+            loading={uIsLoading}
+            thumbnail={form.values.profileUrl}
+            avatarkey={form.values.avatarSvg}
+            onUpload={onUpload}
+            onRemove={onRemove}
+          />
+          <div className="flex flex-col space-y-3">
+            <TextInput
+              label={
+                <Text size="md" weight={500}>
+                  닉네임
+                </Text>
+              }
+              id="nickname"
+              autoComplete="on"
+              placeholder="닉네임"
+              {...form.getInputProps('nickname')}
+            />
+            <TextInput
+              label={
+                <Text size="md" weight={500}>
+                  이메일
+                </Text>
+              }
+              id="email"
+              autoComplete="on"
+              placeholder="이메일"
+              {...form.getInputProps('email')}
+            />
+            <PasswordInput
+              label={
+                <Text size="md" weight={500}>
+                  비밀번호
+                </Text>
+              }
+              {...form.getInputProps('password')}
+              id="password"
+              autoComplete="on"
+              placeholder="비밀번호"
+            />
+            <PasswordInput
+              label={
+                <Text size="md" weight={500}>
+                  비밀번호 확인
+                </Text>
+              }
+              {...form.getInputProps('confirmPassword')}
+              id="confirmPassword"
+              autoComplete="on"
+              placeholder="비밀번호 확인"
+            />
+
+            <Radio.Group
+              defaultValue={'react'}
+              label={
+                <Text size="md" weight={500}>
+                  성별
+                </Text>
+              }
+              {...form.getInputProps('gender')}
+            >
+              <Radio value={GenderEnum.M} label="남성" />
+              <Radio value={GenderEnum.F} label="여성" />
+            </Radio.Group>
+          </div>
+
+          <Button type="submit" fullWidth mt="xl" loading={sIsLoading}>
             회원가입
-          </Typography>
-          <Box
-            component="form"
-            className="space-y-4"
-            onSubmit={handleSubmit(onSubmit)}
-            ref={formRef}
-            sx={{ mt: 1 }}
-          >
-            <UserProfile
-              avatarkey={key}
-              defaultThumbnail={true}
-              thumbnail={null}
-              disabledActions={true}
-            />
-            <LoadingButton
-              color="secondary"
-              size="large"
-              type="button"
-              onClick={() => setIsOpen(true)}
-              loadingPosition="start"
-              startIcon={<VpnKey />}
-              variant="outlined"
-              fullWidth
-              loading={isLoading}
-            >
-              키스토어로 가입하기
-            </LoadingButton>
-            <Controller
-              control={control}
-              name="nickname"
-              render={({ field }) => (
-                <TextField
-                  required
-                  label="닉네임"
-                  placeholder="닉네임"
-                  autoComplete="off"
-                  color="info"
-                  variant="standard"
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  inputRef={field.ref}
-                  error={!!errors?.nickname?.message}
-                  helperText={errors?.nickname?.message}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="email"
-              render={({ field }) => (
-                <TextField
-                  required
-                  label="이메일"
-                  placeholder="이메일"
-                  autoComplete="off"
-                  color="info"
-                  variant="standard"
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  error={!!errors?.email?.message}
-                  helperText={errors?.email?.message}
-                  inputRef={field.ref}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="password"
-              render={({ field }) => (
-                <TextField
-                  required
-                  label="비밀번호"
-                  placeholder="비밀번호"
-                  autoComplete="off"
-                  color="info"
-                  variant="standard"
-                  fullWidth
-                  type="password"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  error={!!errors?.password?.message}
-                  helperText={errors?.password?.message}
-                  inputRef={field.ref}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <TextField
-                  required
-                  label="비밀번호 확인"
-                  placeholder="비밀번호 확인"
-                  autoComplete="off"
-                  color="info"
-                  variant="standard"
-                  fullWidth
-                  type="password"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  error={!!errors?.confirmPassword?.message}
-                  helperText={errors?.confirmPassword?.message}
-                  inputRef={field.ref}
-                  {...field}
-                />
-              )}
-            />
-            <FormControl component="fieldset" color="info">
-              <FormLabel component="legend">성별</FormLabel>
-              <Controller
-                name="gender"
-                control={control}
-                defaultValue="M"
-                render={({ field }) => (
-                  <RadioGroup
-                    row
-                    {...field}
-                    aria-label="gender"
-                    name="row-radio-buttons-group"
-                  >
-                    <FormControlLabel
-                      value={GenderEnum.M}
-                      control={<Radio color="info" />}
-                      label="남성"
-                    />
-                    <FormControlLabel
-                      value={GenderEnum.F}
-                      control={<Radio color="info" />}
-                      label="여성"
-                    />
-                  </RadioGroup>
-                )}
-              />
-            </FormControl>
-            <LoadingButton
-              color="info"
-              size="large"
-              onClick={() => {
-                formRef.current?.dispatchEvent(
-                  new Event('submit', { cancelable: true, bubbles: true }),
-                );
-              }}
-              loading={isLoading}
-              disabled={!isValid || !isDirty}
-              variant="contained"
-              className="w-full"
-              fullWidth
-            >
-              회원가입
-            </LoadingButton>
-          </Box>
-        </Box>
-      </AuthLayout>
-      <Alert />
-      <KeystoreLoginDialog visible={isOpen} close={() => setIsOpen(false)} />
-    </>
+          </Button>
+        </form>
+      </Container>
+    </Layout>
   );
-}
+};
 
 export default SignupPage;
-
-SignupPage.ErrorBoundary = ErrorBoundary;

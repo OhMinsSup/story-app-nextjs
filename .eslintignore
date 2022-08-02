@@ -8,6 +8,7 @@ node_modules
 out
 .next
 next.config.js
+public
 
 # truffle
 truffle-config.js
@@ -18,3 +19,8 @@ truffle-config.js
 
 # scripts
 scripts/
+
+legacy_pages/
+
+# tailwind
+tailwind.config.js

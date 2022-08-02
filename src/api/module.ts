@@ -4,6 +4,8 @@ import { client } from './client';
 
 // common
 import { API_ENDPOINTS, STORAGE_KEY } from '@constants/constant';
+import { API_HOST } from '@constants/env';
+import { isBrowser } from '@utils/utils';
 
 // types
 import type { AxiosRequestConfig } from 'axios';
@@ -12,9 +14,8 @@ import type {
   Options,
   Params,
   FileUploadParams,
-  StoryUploadApi,
+  UploadApi,
 } from '@api/schema/story-api';
-import { API_HOST } from '@constants/env';
 
 class APIMoudle {
   withCredentials: boolean;
@@ -28,7 +29,7 @@ class APIMoudle {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   authorized = (options?: Partial<Options>) => {
-    if (typeof window === 'undefined') return null;
+    if (!isBrowser) return null;
     const authorization = localStorage.getItem(STORAGE_KEY.TOKEN_KEY);
     if (!authorization) return null;
     return authorization;
@@ -69,6 +70,7 @@ class APIMoudle {
       API_ENDPOINTS.LOCAL.AUTH.LOGOUT,
       {},
       {
+        withCredentials: true,
         baseURL: API_HOST,
       },
     );
@@ -79,7 +81,7 @@ class APIMoudle {
     form.append('file', file);
     form.append('storyType', storyType);
     const authorization = this.authorized();
-    const result: StoryUploadApi = await client.post(
+    const result: UploadApi = await client.post(
       API_ENDPOINTS.LOCAL.FILE.ROOT,
       form,
       {

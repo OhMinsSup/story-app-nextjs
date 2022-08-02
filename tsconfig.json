@@ -26,7 +26,8 @@
       "@components/*": ["src/components/*"],
       "@hooks/*": ["src/hooks/*"],
       "@api/*": ["src/api/*"],
-      "@store/*": ["src/store/*"]
+      "@store/*": ["src/store/*"],
+      "@atoms/*": ["src/atoms/*"]
     }
   },
   "include": [
@@ -37,5 +38,5 @@
     "**/*.tsx",
     "**/*.js"
   ],
-  "exclude": ["node_modules", ".next", "out", "scripts"]
+  "exclude": ["node_modules", ".next", "out", "scripts", "legacy_pages"]
 }

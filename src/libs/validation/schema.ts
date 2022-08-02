@@ -1,3 +1,5 @@
+import { isInvalidDate } from '@utils/assertion';
+import dayjs from 'dayjs';
 import * as yup from 'yup';
 
 export const common = {
@@ -29,9 +31,19 @@ export const common = {
   gender: yup.string().oneOf(['M', 'F']).required('성별을 선택해 주세요.'),
   media: yup.object().shape({
     contentUrl: yup.string().required('미디어 주소를 입력해주세요.'),
-    name: yup.string(),
+    name: yup.string().optional().notRequired(),
     idx: yup.number().required('미디어 주소를 입력해주세요.'),
   }),
+  price: yup.string().test('price', '숫자만 입력이 가능합니다', (price) => {
+    if (!price) return false;
+    // 정규식 소수점 및 숫자만 입력 (수수점은 존재 할 수도 없을 수 도 있음)
+    const regex = /^[0-9]+(\.[0-9]+)?$/;
+    if (price.match(regex)) {
+      return true;
+    }
+    return false;
+  }),
+  file: yup.object().shape({}),
 };
 
 export const schema = {
@@ -53,18 +65,77 @@ export const schema = {
     file: yup.mixed().required('keystore 파일을 입력해 주세요.'),
     password: yup.string().required('비밀번호를 입력해 주세요.'),
   }),
-  publish: yup.object().shape({
-    name: yup.string().required('이름을 입력해주세요.'),
-    media: common.media.nullable(true).required('미디어를 등록해주세요.'),
-    description: yup.string().required('내용을 입력해주세요.'),
+  story: yup.object().shape({
+    media: common.media.required('미디어를 등록해주세요.'),
+    title: yup
+      .string()
+      .max(100, '최대 100자 내외로 입력해주세요.')
+      .required('제목을 입력해주세요.'),
+    externalSite: yup
+      .string()
+      .url('연관 사이트는 URL 형식으로 입력해주세요.')
+      .nullable()
+      .optional()
+      .notRequired(),
+    description: yup
+      .string()
+      .max(1000, '최대 1000자 내외로 입력해주세요.')
+      .required('내용을 입력해주세요.'),
     backgroundColor: yup
       .string()
       .matches(/^#[0-9a-fA-F]{6}$/, '색상 형식으로 입력해주세요.')
-      .notRequired(),
-    externalUrl: yup
-      .string()
-      .url('외부 URL형식으로 입력해주세요.')
-      .notRequired(),
-    tags: yup.array().of(yup.mixed()).notRequired(),
+      .nullable()
+      .optional(),
+    tags: yup
+      .array()
+      .of(yup.string().required())
+      .max(5, '최대 5개까지 입력해주세요.')
+      .optional(),
+    price: yup
+      .number()
+      .test('invalid_price', '가격 형식으로 입력해주세요.', (value) => {
+        if (value && isNaN(value)) return false;
+        if (value === 0) return false;
+        return true;
+      })
+      .required('가격을 입력해주세요.'),
+    supply: yup
+      .number()
+      .min(1, '발행 수는 최소 1개 입니다.')
+      .test('invalid_price', '발행 수는 최소 1개 입니다.', (value) => {
+        if (!value) return false;
+        if (isNaN(value)) return false;
+        if (value <= 0) return false;
+        return true;
+      })
+      .required('발행 수를 입력해주세요.'),
+    isPublic: yup
+      .boolean()
+      .oneOf([true, false])
+      .required('공개 여부를 선택해주세요.'),
+    rangeDate: yup
+      .array()
+      .of(yup.date().nullable(true).required('시작일을 선택해주세요.'))
+      .length(2, '시작일과 종료일을 선택해주세요.')
+      .test(
+        'rangeDate_beign',
+        '종료일은 시작일 이후로 선택해주세요.',
+        (value) => {
+          if (!value) return false;
+          const [begin, end] = value;
+          if (isInvalidDate(begin) || isInvalidDate(end)) return false;
+          if (dayjs(begin).isAfter(dayjs(end))) return false;
+          return true;
+        },
+      )
+      .test('rangeDate_end', '시작일은 오늘 이후로 선택해주세요.', (value) => {
+        if (!value) return false;
+        const [begin] = value;
+        if (!begin) return false;
+        if (isInvalidDate(begin)) return false;
+        if (dayjs(begin).isBefore(dayjs())) return false;
+        return true;
+      })
+      .required('공개 기간을 선택해주세요.'),
   }),
 };

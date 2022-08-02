@@ -8,12 +8,20 @@ export const PAGE_ENDPOINTS = {
     DETAIL: (id: string | number) => `/publish/${id}/`,
     MODIFY: (id: string | number) => `/publish/${id}/modify/`,
   },
+  NFT: {
+    ROOT: '/nft/',
+    ID: (id: string | number) => `/nft/${id}/`,
+    REGIST: '/nft/regist/',
+  },
   STORY: {
     ROOT: '/story/',
     DETAIL: (id: string | number) => `/story/${id}/`,
   },
   SEARCH: {
     ROOT: '/search/',
+  },
+  TAGS: {
+    ROOT: '/tags/',
   },
   PROFILE: {
     ROOT: '/profile/',
@@ -23,9 +31,6 @@ export const PAGE_ENDPOINTS = {
 };
 
 export const API_ENDPOINTS = {
-  MOCK: {
-    ILLUSTRATION: '/mock-list.json',
-  },
   LOCAL: {
     AUTH: {
       LOGIN: '/users/signin',
@@ -40,6 +45,7 @@ export const API_ENDPOINTS = {
     },
     FILE: {
       ROOT: '/files/upload',
+      LIST: '/files',
     },
     SEARCH: {
       ROOT: '/search',
@@ -49,23 +55,38 @@ export const API_ENDPOINTS = {
     },
     NOTIFICATIONS: {
       ROOT: '/notifications',
-      TOKEN: '/notifications/token',
       PUSH: '/notifications/push',
+      DEVICE: '/notifications/device',
+    },
+    DEVICE: {
+      ROOT: '/devices',
     },
     STORY: {
+      // news
       ROOT: '/stories',
+      ID: (id: string | number) => `/stories/${id}`,
+      // old
       DETAIL: (id: string | number) => `/stories/${id}`,
       HISTORIES: (id: string | number) => `/stories/${id}/histories`,
       ANOTHERS: (id: string | number, userId: string | number) =>
         `/stories/${id}/anothers/${userId}`,
       LIKE: (id: string | number) => `/stories/${id}/like`,
       LIKES: (id: string | number) => `/stories/${id}/likes`,
+      STATUS: (id: string | number) => `/stories/${id}/status`,
       NFT: {
         ROOT: '/stories/nft',
+        BUYER: (id: string | number) => `/stories/nfts/${id}/buyer`,
+        SELLER: (id: string | number) => `/stories/nfts/${id}/seller`,
         HISTORIES: (id: string | number) => `/stories/${id}/nfts/histories`,
+        OFFERS: (id: string | number) => `/stories/${id}/nfts/offers`,
       },
     },
   },
+};
+
+export const QUERIES_KEY = {
+  ME: [API_ENDPOINTS.LOCAL.USER.ME],
+  FILE_LIST: [API_ENDPOINTS.LOCAL.FILE.LIST],
 };
 
 export const WEB_APP = '@@StoryFront';
@@ -73,8 +94,13 @@ export const WEB_APP = '@@StoryFront';
 export const STORAGE_KEY = {
   TOKEN_KEY: `${WEB_APP}/authToken`,
   USER_KEY: `${WEB_APP}/userInfo`,
-  IS_LOGGED_IN_KEY: 'isLoggedIn',
-  PUSH_TOKEN_KEY: 'pushToken',
+  PUSH_TOKEN_KEY: `${WEB_APP}/pushToken`,
+  THEME_KEY: `${WEB_APP}/story-color-scheme`,
+};
+
+export const COOKIE_KEY = {
+  ACCESS_TOKEN: 'access_token',
+  THEME: 'theme_schema',
 };
 
 export const STATUS_CODE = {
@@ -99,7 +125,7 @@ export const RESULT_CODE = {
   // 성공
   OK: 0,
   // 잘못된 패스워드
-  INCORRECT_PASSWORD: 4004,
+  INCORRECT_PASSWORD: 2000,
   // 존재하지 않음
   NOT_EXIST: 2001,
   // 삭제됨
@@ -129,4 +155,13 @@ export const RESULT_CODE = {
   NFT_FAIL: 4006,
   // PUSH_TOKEN 만료
   PUSH_TOKEN_EXPIRED: 4007,
+
+  // 가격이 존재하지 않는 경우
+  NO_PRICE: 5000,
+  // 가격을 제시할 수 없음
+  NO_PRICE_ACTION: 5001,
+  // 가격을 비교했을 떄 너무 낮음
+  PRICE_TOO_LOW: 5002,
+  // Klaytn 단위가 올바르지 않는 경우
+  INVALID_PARAM: 5003,
 };

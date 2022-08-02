@@ -1,208 +1,141 @@
-import React from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import React, { useCallback, useMemo } from 'react';
 
-import { useAlert } from '@hooks/useAlert';
-
-// components
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import ErrorBoundary from '@components/error/ErrorBoundary';
-
-// icons
-import LoadingButton from '@mui/lab/LoadingButton';
+// compoents
+import { GoogleButton, GithubButton } from '@components/ui/Button';
+import { LoginSeo } from '@components/ui/Seo';
+import { Layout } from '@components/ui/Layout';
+import {
+  Anchor,
+  Button,
+  Container,
+  Divider,
+  Group,
+  PasswordInput,
+  Text,
+  TextInput,
+} from '@mantine/core';
 
 // validation
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm, yupResolver } from '@mantine/form';
 import { schema } from '@libs/validation/schema';
-import { PAGE_ENDPOINTS, RESULT_CODE, STORAGE_KEY } from '@constants/constant';
 
-// components
-import AuthLayout from '@components/auth/common/AuthLayout';
+// hooks
+import { useLoginMutation } from '@api/mutations';
+import { useRouter } from 'next/router';
+import { useAtomValue } from 'jotai';
 
-// api
-import { useMutationLogin } from '@api/story/auth';
-import { StoryStorage } from '@libs/storage';
+// atom
+import { authAtom } from '@atoms/authAtom';
 
-import type { LoginInput } from '@api/schema/story-api';
-import type { SubmitHandler } from 'react-hook-form';
+// constants
+import { PAGE_ENDPOINTS } from '@constants/constant';
 
-const initialState = {
-  email: '',
-  password: '',
-};
-
-function LoginPage() {
-  const router = useRouter();
-  const formRef = React.useRef<HTMLFormElement | null>(null);
-
-  const { showAlert, Alert } = useAlert();
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginInput>({
-    mode: 'onSubmit',
-    // @ts-ignore
-    resolver: yupResolver(schema.login),
-    criteriaMode: 'firstError',
-    reValidateMode: 'onChange',
-    defaultValues: {
-      ...initialState,
-    },
-  });
-
-  // 로그인
-  const { mutateAsync, isLoading } = useMutationLogin();
-
-  const onSubmit: SubmitHandler<LoginInput> = async (input) => {
-    const deviceInfo = await StoryStorage.getItem(STORAGE_KEY.PUSH_TOKEN_KEY);
-    const body = {
-      ...input,
-    };
-
-    if (deviceInfo && typeof deviceInfo === 'object') {
-      const { deviceId } = deviceInfo;
-      Object.assign(body, { deviceId });
-    }
-
-    const result = await mutateAsync(body);
-
-    const {
-      data: { resultCode },
-    } = result;
-
-    if (RESULT_CODE.OK === resultCode) {
-      return router.replace(PAGE_ENDPOINTS.INDEX);
-    }
-
-    let message = '에러가 발생했습니다.\n다시 시도해주세요.';
-    switch (resultCode) {
-      case RESULT_CODE.INCORRECT_PASSWORD: {
-        message = '비밀번호가 일치하지 않습니다.';
-        break;
-      }
-      case RESULT_CODE.NOT_EXIST: {
-        message = '존재하지 않는 사용자입니다.';
-        break;
-      }
-    }
-
-    const params = {
-      content: {
-        text: message,
-      },
-    };
-
-    showAlert(params);
-  };
-
-  return (
-    <>
-      <AuthLayout>
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Typography
-            className="font-bold text-center tracking-tight text-gray-700"
-            component="h1"
-            variant="h5"
-          >
-            로그인
-          </Typography>
-          <Box
-            className="space-y-5"
-            sx={{ mt: 1 }}
-            component="form"
-            ref={formRef}
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <Controller
-              control={control}
-              name="email"
-              render={({ field }) => (
-                <TextField
-                  required
-                  label="이메일"
-                  placeholder="이메일"
-                  autoComplete="off"
-                  color="info"
-                  variant="standard"
-                  fullWidth
-                  type="text"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  error={!!errors?.email?.message}
-                  helperText={errors?.email?.message}
-                  inputRef={field.ref}
-                  {...field}
-                />
-              )}
-            />
-
-            <Controller
-              control={control}
-              name="password"
-              render={({ field }) => (
-                <TextField
-                  required
-                  label="비밀번호"
-                  placeholder="비밀번호"
-                  autoComplete="off"
-                  color="info"
-                  variant="standard"
-                  fullWidth
-                  type="password"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  error={!!errors?.password?.message}
-                  helperText={errors?.password?.message}
-                  inputRef={field.ref}
-                  {...field}
-                />
-              )}
-            />
-
-            <LoadingButton
-              color="primary"
-              size="large"
-              variant="contained"
-              className="w-full"
-              fullWidth
-              onClick={() => {
-                formRef.current?.dispatchEvent(
-                  new Event('submit', { cancelable: true, bubbles: true }),
-                );
-              }}
-              loading={isLoading}
-            >
-              로그인
-            </LoadingButton>
-          </Box>
-          <p className="text-sm text-gray-500 my-4 text-center">
-            <span>계정이 없으신가요?</span>
-            <Link href={PAGE_ENDPOINTS.SIGNUP}>
-              <a className="underline mx-1">회원가입</a>
-            </Link>
-          </p>
-        </Box>
-      </AuthLayout>
-      <Alert />
-      {/* <KeystoreLoginDialog /> */}
-    </>
-  );
+interface FormFieldValues {
+  email: string;
+  password: string;
 }
 
-export default LoginPage;
+const LoginPage = () => {
+  const router = useRouter();
+  const isAuthication = useAtomValue(authAtom);
 
-LoginPage.ErrorBoundary = ErrorBoundary;
+  const initialValues = useMemo(() => {
+    return {
+      email: 'veloss@email.io',
+      password: '1q2w3e4r!@',
+    };
+  }, []);
+
+  const form = useForm<FormFieldValues>({
+    validate: yupResolver(schema.login),
+    initialValues,
+  });
+
+  const { mutateAsync, isLoading } = useLoginMutation();
+
+  const onSubmit = (input: FormFieldValues) => mutateAsync(input);
+
+  const onMoveToSignUp = useCallback(() => {
+    router.push(PAGE_ENDPOINTS.SIGNUP);
+  }, [router]);
+
+  if (isAuthication) {
+    router.replace(PAGE_ENDPOINTS.INDEX);
+  }
+
+  return (
+    <Layout>
+      <LoginSeo />
+      <Container size={420} my={40}>
+        <Text size="lg" weight={700}>
+          Story
+        </Text>
+        <Text weight={400}>에 로그인하세요.</Text>
+
+        <Group grow mb="md" mt="md">
+          <GoogleButton radius="xl">Google</GoogleButton>
+          <GithubButton radius="xl">Github</GithubButton>
+        </Group>
+        <Divider label="Or" labelPosition="center" my="lg" />
+        <form onSubmit={form.onSubmit(onSubmit)}>
+          <div className="flex flex-col space-y-3">
+            <TextInput
+              label={
+                <Text size="md" weight={500}>
+                  이메일
+                </Text>
+              }
+              id="email"
+              className="w-full max-w-full"
+              autoComplete="email"
+              placeholder="이메일"
+              {...form.getInputProps('email')}
+            />
+            <PasswordInput
+              classNames={{
+                label: 'w-full',
+              }}
+              label={
+                <div className="flex justify-between items-center">
+                  <Text size="md" weight={500}>
+                    비밀번호
+                  </Text>
+                  <Anchor<'a'>
+                    onClick={(event) => event.preventDefault()}
+                    href="#"
+                    size="sm"
+                  >
+                    비밀번호 찾기
+                  </Anchor>
+                </div>
+              }
+              className="w-full max-w-full"
+              {...form.getInputProps('password')}
+              id="password"
+              autoComplete="password"
+              placeholder="비밀번호"
+            />
+          </div>
+
+          <Button type="submit" fullWidth mt="xl" loading={isLoading}>
+            로그인
+          </Button>
+          <Group position="center" mt="xl" spacing={5}>
+            <Text size="sm">아직 회원이 아니신가요?</Text>
+            <Anchor
+              component="button"
+              type="button"
+              color="primary"
+              size="md"
+              onClick={onMoveToSignUp}
+            >
+              회원가입
+            </Anchor>
+          </Group>
+        </form>
+      </Container>
+    </Layout>
+  );
+};
+
+export default LoginPage;
