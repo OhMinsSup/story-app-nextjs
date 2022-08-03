@@ -14,6 +14,7 @@ import {
   Group,
   Button,
   SimpleGrid,
+  Divider,
   Image,
 } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
@@ -304,11 +305,13 @@ const Form = () => {
                 }
               />
             </Dropzone.Idle>
-            {/* <Image
-              src={
-                'https://velog.velcdn.com/images/taehyunkim/post/567e29e1-7442-4dc8-9b5e-32a2bfd13737/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202020-12-27%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%202.52.12.png'
-              }
-            /> */}
+            <Dropzone.Accept>
+              <Image
+                src={
+                  'https://velog.velcdn.com/images/taehyunkim/post/567e29e1-7442-4dc8-9b5e-32a2bfd13737/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202020-12-27%20%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A5%E1%86%AB%202.52.12.png'
+                }
+              />
+            </Dropzone.Accept>
           </Group>
         </Dropzone>
       </Input.Wrapper>
@@ -348,7 +351,7 @@ const Form = () => {
           classNames={{
             label: 'font-bold',
           }}
-          minRows={7}
+          minRows={5}
           description="설명은 이미지 아래 항목의 세부 정보 페이지에 포함됩니다."
           placeholder="Provide a detailed description of your item."
           spellCheck="false"
@@ -451,6 +454,8 @@ const Form = () => {
             {...form.getInputProps('rangeDate')}
           />
         </SimpleGrid>
+
+        <Divider />
 
         <div
           className={`MySwitch flex fle justify-between items-center space-x-2`}

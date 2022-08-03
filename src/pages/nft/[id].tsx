@@ -14,22 +14,13 @@ function NFTsDetailPage() {
   const id = router.query.id?.toString();
 
   return (
-    <Layout
-      styles={() => ({
-        body: {
-          height: '100%',
-        },
-        main: {
-          padding: 0,
-        },
-      })}
-    >
+    <Layout>
       <div
         className={`nc-NftDetailPage  ${'className'}`}
         data-nc-id="NftDetailPage"
       >
         {/* MAIn */}
-        <main className="container mt-11 flex">
+        <div className="container mt-11 flex">
           <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-14">
             {/* CONTENT */}
             <div className="space-y-8 lg:space-y-10">
@@ -44,7 +35,7 @@ function NFTsDetailPage() {
               <RightSection />
             </div>
           </div>
-        </main>
+        </div>
       </div>
     </Layout>
   );
