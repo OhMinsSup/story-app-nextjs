@@ -165,3 +165,13 @@ export const RESULT_CODE = {
   // Klaytn 단위가 올바르지 않는 경우
   INVALID_PARAM: 5003,
 };
+
+export const ASSETS_IMAGES = {
+  VECTOR_01: '/images/vector_01.png',
+  VECTOR_HLW: '/images/vector_hlw.svg',
+  ABOUT_HERO_RIGHT: '/images/about_hero_right.png',
+  HIW_01: '/images/hlw_01.png',
+  HIW_02: '/images/hlw_02.png',
+  HIW_03: '/images/hlw_03.png',
+  HIW_04: '/images/hlw_04.png',
+};

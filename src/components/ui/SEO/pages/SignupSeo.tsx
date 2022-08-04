@@ -4,7 +4,7 @@ import React from 'react';
 import Seo from '../Seo';
 
 const SignupSeo = () => {
-  const title = 'Signup | story';
+  const title = 'Signup | Remix';
   const url = `${SITE_URL}${PAGE_ENDPOINTS.SIGNUP}`;
 
   return (
