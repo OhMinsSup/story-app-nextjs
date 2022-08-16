@@ -4,7 +4,6 @@ import * as Commander from 'commander';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
-import AWS from 'aws-sdk';
 
 const program = new Commander.Command('story-app')
   .option(

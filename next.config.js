@@ -1,5 +1,4 @@
 const withPWA = require('next-pwa');
-const withPlugins = require('next-compose-plugins');
 const runtimeCaching = require('next-pwa/cache');
 const { withSentryConfig } = require('@sentry/nextjs');
 
@@ -15,7 +14,11 @@ const nextConfig = {
   trailingSlash: true,
 
   compiler: {
-    removeConsole: isProduction,
+    removeConsole: isProduction
+      ? {
+          exclude: ['error', 'wran'],
+        }
+      : false,
     emotion: true,
   },
 
@@ -52,21 +55,14 @@ const nextConfig = {
   compress: true,
 };
 
-const configs = withPlugins(
-  [
-    [
-      withPWA,
-      {
-        pwa: {
-          dest: 'public',
-          runtimeCaching,
-          disable: true,
-        },
-      },
-    ],
-    withSentryConfig,
-  ],
-  nextConfig,
-);
-
-module.exports = configs;
+// module.exports = withSentryConfig(
+//   withPWA({
+//     ...nextConfig,
+//     pwa: {
+//       dest: 'public',
+//       runtimeCaching,
+//       disable: true,
+//     },
+//   }),
+// );
+module.exports = withSentryConfig(nextConfig);

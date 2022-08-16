@@ -2,31 +2,13 @@ export const PAGE_ENDPOINTS = {
   INDEX: '/',
   LOGIN: '/login/',
   SIGNUP: '/signup/',
-  ILLUSTRATION: '/illustration/',
-  PUBLISH: {
-    ROOT: '/publish/',
-    DETAIL: (id: string | number) => `/publish/${id}/`,
-    MODIFY: (id: string | number) => `/publish/${id}/modify/`,
-  },
   NFT: {
     ROOT: '/nft/',
     ID: (id: string | number) => `/nft/${id}/`,
     REGIST: '/nft/regist/',
   },
-  STORY: {
-    ROOT: '/story/',
-    DETAIL: (id: string | number) => `/story/${id}/`,
-  },
-  SEARCH: {
-    ROOT: '/search/',
-  },
-  TAGS: {
-    ROOT: '/tags/',
-  },
-  PROFILE: {
-    ROOT: '/profile/',
-    DETAIL: (id: string | number) => `/profile/${id}/`,
-    EDIT: (id: string | number) => `/profile/${id}/edit/`,
+  EXPLORE: {
+    ROOT: '/explore/',
   },
 };
 
