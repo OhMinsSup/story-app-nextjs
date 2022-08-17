@@ -56,10 +56,10 @@ export interface Params<Body = any> {
 }
 
 export interface Schema<Result = any> {
-  ok: boolean;
   resultCode: number;
-  message: string | null;
-  result: Result;
+  message: string[] | string | null;
+  error: string | null;
+  result: Result | null;
 }
 
 export interface DataIdSchema {

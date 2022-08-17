@@ -27,7 +27,7 @@ import { api } from '@api/module';
 // type
 import type { ThemeType } from '@atoms/commonAtom';
 import type { AppContext, AppProps } from 'next/app';
-import type { UserSchema } from '@api/schema/story-api';
+import type { MeResp } from '@api/schema/resp';
 
 interface AppPageProps extends AppProps {
   Component: any;
@@ -108,8 +108,8 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
     try {
       // server side user info prefetch react query
       await client.prefetchQuery(QUERIES_KEY.ME, async () => {
-        const response = await api.get<UserSchema>({
-          url: API_ENDPOINTS.LOCAL.USER.ME,
+        const response = await api.get<MeResp>({
+          url: API_ENDPOINTS.APP.USERS.ME,
           config: {
             headers: {
               Cookie: cookie,
@@ -119,7 +119,7 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
         return response.data.result;
       });
 
-      const session = client.getQueryData<UserSchema>(QUERIES_KEY.ME);
+      const session = client.getQueryData<MeResp>(QUERIES_KEY.ME);
       Object.assign(pageProps, {
         dehydratedState: dehydrate(client),
       });

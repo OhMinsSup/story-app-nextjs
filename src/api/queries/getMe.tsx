@@ -10,31 +10,40 @@ import { api } from '@api/module';
 // constants
 import { API_ENDPOINTS, QUERIES_KEY } from '@constants/constant';
 
-import type { Schema, ErrorApi, UserSchema } from '@api/schema/story-api';
+import type { Schema, ErrorApi } from '@api/schema/story-api';
+import type { MeResp } from '@api/schema/resp';
 
-export const getMe = async () => {
-  const response = await api.get<UserSchema>({
-    url: API_ENDPOINTS.LOCAL.USER.ME,
+/**
+ * @description 내 정보 가져오는 API
+ */
+export const getMeApi = async () => {
+  const response = await api.get<MeResp>({
+    url: API_ENDPOINTS.APP.USERS.ME,
   });
   return response.data.result;
 };
 
-export const staleTimeByMe = 10 * 60 * 1000; // 10 minute
-
+/**
+ * @description 내 정보 가져오기 react query
+ */
 export const useMeQuery = () => {
   const isAuthication = useAtomValue(authAtom);
 
-  const resp = useQuery<UserSchema, ErrorApi<Schema>>(QUERIES_KEY.ME, getMe, {
-    enabled: isAuthication,
-    staleTime: staleTimeByMe,
-  });
+  const resp = useQuery<MeResp | null, ErrorApi<Schema>>(
+    QUERIES_KEY.ME,
+    getMeApi,
+    {
+      enabled: isAuthication,
+      staleTime: 10 * 60 * 1000, // 10m
+    },
+  );
 
   return {
     get userInfo() {
       return resp.data;
     },
-    get fetch() {
-      return getMe;
+    get fetcher() {
+      return getMeApi;
     },
     ...resp,
   };

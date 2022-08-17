@@ -7,9 +7,6 @@ import { schema } from '@libs/validation/schema';
 // hooks
 import { useSignupMutation, useUploadMutation } from '@api/mutations';
 
-// utils
-import { generateKey } from '@utils/utils';
-
 // components
 import { SignupSeo } from '@components/ui/Seo';
 import { Layout } from '@components/ui/Layout';
@@ -17,48 +14,43 @@ import { UserProfileUpload } from '@components/ui/Upload';
 import {
   Button,
   Container,
+  Input,
   PasswordInput,
-  Radio,
   Text,
   TextInput,
 } from '@mantine/core';
 
 // enum
-import { GenderEnum, StoryUploadTypeEnum } from '@api/schema/enum';
-
-// types
-import type { GenderType } from '@api/schema/story-api';
+import { StoryUploadTypeEnum } from '@api/schema/enum';
+import { RESULT_CODE } from '@constants/constant';
 
 interface FormFieldValues {
-  nickname: string;
+  username: string;
   email: string;
   password: string;
   confirmPassword: string;
-  avatarSvg: string;
-  profileUrl?: string;
-  defaultProfile: boolean;
-  gender: GenderType;
+  profileUrl?: string | null;
 }
 
 const SignupPage = () => {
   const initialValues = useMemo(() => {
     return {
-      nickname: '',
+      username: '',
       email: '',
       password: '',
       confirmPassword: '',
-      avatarSvg: generateKey(),
       profileUrl: undefined,
-      defaultProfile: true,
-      gender: GenderEnum.M as const,
     };
   }, []);
 
-  const { mutateAsync: signupFn, isLoading: sIsLoading } = useSignupMutation();
+  const {
+    mutateAsync: signupFn,
+    isLoading: sIsLoading,
+    state,
+  } = useSignupMutation();
   const { mutateAsync: uploadFn, isLoading: uIsLoading } = useUploadMutation({
     onSuccess(data) {
       form.setFieldValue('profileUrl', data.path);
-      form.setFieldValue('defaultProfile', false);
     },
   });
 
@@ -74,7 +66,6 @@ const SignupPage = () => {
     // 업로드한 이미지가 존재하는 경우
     if (currentUrl) {
       form.setFieldValue('profileUrl', undefined);
-      form.setFieldValue('defaultProfile', true);
     }
   }, [form]);
 
@@ -102,7 +93,6 @@ const SignupPage = () => {
           <UserProfileUpload
             loading={uIsLoading}
             thumbnail={form.values.profileUrl}
-            avatarkey={form.values.avatarSvg}
             onUpload={onUpload}
             onRemove={onRemove}
           />
@@ -113,10 +103,10 @@ const SignupPage = () => {
                   닉네임
                 </Text>
               }
-              id="nickname"
-              autoComplete="on"
+              id="username"
+              autoComplete="nickname"
               placeholder="닉네임"
-              {...form.getInputProps('nickname')}
+              {...form.getInputProps('username')}
             />
             <TextInput
               label={
@@ -125,7 +115,7 @@ const SignupPage = () => {
                 </Text>
               }
               id="email"
-              autoComplete="on"
+              autoComplete="email"
               placeholder="이메일"
               {...form.getInputProps('email')}
             />
@@ -137,7 +127,7 @@ const SignupPage = () => {
               }
               {...form.getInputProps('password')}
               id="password"
-              autoComplete="on"
+              autoComplete="current-password "
               placeholder="비밀번호"
             />
             <PasswordInput
@@ -148,23 +138,14 @@ const SignupPage = () => {
               }
               {...form.getInputProps('confirmPassword')}
               id="confirmPassword"
-              autoComplete="on"
+              autoComplete="current-password "
               placeholder="비밀번호 확인"
             />
-
-            <Radio.Group
-              defaultValue={'react'}
-              label={
-                <Text size="md" weight={500}>
-                  성별
-                </Text>
-              }
-              {...form.getInputProps('gender')}
-            >
-              <Radio value={GenderEnum.M} label="남성" />
-              <Radio value={GenderEnum.F} label="여성" />
-            </Radio.Group>
           </div>
+
+          {state?.code === RESULT_CODE.ALREADY_EXIST && (
+            <Input.Error className="mt-3 mb-3">{state?.message}</Input.Error>
+          )}
 
           <Button type="submit" fullWidth mt="xl" loading={sIsLoading}>
             회원가입

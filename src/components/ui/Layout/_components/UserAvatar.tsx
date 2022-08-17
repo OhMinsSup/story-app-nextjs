@@ -1,19 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 // hooks
 import { useMantineTheme } from '@mantine/core';
-
-// utils
-import { getUserThumbnail } from '@utils/utils';
 
 // components
 import { Box, Group, Avatar } from '@mantine/core';
 
 // types
-import type { UserSchema } from '@api/schema/story-api';
+import type { MeResp } from '@api/schema/resp';
 
 interface UserAvatarProps {
-  userInfo?: UserSchema;
+  userInfo?: MeResp;
 }
 
 const UserAvatar = (
@@ -21,7 +18,10 @@ const UserAvatar = (
   ref: React.ForwardedRef<HTMLDivElement>,
 ) => {
   const theme = useMantineTheme();
-  const url = getUserThumbnail(userInfo?.profile);
+  const resource = useMemo(
+    () => userInfo?.profileUrl ?? null,
+    [userInfo?.profileUrl],
+  );
 
   return (
     <Box
@@ -36,7 +36,7 @@ const UserAvatar = (
       {...others}
     >
       <Group align="center" className="md:p-0 p-1">
-        <Avatar src={url} radius="xl" />
+        <Avatar src={resource} radius="xl" />
       </Group>
     </Box>
   );

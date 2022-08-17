@@ -1,16 +1,13 @@
 // ================== Signup ================== //
 
-import type { GenderType } from './story-api';
-
 export interface SignupBody {
-  nickname: string;
   email: string;
+  username: string;
   password: string;
-  avatarSvg: string;
-  defaultProfile: boolean;
-  gender: GenderType;
   profileUrl?: string | null;
 }
+
+// ================== Login ==================== //
 
 export interface LoginBody {
   email: string;

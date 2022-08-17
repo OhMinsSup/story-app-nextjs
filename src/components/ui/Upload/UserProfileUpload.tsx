@@ -4,15 +4,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Avatar } from '@mantine/core';
 
 // utils
-import { generateAvatar } from '@utils/utils';
 import { isEmpty } from '@utils/assertion';
 import { getTargetElement } from '@libs/browser-utils';
 
 export type UserProfileProps = {
   loading?: boolean;
-  defaultThumbnail?: boolean;
-  thumbnail?: string;
-  avatarkey?: string;
+  thumbnail?: string | null;
   onUpload?: (...args: any[]) => void;
   onRemove?: (...args: any[]) => void;
   onError?: (...args: any[]) => void;
@@ -22,7 +19,6 @@ export type UserProfileProps = {
 
 const UserProfile: React.FC<UserProfileProps> = ({
   thumbnail,
-  avatarkey,
   onUpload,
   onError,
   onRemove,
@@ -51,6 +47,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
       if (!ele) {
         throw new Error('No target element');
       }
+
       if (ele instanceof HTMLInputElement) {
         if (ele.value) ele.value = '';
       }
@@ -83,14 +80,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
   );
 
   useEffect(() => {
-    const url = thumbnail
-      ? thumbnail
-      : avatarkey
-      ? `data:image/svg+xml;utf8,${encodeURIComponent(
-          generateAvatar(avatarkey),
-        )}`
-      : null;
-    setUrl(url);
+    setUrl(thumbnail ? thumbnail : null);
   }, [thumbnail]);
 
   return (

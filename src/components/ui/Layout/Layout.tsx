@@ -15,11 +15,9 @@ const Layout: React.FC<React.PropsWithChildren<LayoutProps>> = ({
   const {
     header = <Header />,
     styles = () => ({
-      body: {
-        height: '100%',
-      },
       main: {
         padding: 0,
+        minHeight: '100%',
       },
     }),
   } = props || {};
