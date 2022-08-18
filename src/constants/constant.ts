@@ -66,7 +66,9 @@ export const API_ENDPOINTS = {
   },
   APP: {
     AUTH: {
-      SIGNUP: '/auth/signup', // 회원가입
+      SIGNIN: '/auth/signin', // 일반 로그인
+      SIGNUP: '/auth/signup', // 일반 회원가입
+      LOGOUT: '/auth/logout', // 로그아웃
     },
     USERS: {
       ME: '/users', // 내정보

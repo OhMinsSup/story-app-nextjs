@@ -67,7 +67,7 @@ class APIMoudle {
 
   logout = () => {
     return axios.post(
-      API_ENDPOINTS.LOCAL.AUTH.LOGOUT,
+      API_ENDPOINTS.APP.AUTH.LOGOUT,
       {},
       {
         withCredentials: true,

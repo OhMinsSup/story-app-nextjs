@@ -7,7 +7,7 @@ import { useSetAtom } from 'jotai';
 // api
 import { api } from '@api/module';
 import { globalClient } from '@api/client';
-import { getMe } from '@api/queries';
+import { getMeApi } from '@api/queries';
 
 // atom
 import { authAtom } from '@atoms/authAtom';
@@ -25,33 +25,37 @@ import { ApiError } from '@libs/error';
 // types
 import type { ErrorApi } from '@api/schema/story-api';
 import type { SigninResp } from '@api/schema/resp';
-import type { LoginBody } from '@api/schema/body';
+import type { SigninBody } from '@api/schema/body';
 
 interface ErrorState {
   message: string;
+  code: number;
 }
 
 const initialState: ErrorState = {
   message: '',
+  code: -1,
 };
 
 function createMethods(state: ErrorState) {
   return {
-    reset() {
+    reset(): ErrorState {
       return initialState;
     },
-    setErrorMessage(message: string) {
+    setErrorMessage(payload: ErrorState): ErrorState {
+      const { code, message } = payload;
       return {
         ...state,
         message,
+        code,
       };
     },
   };
 }
 
-export const postLogin = (body: LoginBody) =>
+export const postLoginApi = (body: SigninBody) =>
   api.post({
-    url: API_ENDPOINTS.LOCAL.AUTH.LOGIN,
+    url: API_ENDPOINTS.APP.AUTH.SIGNIN,
     body,
   });
 
@@ -64,23 +68,27 @@ export function useLoginMutation() {
     ErrorState
   >(createMethods, initialState);
 
-  const resp = useMutation<SigninResp, ErrorApi, LoginBody>(postLogin, {
-    onMutate() {
-      methods.reset();
-    },
+  const resp = useMutation<SigninResp, ErrorApi, SigninBody>(postLoginApi, {
     async onSuccess(data) {
-      const { ok } = data.data;
-      if (!ok) return;
-
-      await globalClient.prefetchQuery(QUERIES_KEY.ME, getMe);
+      const result = data.data?.result;
+      if (result?.userId) {
+        await globalClient.prefetchQuery(QUERIES_KEY.ME, getMeApi);
+      }
       setAuth(true);
       router.replace(PAGE_ENDPOINTS.INDEX);
     },
     onError(error) {
-      if (ApiError.isApiError(error)) {
-        const { message } = error.toApiErrorJSON();
-        methods.setErrorMessage(message?.message);
-        return;
+      if (ApiError.isAxiosError(error)) {
+        const jsonData = error.response?.data;
+        const message = jsonData?.message?.toString() || '';
+        const code = jsonData?.resultCode || -1;
+
+        methods.setErrorMessage({
+          code,
+          message,
+        });
+      } else {
+        // 500 에러
       }
     },
   });
@@ -88,7 +96,7 @@ export function useLoginMutation() {
   return {
     ...resp,
     get fetcher() {
-      return postLogin;
+      return postLoginApi;
     },
     get state() {
       return state;

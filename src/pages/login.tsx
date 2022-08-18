@@ -29,6 +29,7 @@ import { authAtom } from '@atoms/authAtom';
 
 // constants
 import { PAGE_ENDPOINTS } from '@constants/constant';
+import { KlaytnIcon } from '@components/ui/Icon';
 
 interface FormFieldValues {
   email: string;
@@ -73,8 +74,14 @@ const LoginPage = () => {
         <Text weight={400}>에 로그인하세요.</Text>
 
         <Group grow mb="md" mt="md">
-          <GoogleButton radius="xl">Google</GoogleButton>
-          <GithubButton radius="xl">Github</GithubButton>
+          <Button
+            leftIcon={<KlaytnIcon className="w-5 h-5 fill-current" />}
+            variant="default"
+            color="gray"
+            radius="xl"
+          >
+            Keystore
+          </Button>
         </Group>
         <Divider label="Or" labelPosition="center" my="lg" />
         <form onSubmit={form.onSubmit(onSubmit)}>

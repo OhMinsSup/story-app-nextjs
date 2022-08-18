@@ -7,10 +7,9 @@ export interface SignupBody {
   profileUrl?: string | null;
 }
 
-// ================== Login ==================== //
+// ================== Signin ==================== //
 
-export interface LoginBody {
+export interface SigninBody {
   email: string;
   password: string;
-  deviceId?: number;
 }

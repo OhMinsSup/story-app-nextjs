@@ -1,4 +1,3 @@
-import { STORAGE_KEY } from '@constants/constant';
 import qs from 'qs';
 import axios from 'axios';
 
@@ -34,13 +33,6 @@ export const validKeystore = (keystore?: string | ArrayBuffer | null) => {
   const parsedKeystore = JSON.parse(keystore);
   const keys = ['version', 'id', 'address', 'keyring'];
   return keys.every((key) => parsedKeystore[key]);
-};
-
-export const userInfo = () => {
-  if (typeof window === 'undefined') return null;
-  const stringify = localStorage.getItem(STORAGE_KEY.USER_KEY);
-  if (!stringify) return null;
-  return JSON.parse(stringify) ?? null;
 };
 
 export function isAxiosError<R = any>(
@@ -125,12 +117,3 @@ export const klayUnits = [
 export function now() {
   return Math.floor(Date.now() / 1000);
 }
-
-export const placeholderDataFn = (result: any): Schema<any> => {
-  return {
-    ok: true,
-    resultCode: 0,
-    message: '',
-    result,
-  };
-};
