@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 
 // compoents
-import { GoogleButton, GithubButton } from '@components/ui/Button';
 import { LoginSeo } from '@components/ui/Seo';
 import { Layout } from '@components/ui/Layout';
+import { KlaytnIcon } from '@components/ui/Icon';
 import {
   Anchor,
   Button,
@@ -12,6 +13,7 @@ import {
   Group,
   PasswordInput,
   Text,
+  FileButton,
   TextInput,
 } from '@mantine/core';
 
@@ -29,7 +31,11 @@ import { authAtom } from '@atoms/authAtom';
 
 // constants
 import { PAGE_ENDPOINTS } from '@constants/constant';
-import { KlaytnIcon } from '@components/ui/Icon';
+
+// dynamic
+const LoginKeystorePopup = dynamic(
+  () => import('@components/auth/LoginKeystorePopup'),
+);
 
 interface FormFieldValues {
   email: string;
@@ -39,6 +45,8 @@ interface FormFieldValues {
 const LoginPage = () => {
   const router = useRouter();
   const isAuthication = useAtomValue(authAtom);
+  const [file, setFile] = useState<File | null>(null);
+  const resetRef = useRef<() => void>(null);
 
   const initialValues = useMemo(() => {
     return {
@@ -52,13 +60,18 @@ const LoginPage = () => {
     initialValues,
   });
 
-  const { mutateAsync, isLoading } = useLoginMutation();
+  const { mutate, isLoading } = useLoginMutation();
 
-  const onSubmit = (input: FormFieldValues) => mutateAsync(input);
+  const onSubmit = (input: FormFieldValues) => mutate(input);
 
   const onMoveToSignUp = useCallback(() => {
     router.push(PAGE_ENDPOINTS.SIGNUP);
   }, [router]);
+
+  const onCloseModal = useCallback(() => {
+    setFile(null);
+    resetRef.current?.();
+  }, []);
 
   if (isAuthication) {
     router.replace(PAGE_ENDPOINTS.INDEX);
@@ -74,14 +87,23 @@ const LoginPage = () => {
         <Text weight={400}>에 로그인하세요.</Text>
 
         <Group grow mb="md" mt="md">
-          <Button
-            leftIcon={<KlaytnIcon className="w-5 h-5 fill-current" />}
-            variant="default"
-            color="gray"
-            radius="xl"
+          <FileButton
+            resetRef={resetRef}
+            onChange={setFile}
+            accept=".json,application/json"
           >
-            Keystore
-          </Button>
+            {(props) => (
+              <Button
+                leftIcon={<KlaytnIcon className="w-5 h-5 fill-current" />}
+                variant="default"
+                color="gray"
+                radius="xl"
+                {...props}
+              >
+                Keystore
+              </Button>
+            )}
+          </FileButton>
         </Group>
         <Divider label="Or" labelPosition="center" my="lg" />
         <form onSubmit={form.onSubmit(onSubmit)}>
@@ -140,6 +162,7 @@ const LoginPage = () => {
             </Anchor>
           </Group>
         </form>
+        <LoginKeystorePopup payload={file} onClose={onCloseModal} />
       </Container>
     </Layout>
   );

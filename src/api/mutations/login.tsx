@@ -17,6 +17,7 @@ import {
   API_ENDPOINTS,
   PAGE_ENDPOINTS,
   QUERIES_KEY,
+  STATUS_CODE,
 } from '@constants/constant';
 
 // types
@@ -25,7 +26,7 @@ import { ApiError } from '@libs/error';
 // types
 import type { ErrorApi } from '@api/schema/story-api';
 import type { SigninResp } from '@api/schema/resp';
-import type { SigninBody } from '@api/schema/body';
+import type { SigninBody, SigninByKeystoreBody } from '@api/schema/body';
 
 interface ErrorState {
   message: string;
@@ -58,6 +59,22 @@ export const postLoginApi = (body: SigninBody) =>
     url: API_ENDPOINTS.APP.AUTH.SIGNIN,
     body,
   });
+
+export const postKeystoreLoginApi = (body: SigninByKeystoreBody) => {
+  const formData = new FormData();
+  formData.append('file', body.file);
+  formData.append('password', body.password);
+
+  return api.post({
+    url: API_ENDPOINTS.APP.AUTH.KEYSTORE.SIGNIN,
+    body: formData,
+    config: {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+  });
+};
 
 export function useLoginMutation() {
   const router = useRouter();
@@ -97,6 +114,69 @@ export function useLoginMutation() {
     ...resp,
     get fetcher() {
       return postLoginApi;
+    },
+    get state() {
+      return state;
+    },
+    get method() {
+      return methods;
+    },
+  };
+}
+
+export function useLoginByKeystoreMutation() {
+  const router = useRouter();
+  const setAuth = useSetAtom(authAtom);
+
+  const [state, methods] = useMethods<
+    ReturnType<typeof createMethods>,
+    ErrorState
+  >(createMethods, initialState);
+
+  const resp = useMutation<SigninResp, ErrorApi, SigninByKeystoreBody>(
+    postKeystoreLoginApi,
+    {
+      async onSuccess(data) {
+        const result = data.data?.result;
+        if (result?.userId) {
+          await globalClient.prefetchQuery(QUERIES_KEY.ME, getMeApi);
+        }
+        setAuth(true);
+        router.replace(PAGE_ENDPOINTS.INDEX);
+      },
+      onError(error) {
+        if (ApiError.isAxiosError(error)) {
+          switch (error.response?.status) {
+            case STATUS_CODE.SERVER_ERROR: {
+              return;
+            }
+            case STATUS_CODE.NOT_FOUND: {
+              // router
+              return;
+            }
+            default: {
+              const jsonData = error.response?.data;
+              const message = jsonData?.message?.toString() || '';
+              const code = jsonData?.resultCode || -1;
+
+              methods.setErrorMessage({
+                code,
+                message,
+              });
+              return;
+            }
+          }
+        } else {
+          // 500 에러
+        }
+      },
+    },
+  );
+
+  return {
+    ...resp,
+    get fetcher() {
+      return postKeystoreLoginApi;
     },
     get state() {
       return state;

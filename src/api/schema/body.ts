@@ -13,3 +13,8 @@ export interface SigninBody {
   email: string;
   password: string;
 }
+
+export interface SigninByKeystoreBody {
+  file: File;
+  password: string;
+}

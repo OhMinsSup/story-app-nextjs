@@ -61,9 +61,9 @@ export const schema = {
       .required('비밀번호 확인을 입력해주세요.'),
     profileUrl: yup.string().optional().nullable(true).notRequired(),
   }),
-  keystore: yup.object().shape({
-    file: yup.mixed().required('keystore 파일을 입력해 주세요.'),
-    password: yup.string().required('비밀번호를 입력해 주세요.'),
+  loginByKeystore: yup.object().shape({
+    file: yup.mixed().required('keystore json 파일을 등록해주세요.'),
+    keystorePassword: yup.string().required('비밀번호를 입력해 주세요.'),
   }),
   story: yup.object().shape({
     media: common.media.required('미디어를 등록해주세요.'),
