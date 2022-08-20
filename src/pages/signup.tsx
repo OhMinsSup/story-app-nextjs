@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
@@ -33,21 +33,12 @@ interface FormFieldValues {
 }
 
 const SignupPage = () => {
-  const initialValues = useMemo(() => {
-    return {
-      username: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      profileUrl: undefined,
-    };
-  }, []);
-
   const {
     mutateAsync: signupFn,
     isLoading: sIsLoading,
     state,
   } = useSignupMutation();
+
   const { mutateAsync: uploadFn, isLoading: uIsLoading } = useUploadMutation({
     onSuccess(data) {
       form.setFieldValue('profileUrl', data.path);
@@ -56,7 +47,13 @@ const SignupPage = () => {
 
   const form = useForm<FormFieldValues>({
     validate: yupResolver(schema.signup),
-    initialValues,
+    initialValues: {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      profileUrl: undefined,
+    },
   });
 
   const onSubmit = (input: FormFieldValues) => signupFn(input);
