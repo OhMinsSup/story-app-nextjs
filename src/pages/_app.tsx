@@ -28,16 +28,23 @@ import { api } from '@api/module';
 import type { ThemeType } from '@atoms/commonAtom';
 import type { AppContext, AppProps } from 'next/app';
 import type { MeResp } from '@api/schema/resp';
+import type { NextPage } from 'next';
 
-interface AppPageProps extends AppProps {
-  Component: any;
+import { useAtomsDebugValue } from 'jotai/devtools';
+
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: React.ReactElement) => React.ReactNode;
+};
+
+interface AppPropsWithLayout extends AppProps {
+  Component: NextPageWithLayout;
   isAuthication: boolean;
   theme: ThemeType;
 }
 
-import { useAtomsDebugValue } from 'jotai/devtools';
+function AppPage({ Component, pageProps, ...resetProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout ?? ((page) => page);
 
-function AppPage({ Component, pageProps, ...resetProps }: AppPageProps) {
   useHydrateAtoms([
     [authAtom, resetProps.isAuthication],
     [themeAtom, resetProps.theme],
@@ -53,7 +60,7 @@ function AppPage({ Component, pageProps, ...resetProps }: AppPageProps) {
         isAuthication={resetProps.isAuthication}
         theme={resetProps.theme}
       >
-        <Component {...pageProps} />
+        {getLayout(<Component {...pageProps} />)}
       </RootProvider>
     </>
   );

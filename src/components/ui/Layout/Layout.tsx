@@ -30,3 +30,11 @@ const Layout: React.FC<React.PropsWithChildren<LayoutProps>> = ({
 };
 
 export default Layout;
+
+export const createGetLayout = (
+  layoutProps?: LayoutProps,
+): ((page: React.ReactElement) => React.ReactNode) => {
+  return function getLayout(page: React.ReactElement) {
+    return <Layout {...layoutProps}>{page}</Layout>;
+  };
+};

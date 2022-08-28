@@ -13,11 +13,11 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 const IndexPage = () => {
-  return (
-    <Layout>
-      <Home />
-    </Layout>
-  );
+  return <Home />;
 };
 
 export default IndexPage;
+
+IndexPage.getLayout = function getLayout(page: any) {
+  return <Layout>{page}</Layout>;
+};

@@ -81,6 +81,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.2.2",
+    "@playwright/test": "^1.25.1",
     "@types/lodash-es": "^4.17.6",
     "@types/node": "^18.0.6",
     "@types/qs": "^6.9.7",

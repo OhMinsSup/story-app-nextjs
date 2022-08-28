@@ -26,7 +26,7 @@ const LoginKeystorePopup = dynamic(
   () => import('@components/auth/LoginKeystorePopup'),
 );
 
-const LoginPage = () => {
+function LoginPage() {
   const [file, setFile] = useState<File | null>(null);
   const resetRef = useRef<() => void>(null);
 
@@ -38,7 +38,7 @@ const LoginPage = () => {
   }, []);
 
   return (
-    <Layout>
+    <>
       <LoginSeo />
       <Container size={420} my={40}>
         <Text size="lg" weight={700}>
@@ -69,8 +69,12 @@ const LoginPage = () => {
         <LoginForm isLoading={isLoading} submit={mutate} />
         <LoginKeystorePopup payload={file} onClose={onCloseModal} />
       </Container>
-    </Layout>
+    </>
   );
-};
+}
 
-export default withAuthGuardRedirect(LoginPage);
+export default LoginPage;
+
+LoginPage.getLayout = function getLayout(page: any) {
+  return <Layout>{page}</Layout>;
+};

@@ -79,7 +79,7 @@ const SignupPage = () => {
   );
 
   return (
-    <Layout>
+    <>
       <SignupSeo />
       <Container size={420} my={40} className="space-y-3">
         <div>
@@ -152,8 +152,12 @@ const SignupPage = () => {
           </Button>
         </form>
       </Container>
-    </Layout>
+    </>
   );
 };
 
-export default withAuthGuardRedirect(SignupPage);
+export default SignupPage;
+
+SignupPage.getLayout = function getLayout(page: any) {
+  return <Layout>{page}</Layout>;
+};
