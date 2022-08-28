@@ -77,6 +77,9 @@ export const API_ENDPOINTS = {
     USERS: {
       ME: '/users', // 내정보
     },
+    UPLOAD: {
+      FILE: '/files/upload', // 파일 업로드
+    },
   },
 };
 

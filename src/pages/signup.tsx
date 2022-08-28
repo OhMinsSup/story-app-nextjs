@@ -20,9 +20,9 @@ import {
   TextInput,
 } from '@mantine/core';
 
-// enum
-import { StoryUploadTypeEnum } from '@api/schema/enum';
 import { RESULT_CODE } from '@constants/constant';
+import { withAuthGuardRedirect } from '@libs/react-utils/withHoc';
+import { MEDIA_TYPE, UPLOAD_TYPE } from '@api/schema/story-api';
 
 interface FormFieldValues {
   username: string;
@@ -41,7 +41,7 @@ const SignupPage = () => {
 
   const { mutateAsync: uploadFn, isLoading: uIsLoading } = useUploadMutation({
     onSuccess(data) {
-      form.setFieldValue('profileUrl', data.path);
+      form.setFieldValue('profileUrl', data.secureUrl);
     },
   });
 
@@ -67,11 +67,14 @@ const SignupPage = () => {
   }, [form]);
 
   const onUpload = useCallback(
-    (file: File) =>
-      uploadFn({
+    (file: File) => {
+      const body = {
         file,
-        storyType: StoryUploadTypeEnum.PROFILE,
-      }),
+        mediaType: MEDIA_TYPE.THUMBNAIL,
+        uploadType: UPLOAD_TYPE.THUMBNAIL,
+      } as const;
+      return uploadFn(body);
+    },
     [uploadFn],
   );
 
@@ -153,4 +156,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default withAuthGuardRedirect(SignupPage);

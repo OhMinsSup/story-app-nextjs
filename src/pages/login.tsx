@@ -16,15 +16,10 @@ import {
 
 // hooks
 import { useLoginMutation } from '@api/mutations';
-import { useRouter } from 'next/router';
-import { useAtomValue } from 'jotai';
-
-// atom
-import { authAtom } from '@atoms/authAtom';
 
 // constants
-import { PAGE_ENDPOINTS } from '@constants/constant';
 import { LoginForm } from '@components/auth';
+import { withAuthGuardRedirect } from '@libs/react-utils/withHoc';
 
 // dynamic
 const LoginKeystorePopup = dynamic(
@@ -32,8 +27,6 @@ const LoginKeystorePopup = dynamic(
 );
 
 const LoginPage = () => {
-  const router = useRouter();
-  const isAuthication = useAtomValue(authAtom);
   const [file, setFile] = useState<File | null>(null);
   const resetRef = useRef<() => void>(null);
 
@@ -43,10 +36,6 @@ const LoginPage = () => {
     setFile(null);
     resetRef.current?.();
   }, []);
-
-  if (isAuthication) {
-    router.replace(PAGE_ENDPOINTS.INDEX);
-  }
 
   return (
     <Layout>
@@ -84,4 +73,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default withAuthGuardRedirect(LoginPage);

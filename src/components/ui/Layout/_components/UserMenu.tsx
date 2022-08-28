@@ -9,8 +9,8 @@ import { useLogoutMutation } from '@api/mutations';
 import { PAGE_ENDPOINTS } from '@constants/constant';
 
 // components
-import { Text, Menu } from '@mantine/core';
-import { Settings, UserCircle, Brush } from 'tabler-icons-react';
+import { Text, Menu, useMantineColorScheme } from '@mantine/core';
+import { Settings, UserCircle, Brush, Sun, Moon } from 'tabler-icons-react';
 import { UniversalButton } from '@components/ui/Button';
 import UserAvatar from './UserAvatar';
 
@@ -18,6 +18,12 @@ const UserMenu = () => {
   const router = useRouter();
   const { userInfo } = useMeQuery();
   const { mutateAsync } = useLogoutMutation();
+
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+
+  const onToggleColorScheme = useCallback(() => {
+    toggleColorScheme();
+  }, [toggleColorScheme]);
 
   const onLogout = useCallback(() => {
     mutateAsync();
@@ -69,6 +75,9 @@ const UserMenu = () => {
         </Menu.Item>
         <Menu.Item icon={<Brush size={14} />} p={12} onClick={onMoveToPublish}>
           발행하기
+        </Menu.Item>
+        <Menu.Item p={12} onClick={onToggleColorScheme}>
+          {colorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
         </Menu.Item>
         <Menu.Item p={12} onClick={onLogout}>
           <Text

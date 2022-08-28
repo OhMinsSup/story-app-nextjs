@@ -1,15 +1,19 @@
-import type { Api, MediaSchema, Schema } from './story-api';
+import type { Api } from './story-api';
 import type { UserSchema, WalletSchema } from './user';
+import type { FileSchema } from './file';
 
-interface AuthRespSchema {
+export interface AuthRespSchema {
   userId: number;
   accessToken: string;
 }
 
-interface MeRespSchema
+export interface MeRespSchema
   extends Pick<UserSchema, 'id' | 'email' | 'username' | 'profileUrl'> {
   wallet: Pick<WalletSchema, 'id' | 'address'>;
 }
+
+export interface UploadRespSchema
+  extends Pick<FileSchema, 'id' | 'publicId' | 'mediaType' | 'secureUrl'> {}
 
 // signup response model
 export type AuthResp = Api<AuthRespSchema>;
@@ -20,5 +24,5 @@ export type SigninResp = Api<AuthRespSchema>;
 // me response model
 export type MeResp = MeRespSchema;
 
-// files response model
-export type FileListResp = Schema<MediaSchema[]>;
+// file upload response model
+export type UploadResp = Api<UploadRespSchema>;

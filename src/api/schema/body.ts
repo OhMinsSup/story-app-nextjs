@@ -1,5 +1,7 @@
 // ================== Signup ================== //
 
+import { MediaType, UploadType } from './story-api';
+
 export interface SignupBody {
   email: string;
   username: string;
@@ -17,4 +19,12 @@ export interface SigninBody {
 export interface SigninByKeystoreBody {
   file: File;
   password: string;
+}
+
+// ================== Upload ==================== //
+
+export interface FileUploadBody {
+  file: File;
+  uploadType: UploadType;
+  mediaType: MediaType;
 }
