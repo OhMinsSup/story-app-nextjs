@@ -4,7 +4,7 @@ import React from 'react';
 import Seo from '../Seo';
 
 const NFTsRegister = () => {
-  const title = 'Create NFTs | story';
+  const title = 'Create NFTs | Remix';
   const url = `${SITE_URL}${PAGE_ENDPOINTS.NFT.REGIST}`;
 
   return (

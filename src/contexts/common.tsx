@@ -1,5 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
+import { NavigationProgress } from '@mantine/nprogress';
 
 // atom
 import { authAtom } from '@atoms/authAtom';
@@ -96,6 +97,7 @@ export const CommonProvider: React.FC<
         withGlobalStyles
         withNormalizeCSS
       >
+        <NavigationProgress />
         {children}
       </MantineProvider>
     </ColorSchemeProvider>

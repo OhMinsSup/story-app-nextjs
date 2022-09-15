@@ -23,7 +23,7 @@ export const common = {
       },
     )
     .required('비밀번호를 입력해 주세요.'),
-  nickname: yup
+  username: yup
     .string()
     .min(2, '2자 이상 입력해주세요.')
     .max(20, '20자 이하로 입력해주세요.')
@@ -52,18 +52,18 @@ export const schema = {
     password: common.password,
   }),
   signup: yup.object().shape({
-    nickname: common.nickname,
+    username: common.username,
     email: common.email,
     password: common.password,
     confirmPassword: yup
       .string()
       .oneOf([yup.ref('password')], '비밀번호가 일치하지 않습니다.')
       .required('비밀번호 확인을 입력해주세요.'),
-    gender: common.gender,
+    profileUrl: yup.string().optional().nullable(true).notRequired(),
   }),
-  keystore: yup.object().shape({
-    file: yup.mixed().required('keystore 파일을 입력해 주세요.'),
-    password: yup.string().required('비밀번호를 입력해 주세요.'),
+  loginByKeystore: yup.object().shape({
+    file: yup.mixed().required('keystore json 파일을 등록해주세요.'),
+    keystorePassword: yup.string().required('비밀번호를 입력해 주세요.'),
   }),
   story: yup.object().shape({
     media: common.media.required('미디어를 등록해주세요.'),

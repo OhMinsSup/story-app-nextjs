@@ -4,9 +4,11 @@ import { SITE_URL } from '@constants/env';
 
 import type { DefaultSeoProps } from 'next-seo';
 
-export const Title = 'story';
-export const Description = '나만의 story를 만들어 보세요.';
-export const DefaultImageUrl = '/images/card.jpg';
+export const Title = 'Remix';
+export const Description =
+  "Remix is the world's first and largest web3 marketplace for NFTs and crypto collectibles. Browse, create, buy, sell, and auction NFTs using Remix today.";
+export const DefaultImageUrl = '/images/remix.jpeg';
+const Author = 'Remix';
 
 const SEO_CONSTANTS: DefaultSeoProps = {
   title: Title,
@@ -35,7 +37,24 @@ const SEO_CONSTANTS: DefaultSeoProps = {
     {
       rel: 'shortcut icon',
       type: 'image/x-icon',
-      href: '/images/favicon.ico',
+      href: '/favicons/favicon.ico',
+    },
+    {
+      rel: 'icon',
+      sizes: '32x32',
+      type: 'image/png',
+      href: '/favicons/icon-32x32.png',
+    },
+    {
+      rel: 'icon',
+      sizes: '16x16',
+      type: 'image/png',
+      href: '/favicons/icon-16x16.png',
+    },
+    {
+      rel: 'apple-touch-icon',
+      sizes: '180x180',
+      href: '/favicons/icon-180x180.png',
     },
     {
       rel: 'manifest',
@@ -44,13 +63,21 @@ const SEO_CONSTANTS: DefaultSeoProps = {
   ],
   additionalMetaTags: [
     {
+      name: 'author',
+      content: Author,
+    },
+    {
+      name: 'theme-color',
+      content: '#ffffff',
+    },
+    {
       name: 'viewport',
       content:
-        'width=device-width,  viewport-fit=cover, initial-scale=1.0, maximum-scale=1.0, user-scalable=0',
+        'width=device-width, viewport-fit=cover, initial-scale=1.0, maximum-scale=1.0, user-scalable=0',
     },
     {
       name: 'keywords',
-      content: 'Story, NFT, Marketplace',
+      content: 'NFT, drops, marketplace, web, klaytn, web3, blockchain',
     },
   ],
 };

@@ -1,13 +1,26 @@
 # *
 User-agent: *
 Allow: /
+Crawl-delay: 10
 
 # Baiduspider
 User-agent: Baiduspider
 Disallow: /
 
+# Yandex
+User-agent: Yandex
+Disallow: /
+
+# bingbot
+User-agent: bingbot
+Disallow: /
+
+# Daumoa
+User-agent: Daumoa
+Crawl-delay: 10
+
 # Host
-Host:
+Host: https://localhost
 
 # Sitemaps
-Sitemap:
+Sitemap: https://localhost:3000/sitemap.xml

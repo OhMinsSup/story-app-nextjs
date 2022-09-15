@@ -27,17 +27,24 @@ import { api } from '@api/module';
 // type
 import type { ThemeType } from '@atoms/commonAtom';
 import type { AppContext, AppProps } from 'next/app';
-import type { UserSchema } from '@api/schema/story-api';
+import type { MeResp } from '@api/schema/resp';
+import type { NextPage } from 'next';
 
-interface AppPageProps extends AppProps {
-  Component: any;
+import { useAtomsDebugValue } from 'jotai/devtools';
+
+type NextPageWithLayout = NextPage & {
+  getLayout?: (page: React.ReactElement) => React.ReactNode;
+};
+
+interface AppPropsWithLayout extends AppProps {
+  Component: NextPageWithLayout;
   isAuthication: boolean;
   theme: ThemeType;
 }
 
-import { useAtomsDebugValue } from 'jotai/devtools';
+function AppPage({ Component, pageProps, ...resetProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout ?? ((page) => page);
 
-function AppPage({ Component, pageProps, ...resetProps }: AppPageProps) {
   useHydrateAtoms([
     [authAtom, resetProps.isAuthication],
     [themeAtom, resetProps.theme],
@@ -53,7 +60,7 @@ function AppPage({ Component, pageProps, ...resetProps }: AppPageProps) {
         isAuthication={resetProps.isAuthication}
         theme={resetProps.theme}
       >
-        <Component {...pageProps} />
+        {getLayout(<Component {...pageProps} />)}
       </RootProvider>
     </>
   );
@@ -108,8 +115,8 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
     try {
       // server side user info prefetch react query
       await client.prefetchQuery(QUERIES_KEY.ME, async () => {
-        const response = await api.get<UserSchema>({
-          url: API_ENDPOINTS.LOCAL.USER.ME,
+        const response = await api.get<MeResp>({
+          url: API_ENDPOINTS.APP.USERS.ME,
           config: {
             headers: {
               Cookie: cookie,
@@ -119,7 +126,7 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
         return response.data.result;
       });
 
-      const session = client.getQueryData<UserSchema>(QUERIES_KEY.ME);
+      const session = client.getQueryData<MeResp>(QUERIES_KEY.ME);
       Object.assign(pageProps, {
         dehydratedState: dehydrate(client),
       });

@@ -9,12 +9,12 @@ const LikeButton: React.FC<LikeButtonProps> = ({
   className,
   liked = Math.random() > 0.6,
 }) => {
-  const [isLiked, setIsLiked] = useState(liked);
+  const [isLiked, setIsLiked] = useState(false);
 
   return (
     <button
       type="button"
-      className={`bg-black/50 px-3.5 h-10 flex items-center justify-center rounded-full text-white ${className}`}
+      className={`bg-black/50 px-3.5 h-10 flex items-center justify-center rounded-full text-white ${className} border-none`}
       onClick={() => setIsLiked(!isLiked)}
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">

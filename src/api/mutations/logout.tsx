@@ -1,26 +1,31 @@
 // hooks
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
+import { useSetAtom } from 'jotai';
 
 // api
 import { api } from '@api/module';
+import { globalClient } from '@api/client';
 
 // atoms
-import { useSetAtom } from 'jotai';
-// import { userAtom } from '@atoms/userAtom';
 import { authAtom } from '@atoms/authAtom';
 
-const postLogout = () => api.logout();
+const postLogoutApi = () => api.logout();
 
 export function useLogoutMutation() {
-  const queryClient = useQueryClient();
   // const setUserAtom = useSetAtom(userAtom);
   const setAuthAtom = useSetAtom(authAtom);
 
-  return useMutation(postLogout, {
+  const resp = useMutation(postLogoutApi, {
     onSuccess: () => {
-      // setUserAtom(null);
       setAuthAtom(false);
-      queryClient.clear();
+      globalClient.clear();
     },
   });
+
+  return {
+    ...resp,
+    get fetcher() {
+      return postLogoutApi;
+    },
+  };
 }

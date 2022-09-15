@@ -1,19 +1,34 @@
 // ================== Signup ================== //
 
-import type { GenderType } from './story-api';
+import { MediaType, UploadType } from './story-api';
 
 export interface SignupBody {
-  nickname: string;
   email: string;
+  username: string;
   password: string;
-  avatarSvg: string;
-  defaultProfile: boolean;
-  gender: GenderType;
   profileUrl?: string | null;
 }
 
-export interface LoginBody {
+export interface SignupByKeystoreBody extends SignupBody {
+  file: File;
+}
+
+// ================== Signin ==================== //
+
+export interface SigninBody {
   email: string;
   password: string;
-  deviceId?: number;
+}
+
+export interface SigninByKeystoreBody {
+  file: File;
+  password: string;
+}
+
+// ================== Upload ==================== //
+
+export interface FileUploadBody {
+  file: File;
+  uploadType: UploadType;
+  mediaType: MediaType;
 }

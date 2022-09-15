@@ -9,13 +9,7 @@ import { isBrowser } from '@utils/utils';
 
 // types
 import type { AxiosRequestConfig } from 'axios';
-import type {
-  Schema,
-  Options,
-  Params,
-  FileUploadParams,
-  UploadApi,
-} from '@api/schema/story-api';
+import type { Schema, Options, Params } from '@api/schema/story-api';
 
 class APIMoudle {
   withCredentials: boolean;
@@ -67,33 +61,13 @@ class APIMoudle {
 
   logout = () => {
     return axios.post(
-      API_ENDPOINTS.LOCAL.AUTH.LOGOUT,
+      API_ENDPOINTS.APP.AUTH.LOGOUT,
       {},
       {
         withCredentials: true,
         baseURL: API_HOST,
       },
     );
-  };
-
-  upload = async ({ file, storyType }: FileUploadParams) => {
-    const form = new FormData();
-    form.append('file', file);
-    form.append('storyType', storyType);
-    const authorization = this.authorized();
-    const result: UploadApi = await client.post(
-      API_ENDPOINTS.LOCAL.FILE.ROOT,
-      form,
-      {
-        headers: {
-          ...([authorization, !this.withCredentials].every(Boolean) && {
-            Authorization: `Bearer ${authorization}`,
-          }),
-          'Content-Type': 'multipart/form-data',
-        },
-      },
-    );
-    return result;
   };
 }
 

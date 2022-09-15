@@ -2,31 +2,17 @@ export const PAGE_ENDPOINTS = {
   INDEX: '/',
   LOGIN: '/login/',
   SIGNUP: '/signup/',
-  ILLUSTRATION: '/illustration/',
-  PUBLISH: {
-    ROOT: '/publish/',
-    DETAIL: (id: string | number) => `/publish/${id}/`,
-    MODIFY: (id: string | number) => `/publish/${id}/modify/`,
-  },
   NFT: {
     ROOT: '/nft/',
     ID: (id: string | number) => `/nft/${id}/`,
     REGIST: '/nft/regist/',
   },
-  STORY: {
-    ROOT: '/story/',
-    DETAIL: (id: string | number) => `/story/${id}/`,
+  EXPLORE: {
+    ROOT: '/explore/',
   },
-  SEARCH: {
-    ROOT: '/search/',
-  },
-  TAGS: {
-    ROOT: '/tags/',
-  },
-  PROFILE: {
-    ROOT: '/profile/',
-    DETAIL: (id: string | number) => `/profile/${id}/`,
-    EDIT: (id: string | number) => `/profile/${id}/edit/`,
+  AUTH: {
+    SIGNIN: '/auth/signin/',
+    SIGNUP: '/auth/signup/',
   },
 };
 
@@ -82,10 +68,27 @@ export const API_ENDPOINTS = {
       },
     },
   },
+  APP: {
+    AUTH: {
+      SIGNIN: '/auth/signin', // 일반 로그인
+      SIGNUP: '/auth/signup', // 일반 회원가입
+      LOGOUT: '/auth/logout', // 로그아웃
+      KEYSTORE: {
+        SIGNIN: '/auth/keystore/signin', // keystore 로그인
+        SIGNUP: '/auth/keystore/signup', // keystore 회원가입
+      },
+    },
+    USERS: {
+      ME: '/users', // 내정보
+    },
+    UPLOAD: {
+      FILE: '/files/upload', // 파일 업로드
+    },
+  },
 };
 
 export const QUERIES_KEY = {
-  ME: [API_ENDPOINTS.LOCAL.USER.ME],
+  ME: [API_ENDPOINTS.APP.USERS.ME],
   FILE_LIST: [API_ENDPOINTS.LOCAL.FILE.LIST],
 };
 
@@ -140,6 +143,10 @@ export const RESULT_CODE = {
   DUPLICATE: 2006,
   // 삭제 권한이 없음
   NO_PERMISSION: 2007,
+  // 지갑 주소 중복
+  ALREADY_EXIST_FOR_WALLET: 2008,
+  // 유효하지 않는 json 파일
+  INVALID_JSON_FILE: 2009,
 
   // 만료된 토큰
   TOKEN_EXPIRED: 4001,
@@ -149,6 +156,7 @@ export const RESULT_CODE = {
   INVALID_TOKEN: 4003,
   // 만료된 서명 토큰
   SIGNATURE_TOKEN: 4004,
+
   // 자신이 생성한 아이템에 좋아요등의 액션을 할 수 없음
   NO_PERMISSION_ACTION: 4005,
   // NFT 발생 실패
@@ -164,4 +172,16 @@ export const RESULT_CODE = {
   PRICE_TOO_LOW: 5002,
   // Klaytn 단위가 올바르지 않는 경우
   INVALID_PARAM: 5003,
+  // klaytn 지갑 생성 오류
+  WALLET_GENERATE_ERROR: 5004,
+};
+
+export const ASSETS_IMAGES = {
+  VECTOR_01: '/images/vector_01.png',
+  VECTOR_HLW: '/images/vector_hlw.svg',
+  ABOUT_HERO_RIGHT: '/images/about_hero_right.png',
+  HIW_01: '/images/hlw_01.png',
+  HIW_02: '/images/hlw_02.png',
+  HIW_03: '/images/hlw_03.png',
+  HIW_04: '/images/hlw_04.png',
 };

@@ -7,19 +7,23 @@ import { useLogoutMutation } from '@api/mutations';
 
 // constants
 import { PAGE_ENDPOINTS } from '@constants/constant';
-import { getUserThumbnail } from '@utils/utils';
 
 // components
-import { Text, Menu, Avatar, Box, Group } from '@mantine/core';
-import { Settings, UserCircle, Brush } from 'tabler-icons-react';
+import { Text, Menu, useMantineColorScheme } from '@mantine/core';
+import { Settings, UserCircle, Brush, Sun, Moon } from 'tabler-icons-react';
 import { UniversalButton } from '@components/ui/Button';
-
 import UserAvatar from './UserAvatar';
 
 const UserMenu = () => {
   const router = useRouter();
   const { userInfo } = useMeQuery();
   const { mutateAsync } = useLogoutMutation();
+
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+
+  const onToggleColorScheme = useCallback(() => {
+    toggleColorScheme();
+  }, [toggleColorScheme]);
 
   const onLogout = useCallback(() => {
     mutateAsync();
@@ -41,8 +45,6 @@ const UserMenu = () => {
     router.push(PAGE_ENDPOINTS.LOGIN);
   }, [router]);
 
-  const url = getUserThumbnail(userInfo?.profile);
-
   if (!userInfo) {
     return (
       <UniversalButton onClick={onMoveToLogin}>
@@ -57,15 +59,6 @@ const UserMenu = () => {
         <UserAvatar userInfo={userInfo} />
       </Menu.Target>
       <Menu.Dropdown>
-        <Group p={12}>
-          <Avatar src={url} radius="xl" />
-          <Box sx={{ flex: 1 }}>
-            <Text size="sm" weight={600}>
-              @{userInfo?.profile?.nickname}
-            </Text>
-          </Box>
-        </Group>
-        <Menu.Divider />
         <Menu.Item
           icon={<UserCircle size={14} />}
           p={12}
@@ -83,13 +76,20 @@ const UserMenu = () => {
         <Menu.Item icon={<Brush size={14} />} p={12} onClick={onMoveToPublish}>
           발행하기
         </Menu.Item>
+        <Menu.Item
+          icon={colorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+          p={12}
+          onClick={onToggleColorScheme}
+        >
+          {colorScheme === 'dark' ? '라이트 모드' : '다크 모드'}
+        </Menu.Item>
         <Menu.Item p={12} onClick={onLogout}>
           <Text
             size="xs"
             component="span"
             style={{ fontFamily: 'Greycliff CF, sans-serif' }}
           >
-            @{userInfo?.profile?.nickname} 계정에서 로그아웃
+            @{userInfo?.username} 계정에서 로그아웃
           </Text>
         </Menu.Item>
       </Menu.Dropdown>

@@ -4,41 +4,6 @@ import type {
   GetStaticPathsContext,
   GetStaticPropsContext,
 } from 'next';
-import { GenderEnum, StoryUploadTypeEnum } from './enum';
-
-// ================= Enum Type Declarations ================= //
-
-export type GenderType = keyof typeof GenderEnum;
-
-export type StoryUploadType =
-  | StoryUploadTypeEnum.STORY
-  | StoryUploadTypeEnum.ETC
-  | StoryUploadTypeEnum.PROFILE;
-
-// ================== File ================== //
-
-export interface FileModel {
-  idx: number;
-  name?: string;
-  contentUrl: string;
-}
-
-export interface FileSchema {
-  id: number;
-  name: string;
-  fileType: string;
-  storyType: string;
-  path: string;
-}
-
-export interface FileUploadParams {
-  storyType: StoryUploadType;
-  file: File;
-}
-
-export type UploadApi = AxiosResponse<Schema<FileSchema>>;
-
-// ================== Common =================== //
 
 export interface Options {
   context:
@@ -56,10 +21,10 @@ export interface Params<Body = any> {
 }
 
 export interface Schema<Result = any> {
-  ok: boolean;
   resultCode: number;
-  message: string | null;
-  result: Result;
+  message: string[] | string | null;
+  error: string | null;
+  result: Result | null;
 }
 
 export interface DataIdSchema {
@@ -82,139 +47,21 @@ export type ErrorApi<Result = any> = AxiosError<Schema<Result>>;
 
 export type DataIdApi = AxiosResponse<Schema<DataIdSchema>>;
 
-// ================== Model =================== //
+// ================== Common =================== //
 
-export interface MediaSchema {
-  id: number;
-  contentUrl: string;
-  publidId: string;
-  version: string;
-  type: string;
-  userId: number;
-  createdAt: string;
-  updatedAt: string;
-}
+export const MEDIA_TYPE = {
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  MODEL: 'MODEL',
+  THUMBNAIL: 'THUMBNAIL',
+} as const;
 
-export interface UserSchema {
-  id: number;
-  email: string;
-  profile: ProfileSchema;
-  account: AccountSchema;
-}
+export type MediaType = keyof typeof MEDIA_TYPE;
 
-export interface AccountSchema {
-  address: string;
-}
+export const UPLOAD_TYPE = {
+  PROFILE: 'PROFILE',
+  NFT: 'NFT',
+  THUMBNAIL: 'THUMBNAIL',
+} as const;
 
-export interface ProfileSchema {
-  nickname: string;
-  profileUrl?: string | null;
-  avatarSvg: string;
-  defaultProfile: boolean;
-  canNotification: boolean;
-  gender: GenderType;
-  bio?: string | null;
-}
-
-export interface TagSchema {
-  id: number;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface DeviceSchema {
-  id: number;
-  os: string;
-  token: string | null;
-  userId: number | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface HistorySchema {
-  id: number;
-  status: string;
-  blockNumber: string;
-  blockHash: string;
-  transactionHash: string;
-  createdAt: string;
-}
-
-export interface OfferSchema {
-  id: number;
-  buyer: {
-    profile: Pick<
-      ProfileSchema,
-      'nickname' | 'avatarSvg' | 'defaultProfile' | 'profileUrl'
-    >;
-  };
-  seller: {
-    profile: Pick<
-      ProfileSchema,
-      'nickname' | 'avatarSvg' | 'defaultProfile' | 'profileUrl'
-    >;
-  };
-  price: string;
-  unit: string;
-}
-
-// ================== User  ================== //
-
-export interface ProfileInput {
-  nickname?: string;
-  defaultProfile?: boolean;
-  avatarSvg?: string;
-  profileUrl?: string;
-  bio?: string;
-  gender?: GenderType;
-  canNotification?: boolean;
-}
-
-// ================== Login ================== //
-
-export interface LoginSchema {
-  accessToken: string;
-}
-
-// ================== Signup ================== //
-
-export interface SignupInput {
-  nickname: string;
-  email: string;
-  password: string;
-  avatarSvg: string;
-  defaultProfile: boolean;
-  gender: GenderType;
-  profileUrl?: string | null;
-}
-
-// =================== Story =================== //
-
-export interface StoryInput {
-  title: string;
-  description: string;
-  media: { idx: number; name?: string; contentUrl: string } | null;
-  backgroundColor?: string;
-  externalSite?: string;
-  rangeDate: Date[];
-  tags: string[];
-  isPublic: boolean;
-  price: string;
-}
-
-export interface StorySchema {
-  id: number;
-  name: string;
-  description: string;
-  backgroundColor?: string;
-  salesStatus: 'waiting' | 'sale' | 'complete' | 'end';
-  externalUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-  media: MediaSchema;
-  likes: { userId: number }[];
-  user: UserSchema;
-  owner: UserSchema;
-  tags: TagSchema[];
-}
+export type UploadType = keyof typeof UPLOAD_TYPE;

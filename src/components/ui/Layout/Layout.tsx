@@ -15,11 +15,9 @@ const Layout: React.FC<React.PropsWithChildren<LayoutProps>> = ({
   const {
     header = <Header />,
     styles = () => ({
-      body: {
-        height: '100%',
-      },
       main: {
         padding: 0,
+        minHeight: '100%',
       },
     }),
   } = props || {};
@@ -32,3 +30,11 @@ const Layout: React.FC<React.PropsWithChildren<LayoutProps>> = ({
 };
 
 export default Layout;
+
+export const createGetLayout = (
+  layoutProps?: LayoutProps,
+): ((page: React.ReactElement) => React.ReactNode) => {
+  return function getLayout(page: React.ReactElement) {
+    return <Layout {...layoutProps}>{page}</Layout>;
+  };
+};

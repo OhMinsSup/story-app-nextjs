@@ -4,17 +4,18 @@ import { useMethods } from 'react-use';
 
 // api
 import { api } from '@api/module';
+import { isEmpty } from '@utils/assertion';
 
 // error
 import { ApiError } from '@libs/error';
 
+// constants
+import { API_ENDPOINTS } from '@constants/constant';
+
 // types
-import type {
-  ErrorApi,
-  FileUploadParams,
-  UploadApi,
-  FileSchema,
-} from '@api/schema/story-api';
+import type { ErrorApi } from '@api/schema/story-api';
+import type { FileUploadBody } from '@api/schema/body';
+import type { UploadResp, UploadRespSchema } from '@api/schema/resp';
 
 interface ErrorState {
   message: string;
@@ -38,14 +39,26 @@ function createMethods(state: ErrorState) {
   };
 }
 
-const postUpload = (body: FileUploadParams) =>
-  api.upload({
-    file: body.file,
-    storyType: body.storyType,
+const postUploadApi = async (body: FileUploadBody) => {
+  const formData = new FormData();
+  formData.append('file', body.file);
+  formData.append('mediaType', body.mediaType);
+  formData.append('uploadType', body.uploadType);
+
+  const resp = await api.post({
+    url: API_ENDPOINTS.APP.UPLOAD.FILE,
+    body: formData,
+    config: {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
   });
+  return resp;
+};
 
 interface Options {
-  onSuccess: (data: FileSchema) => void;
+  onSuccess: (data: UploadRespSchema) => void;
 }
 
 export function useUploadMutation(opts?: Options) {
@@ -54,27 +67,30 @@ export function useUploadMutation(opts?: Options) {
     ErrorState
   >(createMethods, initialState);
 
-  const resp = useMutation<UploadApi, ErrorApi, FileUploadParams>(postUpload, {
-    onMutate() {
-      methods.reset();
+  const resp = useMutation<UploadResp, ErrorApi, FileUploadBody>(
+    postUploadApi,
+    {
+      onMutate() {
+        methods.reset();
+      },
+      onSuccess(data) {
+        const result = data.data?.result;
+        if (isEmpty(result) || !result) return;
+        opts?.onSuccess?.(result);
+      },
+      onError(error) {
+        if (ApiError.isAxiosError(error)) {
+          methods.setErrorMessage('에러가 발생했습니다.\n다시 시도해주세요.');
+          return;
+        }
+      },
     },
-    onSuccess(data) {
-      const { ok, result } = data.data;
-      if (!ok) return;
-      opts?.onSuccess?.(result);
-    },
-    onError(error) {
-      if (ApiError.isAxiosError(error)) {
-        methods.setErrorMessage('에러가 발생했습니다.\n다시 시도해주세요.');
-        return;
-      }
-    },
-  });
+  );
 
   return {
     ...resp,
     get fetcher() {
-      return postUpload;
+      return postUploadApi;
     },
     get state() {
       return state;
