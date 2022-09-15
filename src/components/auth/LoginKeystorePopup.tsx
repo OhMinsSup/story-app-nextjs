@@ -43,8 +43,7 @@ const LoginKeystorePopup: React.FC<LoginKeyStorePopupProps> = ({
     });
 
   useEffect(() => {
-    if (!payload) return;
-    form.setFieldValue('file', payload);
+    if (payload) form.setFieldValue('file', payload);
     return () => {
       form.clearErrors();
       form.reset();

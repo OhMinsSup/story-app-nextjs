@@ -39,7 +39,7 @@ const LoginForm: React.FC<LogintFormProps> = ({ isLoading, submit }) => {
   });
 
   const onMoveToSignUp = useCallback(() => {
-    router.push(PAGE_ENDPOINTS.SIGNUP);
+    router.push(PAGE_ENDPOINTS.AUTH.SIGNUP);
   }, [router]);
 
   const onSubmit = (input: FormFieldValues) => submit(input);

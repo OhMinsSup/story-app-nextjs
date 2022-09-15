@@ -9,6 +9,10 @@ export interface SignupBody {
   profileUrl?: string | null;
 }
 
+export interface SignupByKeystoreBody extends SignupBody {
+  file: File;
+}
+
 // ================== Signin ==================== //
 
 export interface SigninBody {

@@ -76,8 +76,12 @@ const UserMenu = () => {
         <Menu.Item icon={<Brush size={14} />} p={12} onClick={onMoveToPublish}>
           발행하기
         </Menu.Item>
-        <Menu.Item p={12} onClick={onToggleColorScheme}>
-          {colorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+        <Menu.Item
+          icon={colorScheme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+          p={12}
+          onClick={onToggleColorScheme}
+        >
+          {colorScheme === 'dark' ? '라이트 모드' : '다크 모드'}
         </Menu.Item>
         <Menu.Item p={12} onClick={onLogout}>
           <Text

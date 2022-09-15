@@ -10,6 +10,10 @@ export const PAGE_ENDPOINTS = {
   EXPLORE: {
     ROOT: '/explore/',
   },
+  AUTH: {
+    SIGNIN: '/auth/signin/',
+    SIGNUP: '/auth/signup/',
+  },
 };
 
 export const API_ENDPOINTS = {

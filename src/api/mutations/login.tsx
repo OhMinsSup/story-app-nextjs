@@ -1,7 +1,6 @@
 // hooks
 import { useMutation } from '@tanstack/react-query';
 import { useMethods } from 'react-use';
-import { useRouter } from 'next/router';
 import { useSetAtom } from 'jotai';
 
 // api
@@ -13,12 +12,7 @@ import { getMeApi } from '@api/queries';
 import { authAtom } from '@atoms/authAtom';
 
 // constants
-import {
-  API_ENDPOINTS,
-  PAGE_ENDPOINTS,
-  QUERIES_KEY,
-  STATUS_CODE,
-} from '@constants/constant';
+import { API_ENDPOINTS, QUERIES_KEY, STATUS_CODE } from '@constants/constant';
 
 // types
 import { ApiError } from '@libs/error';
@@ -77,7 +71,6 @@ export const postKeystoreLoginApi = (body: SigninByKeystoreBody) => {
 };
 
 export function useLoginMutation() {
-  const router = useRouter();
   const setAuth = useSetAtom(authAtom);
 
   const [state, methods] = useMethods<
@@ -92,14 +85,12 @@ export function useLoginMutation() {
         await globalClient.prefetchQuery(QUERIES_KEY.ME, getMeApi);
       }
       setAuth(true);
-      router.replace(PAGE_ENDPOINTS.INDEX);
     },
     onError(error) {
       if (ApiError.isAxiosError(error)) {
         const jsonData = error.response?.data;
         const message = jsonData?.message?.toString() || '';
         const code = jsonData?.resultCode || -1;
-
         methods.setErrorMessage({
           code,
           message,
@@ -125,7 +116,6 @@ export function useLoginMutation() {
 }
 
 export function useLoginByKeystoreMutation() {
-  const router = useRouter();
   const setAuth = useSetAtom(authAtom);
 
   const [state, methods] = useMethods<
@@ -142,7 +132,6 @@ export function useLoginByKeystoreMutation() {
           await globalClient.prefetchQuery(QUERIES_KEY.ME, getMeApi);
         }
         setAuth(true);
-        router.replace(PAGE_ENDPOINTS.INDEX);
       },
       onError(error) {
         if (ApiError.isAxiosError(error)) {

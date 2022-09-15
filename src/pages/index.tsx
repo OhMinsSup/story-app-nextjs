@@ -18,6 +18,6 @@ const IndexPage = () => {
 
 export default IndexPage;
 
-IndexPage.getLayout = function getLayout(page: any) {
+IndexPage.getLayout = function getLayout(page: React.ReactNode) {
   return <Layout>{page}</Layout>;
 };
