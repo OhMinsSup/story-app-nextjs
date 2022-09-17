@@ -65,54 +65,37 @@ export const schema = {
     file: yup.mixed().required('keystore json 파일을 등록해주세요.'),
     keystorePassword: yup.string().required('비밀번호를 입력해 주세요.'),
   }),
-  story: yup.object().shape({
+  item: yup.object().shape({
     media: common.media.required('미디어를 등록해주세요.'),
     title: yup
       .string()
       .max(100, '최대 100자 내외로 입력해주세요.')
       .required('제목을 입력해주세요.'),
-    externalSite: yup
-      .string()
-      .url('연관 사이트는 URL 형식으로 입력해주세요.')
-      .nullable()
-      .optional()
-      .notRequired(),
     description: yup
       .string()
       .max(1000, '최대 1000자 내외로 입력해주세요.')
       .required('내용을 입력해주세요.'),
-    backgroundColor: yup
-      .string()
-      .matches(/^#[0-9a-fA-F]{6}$/, '색상 형식으로 입력해주세요.')
-      .nullable()
-      .optional(),
+    price: yup
+      .number()
+      .test('invalid_price', '정상적인 금액을 입력해주세요.', (value) => {
+        if (value && isNaN(value)) return false;
+        if (value === 0) return false;
+        return true;
+      })
+      .test('max_price', '최대 100 klaytn 이하로 입력해주세요.', (value) => {
+        if (value && value > 100 * 10 ** 18) return false;
+        return true;
+      })
+      .test('min_price', '최소 0.01 klaytn 이상으로 입력해주세요.', (value) => {
+        if (value && value < 1 * 10 ** 9) return false;
+        return true;
+      })
+      .required('가격을 입력해주세요.'),
     tags: yup
       .array()
       .of(yup.string().required())
       .max(5, '최대 5개까지 입력해주세요.')
       .optional(),
-    price: yup
-      .number()
-      .test('invalid_price', '가격 형식으로 입력해주세요.', (value) => {
-        if (value && isNaN(value)) return false;
-        if (value === 0) return false;
-        return true;
-      })
-      .required('가격을 입력해주세요.'),
-    supply: yup
-      .number()
-      .min(1, '발행 수는 최소 1개 입니다.')
-      .test('invalid_price', '발행 수는 최소 1개 입니다.', (value) => {
-        if (!value) return false;
-        if (isNaN(value)) return false;
-        if (value <= 0) return false;
-        return true;
-      })
-      .required('발행 수를 입력해주세요.'),
-    isPublic: yup
-      .boolean()
-      .oneOf([true, false])
-      .required('공개 여부를 선택해주세요.'),
     rangeDate: yup
       .array()
       .of(yup.date().nullable(true).required('시작일을 선택해주세요.'))
@@ -137,5 +120,38 @@ export const schema = {
         return true;
       })
       .required('공개 기간을 선택해주세요.'),
+    isPublic: yup
+      .boolean()
+      .nullable(true)
+      .optional()
+      .required('공개 여부를 선택해주세요.'),
+    backgroundColor: yup
+      .string()
+      .matches(/^#[0-9a-fA-F]{6}$/, '색상 형식으로 입력해주세요.')
+      .nullable(true)
+      .optional(),
+    externalSite: yup
+      .string()
+      .url('연관 사이트는 URL 형식으로 입력해주세요.')
+      .test(
+        'externalSite',
+        '연관 사이트는 URL 형식으로 입력해주세요.',
+        async (link) => {
+          if (!link) return true;
+          if (/^(http|https):\/\/[^ "]+$/.test(link)) {
+            // link ping validation
+            try {
+              const res = await fetch(link);
+              if (res.status === 200) return true;
+              return false;
+            } catch (e) {
+              return false;
+            }
+          }
+          return true;
+        },
+      )
+      .nullable(true)
+      .optional(),
   }),
 };

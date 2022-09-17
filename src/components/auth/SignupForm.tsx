@@ -11,6 +11,7 @@ import {
   useSignupMutation,
   useUploadMutation,
 } from '@api/mutations';
+import { useRouter } from 'next/router';
 
 // components
 import { UserProfileUpload } from '@components/ui/Upload';
@@ -24,13 +25,13 @@ import {
   Text,
   FileInput,
   TextInput,
-  Space,
   ActionIcon,
+  Anchor,
 } from '@mantine/core';
 import { KlaytnIcon } from '@components/ui/Icon';
 
 // constants
-import { RESULT_CODE } from '@constants/constant';
+import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 import { MEDIA_TYPE, UPLOAD_TYPE } from '@api/schema/story-api';
 
 interface FormFieldValues {
@@ -44,6 +45,7 @@ interface FormFieldValues {
 
 const SignupForm = () => {
   const resetRef = useRef<() => void>(null);
+  const router = useRouter();
 
   const {
     mutateAsync: signupFn,
@@ -107,6 +109,10 @@ const SignupForm = () => {
     form.setFieldValue('file', undefined);
     resetRef.current?.();
   }, [form]);
+
+  const onClickMoveToLogin = useCallback(() => {
+    router.push(PAGE_ENDPOINTS.AUTH.SIGNIN);
+  }, [router]);
 
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
@@ -223,6 +229,18 @@ const SignupForm = () => {
       >
         회원가입
       </Button>
+      <Group position="center" mt="xl" spacing={5}>
+        <Text size="sm">로그인 하시겠습니까?</Text>
+        <Anchor
+          component="button"
+          type="button"
+          color="primary"
+          size="md"
+          onClick={onClickMoveToLogin}
+        >
+          로그인
+        </Anchor>
+      </Group>
     </form>
   );
 };

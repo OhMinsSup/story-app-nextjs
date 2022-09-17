@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 
 // components
 import {
@@ -18,7 +18,6 @@ import {
   Image,
 } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
-import { openModal, closeAllModals } from '@mantine/modals';
 import { DateRangePicker } from '@mantine/dates';
 import { Paint, Upload, Network, X, Hash, Calendar } from 'tabler-icons-react';
 
@@ -28,25 +27,14 @@ import { schema } from '@libs/validation/schema';
 
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
-import { useUploadMutation } from '@api/mutations';
-import { useWorker } from '@koale/useworker';
-
-// utils
-import { isEmpty } from '@utils/assertion';
-import parseByBytes from 'magic-bytes.js';
-
-// types
-import type { mp4box } from 'global';
+import { useItemMediaWorker } from '@hooks/useItemMediaWorker';
 
 // enum
-import { StoryUploadTypeEnum } from '@api/schema/enum';
+// import { StoryUploadTypeEnum } from '@api/schema/enum';
 import { KlaytnIcon } from '@components/ui/Icon';
+import type { UploadRespSchema } from '@api/schema/resp';
 
-interface MediaFieldValue {
-  idx: number;
-  name?: string;
-  contentUrl: string;
-}
+interface MediaFieldValue extends UploadRespSchema {}
 
 interface FormFieldValues {
   title: string;
@@ -56,81 +44,13 @@ interface FormFieldValues {
   tags: string[];
   backgroundColor: string;
   price: number;
-  supply: number;
   rangeDate: [Date | null, Date | null];
   isPublic: boolean;
 }
 
-function getmimeFn(file: File) {
-  return new Promise<string | null>((resolve) => {
-    const fileReader = new FileReader();
-    fileReader.onloadend = (e) => {
-      if (!e.target) return resolve(null);
-      const bytes = new Uint8Array(e.target.result as ArrayBuffer);
-      // https://en.wikipedia.org/wiki/List_of_file_signatures.
-      // https://github.com/sindresorhus/file-type
-      // https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
-      // https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
-      const result = parseByBytes(bytes);
-      const guessedFile = result[0];
-      if (!guessedFile) return resolve(null);
-      if (!guessedFile.mime) return resolve(null);
-      resolve(guessedFile.mime);
-    };
-    fileReader.onerror = () => {
-      return resolve(null);
-    };
-    fileReader.readAsArrayBuffer(file);
-  });
-}
-
-// web worker env
-const webcodecsFn = (blob: File) => {
-  return new Promise<mp4box.MP4Info>((resolve, reject) => {
-    const objectURL = URL.createObjectURL(blob);
-    self.fetch(objectURL).then((resp) => {
-      const file = self.MP4Box.createFile();
-      file.onError = (e: unknown) => {
-        URL.revokeObjectURL(objectURL);
-        return reject(e);
-      };
-
-      file.onReady = (info: any) => {
-        URL.revokeObjectURL(objectURL);
-        return resolve(info);
-      };
-
-      const reader = resp.body?.getReader();
-      let offset = 0;
-      // eslint-disable-next-line prefer-const
-      let mp4File = file;
-
-      function appendBuffers({ done, value }: Record<string, any>): any {
-        if (done) {
-          mp4File.flush();
-          return;
-        }
-
-        // eslint-disable-next-line prefer-const
-        let buf = value.buffer;
-        buf.fileStart = offset;
-
-        offset += buf.byteLength;
-
-        mp4File.appendBuffer(buf);
-
-        return reader?.read().then(appendBuffers);
-      }
-
-      reader?.read().then(appendBuffers);
-    });
-  });
-};
-
 // browser env
-const Form = () => {
+const NFTsForm = () => {
   const theme = useMantineTheme();
-  const [isUploading, setUploading] = useState(false);
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   const initialValues: FormFieldValues = useMemo(() => {
@@ -143,13 +63,12 @@ const Form = () => {
       externalSite: '',
       rangeDate: [null, null],
       isPublic: false,
-      supply: 1,
       price: 0,
     };
   }, []);
 
   const form = useForm<FormFieldValues>({
-    validate: yupResolver(schema.story),
+    validate: yupResolver(schema.item),
     initialValues,
   });
 
@@ -165,100 +84,18 @@ const Form = () => {
       beginDate: rangeDate[0] ? rangeDate[0].getTime() : null,
       endDate: rangeDate[1] ? rangeDate[1].getTime() : null,
       tags: values.tags,
-      mediaId: values.media?.idx,
+      mediaId: values.media?.id,
     };
     console.log('body', body);
   };
 
-  const { mutateAsync, isLoading } = useUploadMutation({
-    onSuccess: (data) => {
-      form.setFieldValue('media', {
-        idx: data.id,
-        name: data.name,
-        contentUrl: data.path,
-      });
-    },
+  const { isLoading, onUpload } = useItemMediaWorker({
+    onSuccess: (data) => form.setFieldValue('media', data),
   });
 
-  const [worker] = useWorker(webcodecsFn, {
-    autoTerminate: true,
-    remoteDependencies: [
-      'https://cdn.jsdelivr.net/npm/mp4box@0.5.2/dist/mp4box.all.min.js',
-    ],
-  });
+  console.log('form.values', form.values.media);
 
-  const openUploadErrorModal = useCallback(
-    (message: string) =>
-      openModal({
-        title: '업로드 에러',
-        centered: true,
-        children: (
-          <>
-            <Text size="sm">{message}</Text>
-            <Button
-              onClick={() => closeAllModals()}
-              mt="md"
-              className="float-right"
-            >
-              확인
-            </Button>
-          </>
-        ),
-      }),
-    [],
-  );
-
-  const onUploadStart = useCallback(
-    async (files: File[]) => {
-      const file = files[0];
-      if (!file || isEmpty(file)) return;
-      setUploading(true);
-      const mimeType = await getmimeFn(file);
-      if (!mimeType) {
-        return openUploadErrorModal(
-          '올바른 업로드 형식의 파일을 등록해주세요.',
-        );
-      }
-
-      const body = {
-        file,
-        storyType: StoryUploadTypeEnum.STORY,
-      };
-
-      if (mimeType.includes('image')) {
-        await mutateAsync(body);
-      } else if (mimeType.includes('video') || mimeType.includes('audio')) {
-        // https://caniuse.com/mdn-api_mediasource_istypesupported
-        // https://developer.mozilla.org/ko/docs/Web/Media/Formats/Video_codecs
-        // https://developer.mozilla.org/ko/docs/Web/Media/Formats/codecs_parameter
-        const webcodecs = await worker(file);
-        const tracks = webcodecs.tracks
-          .filter((t) => ['video', 'audio'].includes(t.type))
-          .map((t) => ({
-            type: t.type,
-            codec: t.codec,
-          }));
-        // 'video/mp4; codecs="avc1.4d400c,mp4a.40.2,mp4a.40.2"'
-        const mimeCodec = `${file.type}; codecs="${tracks
-          .map((t) => t.codec)
-          .join(',')}"`;
-        if ('MediaSource' in window && MediaSource.isTypeSupported(mimeCodec)) {
-          console.log('supported MIME type or codec:', mimeCodec);
-          await mutateAsync(body);
-        } else {
-          console.error('Unsupported MIME type or codec: ', mimeCodec);
-          return openUploadErrorModal(
-            '브라우저에서 지원하지 않는 코덱 형식입니다.',
-          );
-        }
-      } else {
-        return openUploadErrorModal(
-          '올바른 업로드 형식의 파일을 등록해주세요.',
-        );
-      }
-    },
-    [mutateAsync, openUploadErrorModal, worker],
-  );
+  // {"result":{"id":2,"publicId":"media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm","secureUrl":"https://res.cloudinary.com/planeshare/image/upload/v1663410100/media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm.jpg","mediaType":"IMAGE"},"resultCode":0,"message":null,"error":null}
 
   return (
     <>
@@ -275,12 +112,8 @@ const Form = () => {
         <Dropzone
           className="w-full h-80 flex justify-center items-center"
           loading={isLoading}
-          onDrop={onUploadStart}
+          onDrop={onUpload}
           multiple={false}
-          onReject={(files) => {
-            console.log('rejected files', files);
-            setUploading(false);
-          }}
           maxFiles={1}
           maxSize={1 * 1024 ** 2}
         >
@@ -477,4 +310,4 @@ const Form = () => {
   );
 };
 
-export default Form;
+export default NFTsForm;
