@@ -8,10 +8,11 @@ import { QueryClient, dehydrate } from '@tanstack/react-query';
 import { useHydrateAtoms } from 'jotai/utils';
 import { authAtom } from '@atoms/authAtom';
 import { themeAtom } from '@atoms/commonAtom';
+import { useAtomsDebugValue } from 'jotai/devtools';
 
 // components
 import { RootProvider } from '@contexts/provider';
-import { DefaultSeo } from '@components/ui/Seo';
+import { DefaultSeo } from '@components/ui/SEO';
 
 // utils
 import { isString } from '@utils/assertion';
@@ -29,8 +30,6 @@ import type { ThemeType } from '@atoms/commonAtom';
 import type { AppContext, AppProps } from 'next/app';
 import type { MeResp } from '@api/schema/resp';
 import type { NextPage } from 'next';
-
-import { useAtomsDebugValue } from 'jotai/devtools';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: React.ReactElement) => React.ReactNode;

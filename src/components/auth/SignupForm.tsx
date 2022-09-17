@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from 'react';
+import { Upload as UploadIcon, Trash as TrashIcon } from 'tabler-icons-react';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
@@ -21,7 +22,10 @@ import {
   Input,
   PasswordInput,
   Text,
+  FileInput,
   TextInput,
+  Space,
+  ActionIcon,
 } from '@mantine/core';
 import { KlaytnIcon } from '@components/ui/Icon';
 
@@ -99,6 +103,11 @@ const SignupForm = () => {
     [uploadFn],
   );
 
+  const onRemoveKeystoreFile = useCallback(() => {
+    form.setFieldValue('file', undefined);
+    resetRef.current?.();
+  }, [form]);
+
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <UserProfileUpload
@@ -109,9 +118,16 @@ const SignupForm = () => {
       />
       <Divider label="인증" labelPosition="left" my="lg" />
       <div>
-        <Text size="md" weight={500}>
-          Keystore 인증
-        </Text>
+        <div className="flex justify-between items-center">
+          <Text size="md" weight={500}>
+            Keystore 인증
+          </Text>
+          {form.values.file && (
+            <ActionIcon variant="subtle" onClick={onRemoveKeystoreFile}>
+              <TrashIcon size={16} />
+            </ActionIcon>
+          )}
+        </div>
         <Group grow mb="md" mt="md">
           <FileButton
             resetRef={resetRef}
@@ -132,6 +148,18 @@ const SignupForm = () => {
             )}
           </FileButton>
         </Group>
+        {form.values.file && (
+          <FileInput
+            disabled
+            styles={{
+              input: {
+                fontSize: '12px',
+              },
+            }}
+            value={form.values.file}
+            icon={<UploadIcon size={14} />}
+          />
+        )}
       </div>
       <Divider label="정보" labelPosition="left" my="lg" />
       <div className="flex flex-col space-y-3">

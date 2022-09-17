@@ -4,7 +4,7 @@ import React from 'react';
 import { Title, Text } from '@mantine/core';
 import { Form } from '@components/nft';
 import { Layout } from '@components/ui/Layout';
-import { NFTsRegisterSeo } from '@components/ui/Seo';
+import { NFTsRegisterSeo } from '@components/ui/SEO';
 import { ModalsProvider } from '@mantine/modals';
 
 function NFTsRegisterPage() {

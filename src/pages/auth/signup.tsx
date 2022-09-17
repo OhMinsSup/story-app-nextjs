@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 // components
-import { SignupSeo } from '@components/ui/Seo';
+import { SignupSeo } from '@components/ui/SEO';
 import { Layout } from '@components/ui/Layout';
 import { Container, Text } from '@mantine/core';
 import { SignupForm } from '@components/auth';
