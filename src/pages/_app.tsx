@@ -12,7 +12,7 @@ import { useAtomsDebugValue } from 'jotai/devtools';
 
 // components
 import { RootProvider } from '@contexts/provider';
-import { DefaultSeo } from '@components/ui/SEO';
+import { DefaultSeo } from '@components/ui/Seo';
 
 // utils
 import { isString } from '@utils/assertion';

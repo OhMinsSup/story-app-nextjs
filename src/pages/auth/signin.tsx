@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 
 // compoents
-import { LoginSeo } from '@components/ui/SEO';
+import { LoginSeo } from '@components/ui/Seo';
 import { Layout } from '@components/ui/Layout';
 import { KlaytnIcon } from '@components/ui/Icon';
 import { LoginForm } from '@components/auth';
