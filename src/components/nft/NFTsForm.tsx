@@ -9,17 +9,13 @@ import {
   TextInput,
   Text,
   Switch,
-  Input,
   useMantineTheme,
-  Group,
   Button,
   SimpleGrid,
   Divider,
-  Image,
 } from '@mantine/core';
-import { Dropzone } from '@mantine/dropzone';
 import { DateRangePicker } from '@mantine/dates';
-import { Paint, Upload, Network, X, Hash, Calendar } from 'tabler-icons-react';
+import { Paint, Network, Hash, Calendar } from 'tabler-icons-react';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
@@ -27,14 +23,13 @@ import { schema } from '@libs/validation/schema';
 
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
-import { useItemMediaWorker } from '@hooks/useItemMediaWorker';
+import { useUpload } from '@hooks/useUpload';
 
 // enum
 // import { StoryUploadTypeEnum } from '@api/schema/enum';
 import { KlaytnIcon } from '@components/ui/Icon';
 import type { UploadRespSchema } from '@api/schema/resp';
 import { MediaUpload } from './_components';
-import { FormItem } from '@components/ui/Shared';
 
 interface MediaFieldValue extends UploadRespSchema {}
 
@@ -91,9 +86,9 @@ const NFTsForm = () => {
     console.log('body', body);
   };
 
-  const { isLoading, onUpload } = useItemMediaWorker({
-    onSuccess: (data) => form.setFieldValue('media', data),
-  });
+  // const { isLoading, onUpload } = useUpload({
+  //   onSuccess: (data) => form.setFieldValue('media', data),
+  // });
 
   // useEffect(() => {
   //   form.setFieldValue('media', {
@@ -105,49 +100,45 @@ const NFTsForm = () => {
   //   });
   // }, []);
 
-  // console.log('form.values', form.values.media);
+  console.log('form.values', form.values.media);
 
   // {"result":{"id":2,"publicId":"media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm","secureUrl":"https://res.cloudinary.com/planeshare/image/upload/v1663410100/media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm.jpg","mediaType":"IMAGE"},"resultCode":0,"message":null,"error":null}
 
   return (
     <>
-      <MediaUpload />
+      <MediaUpload media={form.values.media} />
       <form
         className="form-area mt-4 space-y-4"
         onSubmit={form.onSubmit(onSubmit)}
       >
-        <FormItem label="제목">
-          <TextInput
-            id="title"
-            required
-            placeholder="제목을 입력하세요."
-            spellCheck="false"
-            aria-label="title"
-            {...form.getInputProps('title')}
-          />
-        </FormItem>
+        <TextInput
+          label="제목"
+          id="title"
+          required
+          placeholder="제목을 입력하세요."
+          aria-label="title"
+          {...form.getInputProps('title')}
+        />
 
-        <FormItem label="연관 사이트">
-          <TextInput
-            id="externalSite"
-            icon={<Network />}
-            placeholder="https://yoursite.io/item/123"
-            description="Story는 이 항목의 세부 사항 페이지에 이 URL에 대한 링크를 포함하므로 사용자가 클릭하여 자세히 알아볼 수 있습니다. 자세한 내용은 자신의 웹페이지에 링크할 수 있습니다."
-            {...form.getInputProps('externalSite')}
-          />
-        </FormItem>
+        <TextInput
+          label="연관 사이트"
+          id="externalSite"
+          icon={<Network />}
+          placeholder="https://yoursite.io/item/123"
+          description="Story는 이 항목의 세부 사항 페이지에 이 URL에 대한 링크를 포함하므로 사용자가 클릭하여 자세히 알아볼 수 있습니다. 자세한 내용은 자신의 웹페이지에 링크할 수 있습니다."
+          {...form.getInputProps('externalSite')}
+        />
 
-        <FormItem label="설명">
-          <Textarea
-            id="description"
-            autosize
-            minRows={5}
-            description="설명은 이미지 아래 항목의 세부 정보 페이지에 포함됩니다."
-            placeholder="설명은 이미지 아래 항목의 세부 정보 페이지에 포함됩니다."
-            spellCheck="false"
-            {...form.getInputProps('description')}
-          />
-        </FormItem>
+        <Textarea
+          label="설명"
+          id="description"
+          autosize
+          minRows={5}
+          description="설명은 이미지 아래 항목의 세부 정보 페이지에 포함됩니다."
+          placeholder="설명은 이미지 아래 항목의 세부 정보 페이지에 포함됩니다."
+          spellCheck="false"
+          {...form.getInputProps('description')}
+        />
 
         <SimpleGrid
           cols={2}
@@ -156,90 +147,70 @@ const NFTsForm = () => {
             { maxWidth: 600, cols: 1, spacing: 'sm' },
           ]}
         >
-          <FormItem label="태그">
-            <MultiSelect
-              id="tags"
-              description="NFT에 연관된 키워드를 등록해주세요."
-              data={form.values.tags}
-              placeholder="태그 (옵션)"
-              searchable
-              icon={<Hash size={16} />}
-              limit={5}
-              classNames={{ label: 'font-bold' }}
-              nothingFound="Nothing found"
-              withinPortal
-              creatable
-              error={form.errors.tags}
-              getCreateLabel={(query) => `+ Create ${query}`}
-              onCreate={(query) => {
-                const item = { value: query, label: query };
-                form.setFieldValue('tags', [...form.values.tags, query]);
-                return item;
-              }}
-            />
-          </FormItem>
+          <MultiSelect
+            id="tags"
+            label="태그"
+            description="NFT에 연관된 키워드를 등록해주세요."
+            data={form.values.tags}
+            placeholder="태그 (옵션)"
+            searchable
+            icon={<Hash size={16} />}
+            limit={5}
+            classNames={{ label: 'font-bold' }}
+            nothingFound="Nothing found"
+            withinPortal
+            creatable
+            error={form.errors.tags}
+            getCreateLabel={(query) => `+ Create ${query}`}
+            onCreate={(query) => {
+              const item = { value: query, label: query };
+              form.setFieldValue('tags', [...form.values.tags, query]);
+              return item;
+            }}
+          />
 
-          <FormItem label="배경색">
-            <ColorInput
-              description="컬러 코드(6자리 HEX값)를 직접 입력할 수 있습니다."
-              icon={<Paint size={16} />}
-              {...form.getInputProps('backgroundColor')}
-            />
-          </FormItem>
+          <ColorInput
+            label="배경색"
+            description="컬러 코드(6자리 HEX값)를 직접 입력할 수 있습니다."
+            icon={<Paint size={16} />}
+            {...form.getInputProps('backgroundColor')}
+          />
         </SimpleGrid>
 
         <SimpleGrid
-          cols={3}
+          cols={2}
           breakpoints={[
-            { maxWidth: 980, cols: 3, spacing: 'md' },
             { maxWidth: 755, cols: 2, spacing: 'sm' },
             { maxWidth: 600, cols: 1, spacing: 'sm' },
           ]}
         >
-          <FormItem label="가격">
-            <NumberInput
-              required
-              hideControls
-              icon={<KlaytnIcon className="w-4 h-4 fill-current" />}
-              description="실제 사용자에게 판매되는 가격입니다."
-              parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
-              {...form.getInputProps('price')}
-              formatter={(value: any) =>
-                Number.isNaN(parseFloat(value))
-                  ? ''
-                  : `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              }
-            />
-          </FormItem>
+          <NumberInput
+            required
+            label="가격"
+            hideControls
+            icon={<KlaytnIcon className="w-4 h-4 fill-current" />}
+            description="실제 사용자에게 판매되는 가격입니다."
+            parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
+            {...form.getInputProps('price')}
+            formatter={(value: any) =>
+              Number.isNaN(parseFloat(value))
+                ? ''
+                : `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            }
+          />
 
-          <FormItem label="발행수">
-            <NumberInput
-              required
-              hideControls
-              description="발행할 수 있는 항목의 수입니다."
-              {...form.getInputProps('supply')}
-              parser={(value: any) => value.replace(/\$\s?|(,*)/g, '')}
-              formatter={(value: any) =>
-                Number.isNaN(parseFloat(value))
-                  ? ''
-                  : `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-              }
-            />
-          </FormItem>
-
-          <FormItem label="판매기간">
-            <DateRangePicker
-              locale="ko"
-              required
-              icon={<Calendar size={16} />}
-              description="NFT가 판매되는 기간입니다."
-              classNames={{
-                label: 'font-bold',
-              }}
-              dropdownType={isMobile ? 'modal' : 'popover'}
-              {...form.getInputProps('rangeDate')}
-            />
-          </FormItem>
+          <DateRangePicker
+            locale="ko"
+            label="판매기간"
+            required
+            icon={<Calendar size={16} />}
+            description="NFT가 판매되는 기간입니다."
+            classNames={{
+              label: 'font-bold',
+            }}
+            dropdownType={isMobile ? 'modal' : 'popover'}
+            {...form.getInputProps('rangeDate')}
+          />
         </SimpleGrid>
 
         <Divider />
