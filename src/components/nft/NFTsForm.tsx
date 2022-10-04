@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 // components
 import {
@@ -23,7 +23,6 @@ import { schema } from '@libs/validation/schema';
 
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
-import { useUpload } from '@hooks/useUpload';
 
 // enum
 // import { StoryUploadTypeEnum } from '@api/schema/enum';
@@ -86,27 +85,34 @@ const NFTsForm = () => {
     console.log('body', body);
   };
 
-  // const { isLoading, onUpload } = useUpload({
-  //   onSuccess: (data) => form.setFieldValue('media', data),
-  // });
+  useEffect(() => {
+    form.setFieldValue('media', {
+      id: 2,
+      publicId: 'media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm',
+      secureUrl:
+        'https://res.cloudinary.com/planeshare/image/upload/v1663410100/media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm.jpg',
+      mediaType: 'IMAGE',
+    });
+  }, []);
 
-  // useEffect(() => {
-  //   form.setFieldValue('media', {
-  //     id: 2,
-  //     publicId: 'media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm',
-  //     secureUrl:
-  //       'https://res.cloudinary.com/planeshare/image/upload/v1663410100/media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm.jpg',
-  //     mediaType: 'IMAGE',
-  //   });
-  // }, []);
+  const onUploaded = useCallback(
+    (data: any) => {
+      form.setFieldValue('media', data);
+    },
+    [form],
+  );
 
-  console.log('form.values', form.values.media);
-
-  // {"result":{"id":2,"publicId":"media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm","secureUrl":"https://res.cloudinary.com/planeshare/image/upload/v1663410100/media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm.jpg","mediaType":"IMAGE"},"resultCode":0,"message":null,"error":null}
+  const onUploadRemove = useCallback(() => {
+    form.setFieldValue('media', null);
+  }, [form]);
 
   return (
     <>
-      <MediaUpload media={form.values.media} />
+      <MediaUpload
+        media={form.values.media}
+        onUploaded={onUploaded}
+        onUploadRemove={onUploadRemove}
+      />
       <form
         className="form-area mt-4 space-y-4"
         onSubmit={form.onSubmit(onSubmit)}

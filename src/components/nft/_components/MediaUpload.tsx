@@ -1,47 +1,84 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import type { UploadRespSchema } from '@api/schema/resp';
 import type { Nullable } from '@utils/assertion';
+import { CloudUploadIcon } from '@heroicons/react/outline';
 import { MediaContentsUnStable } from '@components/ui/Media';
 import { useDrop } from '@hooks/useDrop';
 import { useUpload } from '@hooks/useUpload';
 import { UploadIcon } from '@components/ui/Icon';
+import classNames from 'classnames';
+import { Loader, CloseButton, Box, Text } from '@mantine/core';
 
-interface InfoProps {}
+interface InfoProps {
+  isLoading: boolean;
+  onDrop: (files: File[]) => void;
+}
 
-const Info: React.FC<InfoProps> = () => {
+type DropState = 'init' | 'over' | 'drop';
+
+const Info: React.FC<InfoProps> = ({ onDrop, isLoading }) => {
   const ref = useRef<HTMLDivElement | null>(null);
+  const [dropState, setDropState] = useState<DropState>('init');
 
   useDrop(ref, {
-    onDragOver(event?) {
-      console.log('onDragOver', event);
+    onDragOver() {
+      setDropState('over');
     },
-    onDragLeave(event?) {
-      console.log('onDragLeave', event);
+    onDragLeave() {
+      setDropState('init');
     },
-    onDrop(event?) {
-      console.log('onDrop', event);
+    onDrop() {
+      setDropState('drop');
     },
-    onPaste(event?) {
-      console.log('onPaste', event);
+    onFiles(files) {
+      onDrop(files);
     },
   });
 
   return (
     <div
       ref={ref}
-      className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 dark:border-neutral-6000 border-dashed rounded-xl cursor-pointer"
+      className={classNames(
+        'mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer',
+        {
+          'border-blue-600': dropState === 'over',
+        },
+      )}
     >
       <div className="space-y-1 text-center">
-        <UploadIcon className="mx-auto h-12 w-12 text-neutral-400" />
-        <div className="flex text-sm text-neutral-6000 dark:text-neutral-300 items-center">
-          <label
-            htmlFor="file-upload"
-            className="relative cursor-pointer  rounded-md font-medium text-gray-600 hover:text-gray-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:text-gray-500"
-          >
-            <span>Upload a file</span>
-          </label>
-          <p className="pl-1">or drag and drop</p>
-        </div>
+        <>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <>
+              {dropState === 'over' ? (
+                <CloudUploadIcon className="mx-auto h-12 w-12 text-blue-600" />
+              ) : (
+                <UploadIcon className="mx-auto h-12 w-12 text-gray-400" />
+              )}
+              <div
+                className={classNames(
+                  'flex text-sm text-gray-400 items-center',
+                  {
+                    'text-blue-400': dropState === 'over',
+                  },
+                )}
+              >
+                <label
+                  htmlFor="file-upload"
+                  className={classNames(
+                    'relative cursor-pointer rounded-md font-medium text-gray-600',
+                    {
+                      'text-blue-600': dropState === 'over',
+                    },
+                  )}
+                >
+                  <span>Upload a file or drag and drop</span>
+                </label>
+              </div>
+            </>
+          )}
+        </>
       </div>
     </div>
   );
@@ -49,12 +86,26 @@ const Info: React.FC<InfoProps> = () => {
 
 interface MediaUploadProps {
   media: Nullable<UploadRespSchema>;
+  onUploaded: (data: any) => void;
+  onUploadRemove: () => void;
 }
 
-const MediaUpload: React.FC<MediaUploadProps> = ({ media }) => {
+const MediaUpload: React.FC<MediaUploadProps> = ({
+  media,
+  onUploaded,
+  onUploadRemove,
+}) => {
   const { isLoading, onUpload } = useUpload({
-    onSuccess: (data) => console.log(data),
+    onSuccess: onUploaded,
   });
+
+  const onDrop = useCallback(
+    (files: File[]) => {
+      if (!files) return;
+      onUpload(files);
+    },
+    [onUpload],
+  );
 
   return (
     <div>
@@ -66,7 +117,24 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media }) => {
         GLTF. 최대 크기: 10MB
       </span>
       <div className="mt-5">
-        {media ? <MediaContentsUnStable media={media} /> : <Info />}
+        {media ? (
+          <Box className="flex flex-col">
+            <div className="flex justify-between pb-2 items-center">
+              <Text size="sm" align="left" weight={500}>
+                {media.mediaType}
+              </Text>
+              <CloseButton
+                title="remove media item"
+                size="xl"
+                iconSize={20}
+                onClick={onUploadRemove}
+              />
+            </div>
+            <MediaContentsUnStable media={media} />
+          </Box>
+        ) : (
+          <Info onDrop={onDrop} isLoading={isLoading} />
+        )}
       </div>
     </div>
   );

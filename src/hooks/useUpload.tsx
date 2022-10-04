@@ -48,7 +48,9 @@ export const useUpload = (params: UseUploadParams) => {
 
   const onUpload = async (files: File[]) => {
     const file = files[0];
-    if (!file || isEmpty(file)) return;
+    if (!file) {
+      return;
+    }
 
     const mimeType = await getMimeInfo(file);
     if (!mimeType) {
@@ -82,6 +84,8 @@ export const useUpload = (params: UseUploadParams) => {
           '이미지는 최대 10MB까지 업로드 가능합니다.',
         );
       }
+
+      return await mutateAsync(body);
     } else if (mediaType === MEDIA_TYPE.VIDEO) {
       if (file.size > 20971520) {
         return openUploadErrorModal(
