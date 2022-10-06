@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 // components
 import {
@@ -9,7 +9,6 @@ import {
   TextInput,
   Text,
   Switch,
-  useMantineTheme,
   Button,
   SimpleGrid,
   Divider,
@@ -29,6 +28,7 @@ import { useMediaQuery } from '@mantine/hooks';
 import { KlaytnIcon } from '@components/ui/Icon';
 import type { UploadRespSchema } from '@api/schema/resp';
 import { MediaUpload } from './_components';
+import { useItemMutation } from '@api/mutations';
 
 interface MediaFieldValue extends UploadRespSchema {}
 
@@ -46,7 +46,6 @@ interface FormFieldValues {
 
 // browser env
 const NFTsForm = () => {
-  const theme = useMantineTheme();
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   const initialValues: FormFieldValues = useMemo(() => {
@@ -68,6 +67,8 @@ const NFTsForm = () => {
     initialValues,
   });
 
+  const {} = useItemMutation();
+
   const onSubmit = async (values: typeof form.values) => {
     const { rangeDate } = values;
     const body = {
@@ -85,15 +86,15 @@ const NFTsForm = () => {
     console.log('body', body);
   };
 
-  useEffect(() => {
-    form.setFieldValue('media', {
-      id: 2,
-      publicId: 'media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm',
-      secureUrl:
-        'https://res.cloudinary.com/planeshare/image/upload/v1663410100/media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm.jpg',
-      mediaType: 'IMAGE',
-    });
-  }, []);
+  // useEffect(() => {
+  //   form.setFieldValue('media', {
+  //     id: 2,
+  //     publicId: 'media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm',
+  //     secureUrl:
+  //       'https://res.cloudinary.com/planeshare/image/upload/v1663410100/media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm.jpg',
+  //     mediaType: 'IMAGE',
+  //   });
+  // }, []);
 
   const onUploaded = useCallback(
     (data: any) => {

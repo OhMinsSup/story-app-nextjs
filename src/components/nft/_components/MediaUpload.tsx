@@ -1,13 +1,21 @@
 import React, { useCallback, useRef, useState } from 'react';
-import type { UploadRespSchema } from '@api/schema/resp';
-import type { Nullable } from '@utils/assertion';
+import classNames from 'classnames';
+
+// utils
+import { isEmpty, Nullable } from '@utils/assertion';
+import { getTargetElement } from '@libs/browser-utils';
+
+// components
+import { UploadIcon } from '@components/ui/Icon';
+import { Loader, CloseButton, Box, Text } from '@mantine/core';
 import { CloudUploadIcon } from '@heroicons/react/outline';
 import { MediaContentsUnStable } from '@components/ui/Media';
+
+// hooks
 import { useDrop } from '@hooks/useDrop';
 import { useUpload } from '@hooks/useUpload';
-import { UploadIcon } from '@components/ui/Icon';
-import classNames from 'classnames';
-import { Loader, CloseButton, Box, Text } from '@mantine/core';
+
+import type { UploadRespSchema } from '@api/schema/resp';
 
 interface InfoProps {
   isLoading: boolean;
@@ -18,6 +26,8 @@ type DropState = 'init' | 'over' | 'drop';
 
 const Info: React.FC<InfoProps> = ({ onDrop, isLoading }) => {
   const ref = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const [dropState, setDropState] = useState<DropState>('init');
 
   useDrop(ref, {
@@ -35,9 +45,39 @@ const Info: React.FC<InfoProps> = ({ onDrop, isLoading }) => {
     },
   });
 
+  const onUploadStart = useCallback(() => {
+    const ele = getTargetElement(inputRef);
+    if (!ele) {
+      throw new Error('No target element');
+    }
+
+    if (ele instanceof HTMLInputElement) {
+      if (ele.value) ele.value = '';
+    }
+
+    inputRef.current?.click();
+  }, []);
+
+  const onUploadChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files;
+      if (!files || isEmpty(files)) {
+        throw new Error('No file');
+      }
+      const file = files[0];
+      if (!file) {
+        throw new Error('No file');
+      }
+
+      onDrop?.([file]);
+    },
+    [onDrop],
+  );
+
   return (
     <div
       ref={ref}
+      onClick={onUploadStart}
       className={classNames(
         'mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer',
         {
@@ -76,6 +116,13 @@ const Info: React.FC<InfoProps> = ({ onDrop, isLoading }) => {
                   <span>Upload a file or drag and drop</span>
                 </label>
               </div>
+              <input
+                ref={inputRef}
+                hidden
+                type="file"
+                // accept={accept.join(',')}
+                onChange={onUploadChange}
+              />
             </>
           )}
         </>
