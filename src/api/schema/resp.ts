@@ -15,6 +15,10 @@ export interface MeRespSchema
 export interface UploadRespSchema
   extends Pick<FileSchema, 'id' | 'publicId' | 'mediaType' | 'secureUrl'> {}
 
+export interface DataIdRespSchema {
+  dataId: number;
+}
+
 // signup response model
 export type AuthResp = Api<AuthRespSchema>;
 
@@ -26,3 +30,6 @@ export type MeResp = MeRespSchema;
 
 // file upload response model
 export type UploadResp = Api<UploadRespSchema>;
+
+// data id return response model
+export type DataIdResp = Api<DataIdRespSchema>;

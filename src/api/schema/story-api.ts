@@ -27,25 +27,17 @@ export interface Schema<Result = any> {
   result: Result | null;
 }
 
-export interface DataIdSchema {
-  dataId: number;
-}
-
 export interface ListSchema<Result = any> {
   list: Array<Result>;
   total: number;
   pageNo: number;
 }
 
-export type DataIdParams = number | string | null | undefined;
-
 export type Api<Result = any> = AxiosResponse<Schema<Result>>;
 
 export type ListApi<Result = any> = AxiosResponse<Schema<ListSchema<Result>>>;
 
 export type ErrorApi<Result = any> = AxiosError<Schema<Result>>;
-
-export type DataIdApi = AxiosResponse<Schema<DataIdSchema>>;
 
 // ================== Common =================== //
 

@@ -1,15 +1,21 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
-import { NavigationProgress } from '@mantine/nprogress';
 
 // atom
 import { authAtom } from '@atoms/authAtom';
 import { readWriteThemaAtom } from '@atoms/commonAtom';
 import { useAtom, useSetAtom } from 'jotai';
 
+import {
+  startNavigationProgress,
+  resetNavigationProgress,
+  NavigationProgress,
+} from '@mantine/nprogress';
+
 // hooks
 import { useNotfiyManager } from '@libs/state/notify';
 import { useMount } from 'react-use';
+import { useRouter } from 'next/router';
 
 // api
 import { api } from '@api/module';
@@ -23,6 +29,8 @@ export const CommonProvider: React.FC<
   React.PropsWithChildren<CommonProviderProps>
 > = ({ children }) => {
   const notify = useNotfiyManager();
+
+  const router = useRouter();
 
   const setAuth = useSetAtom(authAtom);
 
@@ -54,6 +62,22 @@ export const CommonProvider: React.FC<
       }
     });
   });
+
+  useEffect(() => {
+    const handleStart = (url: string) =>
+      url !== router.asPath && startNavigationProgress();
+    const handleComplete = () => resetNavigationProgress();
+
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleComplete);
+
+    return () => {
+      router.events.off('routeChangeStart', handleStart);
+      router.events.off('routeChangeComplete', handleComplete);
+      router.events.off('routeChangeError', handleComplete);
+    };
+  }, [router.asPath]);
 
   return (
     <ColorSchemeProvider

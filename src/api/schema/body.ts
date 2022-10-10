@@ -1,6 +1,6 @@
-// ================== Signup ================== //
-
 import { MediaType, UploadType } from './story-api';
+
+// ================== Signup ================== //
 
 export interface SignupBody {
   email: string;
@@ -31,4 +31,20 @@ export interface FileUploadBody {
   file: File;
   uploadType: UploadType;
   mediaType: MediaType;
+}
+
+// ================== Item ==================== //
+
+export interface ItemBody {
+  title: string;
+  description: string;
+  price: number;
+  beginDate: number;
+  endDate: number;
+  fileId: number;
+  thumbnailUrl: string;
+  isPublic?: boolean;
+  backgroundColor?: string | null;
+  externalSite?: string | null;
+  tags?: string[] | null;
 }

@@ -1,6 +1,8 @@
 import qs from 'qs';
 import axios from 'axios';
 import parseByBytes from 'magic-bytes.js';
+// @ts-ignore
+import muxjs from 'mux.js';
 
 import type { MutableRefObject } from 'react';
 import type { AxiosError } from 'axios';
@@ -108,29 +110,14 @@ export function now() {
   return Math.floor(Date.now() / 1000);
 }
 
-const fileTypeFromStream = (blob: Blob) => {
-  return new Promise<string | null>((resolve) => {
-    if (blob instanceof Blob) {
-      const fileReader = new FileReader();
-      fileReader.onloadend = (e) => {
-        if (!e.target) return resolve(null);
-        const bytes = new Uint8Array(e.target.result as ArrayBuffer);
-        // https://en.wikipedia.org/wiki/List_of_file_signatures.
-        // https://github.com/sindresorhus/file-type
-        // https://mimesniff.spec.whatwg.org/#matching-an-image-type-pattern
-        // https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
-        const result = parseByBytes(bytes);
-        const guessedFile = result[0];
-        if (!guessedFile) return resolve(null);
-        if (!guessedFile.mime) return resolve(null);
-        resolve(guessedFile.mime);
-      };
-      fileReader.onerror = () => {
-        return resolve(null);
-      };
-      fileReader.readAsArrayBuffer(blob);
-    }
-  });
+export const getMimeInfo = async (blob: Blob | File) => {
+  const buffer = await blob.arrayBuffer();
+  const byteArray = new Uint8Array(buffer);
+  const result = parseByBytes(byteArray);
+  const guessedFile = result[0];
+  if (!guessedFile) return null;
+  if (!guessedFile.mime) return null;
+  return guessedFile.mime;
 };
 
 export const getContentType = async (url: string) => {
@@ -139,7 +126,7 @@ export const getContentType = async (url: string) => {
   const contentType = response.headers.get('content-type');
   const blob = await response.blob();
   if (!contentType) {
-    return await fileTypeFromStream(blob); // content type fullback
+    return await getMimeInfo(blob); // content type fullback
   }
   const file = new File([blob], url, {
     type: contentType,
@@ -154,6 +141,32 @@ export const getFileType = async (file: FileSchema): Promise<string | null> => {
   if (mimeType.includes('image')) return 'IMAGE';
   if (mimeType.includes('video')) return 'VIDEO';
   return null;
+};
+
+type Track = {
+  codec: string;
+  id: number;
+  timescale: number;
+  type: string;
+};
+
+export const getCodecInfo = async (file: File) => {
+  const buffer = await file.arrayBuffer();
+  // buffer to byte array
+  const byteArray = new Uint8Array(buffer);
+  const tracks = muxjs.mp4.probe.tracks(byteArray) as Track[];
+  const codecs = tracks
+    .filter((t) => ['video', 'audio'].includes(t.type))
+    .map((t) => t.codec);
+  // 'video/mp4; codecs="avc1.4d400c,mp4a.40.2,mp4a.40.2"'
+  // https://videojs.com/html5-video-support/
+  // https://support.kinomap.com/hc/en-us/articles/360032372652-Video-format-is-not-supported-on-your-browser-operating-system
+  const mime = `${file.type}; codecs="${codecs.join(',')}"`;
+  return {
+    mime,
+    codecs,
+    tracks,
+  };
 };
 
 export function optimizeAnimation(callback: () => void) {

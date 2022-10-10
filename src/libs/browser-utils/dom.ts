@@ -63,3 +63,8 @@ export function sortByDomNode<T>(
     return 0;
   });
 }
+
+export const isWebApiSupported = (api: string) => {
+  if (!isBrowser) return false;
+  return api in window;
+};

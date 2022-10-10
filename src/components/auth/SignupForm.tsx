@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from 'react';
+import { Upload as UploadIcon, Trash as TrashIcon } from 'tabler-icons-react';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
@@ -10,6 +11,7 @@ import {
   useSignupMutation,
   useUploadMutation,
 } from '@api/mutations';
+import { useRouter } from 'next/router';
 
 // components
 import { UserProfileUpload } from '@components/ui/Upload';
@@ -21,12 +23,15 @@ import {
   Input,
   PasswordInput,
   Text,
+  FileInput,
   TextInput,
+  ActionIcon,
+  Anchor,
 } from '@mantine/core';
 import { KlaytnIcon } from '@components/ui/Icon';
 
 // constants
-import { RESULT_CODE } from '@constants/constant';
+import { PAGE_ENDPOINTS, RESULT_CODE } from '@constants/constant';
 import { MEDIA_TYPE, UPLOAD_TYPE } from '@api/schema/story-api';
 
 interface FormFieldValues {
@@ -40,6 +45,7 @@ interface FormFieldValues {
 
 const SignupForm = () => {
   const resetRef = useRef<() => void>(null);
+  const router = useRouter();
 
   const {
     mutateAsync: signupFn,
@@ -99,6 +105,15 @@ const SignupForm = () => {
     [uploadFn],
   );
 
+  const onRemoveKeystoreFile = useCallback(() => {
+    form.setFieldValue('file', undefined);
+    resetRef.current?.();
+  }, [form]);
+
+  const onClickMoveToLogin = useCallback(() => {
+    router.push(PAGE_ENDPOINTS.AUTH.SIGNIN);
+  }, [router]);
+
   return (
     <form onSubmit={form.onSubmit(onSubmit)}>
       <UserProfileUpload
@@ -109,9 +124,16 @@ const SignupForm = () => {
       />
       <Divider label="인증" labelPosition="left" my="lg" />
       <div>
-        <Text size="md" weight={500}>
-          Keystore 인증
-        </Text>
+        <div className="flex justify-between items-center">
+          <Text size="md" weight={500}>
+            Keystore 인증
+          </Text>
+          {form.values.file && (
+            <ActionIcon variant="subtle" onClick={onRemoveKeystoreFile}>
+              <TrashIcon size={16} />
+            </ActionIcon>
+          )}
+        </div>
         <Group grow mb="md" mt="md">
           <FileButton
             resetRef={resetRef}
@@ -132,6 +154,18 @@ const SignupForm = () => {
             )}
           </FileButton>
         </Group>
+        {form.values.file && (
+          <FileInput
+            disabled
+            styles={{
+              input: {
+                fontSize: '12px',
+              },
+            }}
+            value={form.values.file}
+            icon={<UploadIcon size={14} />}
+          />
+        )}
       </div>
       <Divider label="정보" labelPosition="left" my="lg" />
       <div className="flex flex-col space-y-3">
@@ -195,6 +229,18 @@ const SignupForm = () => {
       >
         회원가입
       </Button>
+      <Group position="center" mt="xl" spacing={5}>
+        <Text size="sm">로그인 하시겠습니까?</Text>
+        <Anchor
+          component="button"
+          type="button"
+          color="primary"
+          size="md"
+          onClick={onClickMoveToLogin}
+        >
+          로그인
+        </Anchor>
+      </Group>
     </form>
   );
 };

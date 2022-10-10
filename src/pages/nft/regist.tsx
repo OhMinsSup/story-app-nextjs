@@ -1,40 +1,43 @@
 import React from 'react';
 
 // components
-import { Title, Text } from '@mantine/core';
-import { Form } from '@components/nft';
+import { Divider } from '@mantine/core';
+import { NFTsForm } from '@components/nft';
 import { Layout } from '@components/ui/Layout';
 import { NFTsRegisterSeo } from '@components/ui/Seo';
 import { ModalsProvider } from '@mantine/modals';
 
 function NFTsRegisterPage() {
   return (
+    <>
+      <div className="max-w-2xl">
+        <h2 className="text-3xl sm:text-4xl font-semibold">NFT 만들기</h2>
+        <span className="block mt-3 text-neutral-500 dark:text-neutral-400">
+          선호하는 표시 이름을 설정하고 프로필 URL을 만들고 기타 개인 설정을
+          관리할 수 있습니다.
+        </span>
+      </div>
+      <Divider my="xs" />
+      <div className="mt-10 md:mt-0 space-y-5 sm:space-y-6 md:sm:space-y-8">
+        <NFTsForm />
+      </div>
+    </>
+  );
+}
+
+export default NFTsRegisterPage;
+
+NFTsRegisterPage.getLayout = function getLayout(page: React.ReactNode) {
+  return (
     <Layout>
       <NFTsRegisterSeo />
       <ModalsProvider>
-        <div
-          className="container grid grid-cols-12 mx-auto 2xl:grid-cols-10 2xl:px-5 md:h-full"
-          style={{
-            paddingTop: 'calc(var(--mantine-header-height, 0px) + 16px)',
-            paddingBottom: 'calc(var(--mantine-footer-height, 0px) + 16px)',
-          }}
-        >
-          <div className="col-span-12 xl:col-span-10 xl:col-start-2 2xl:col-start-3 2xl:col-span-6">
-            <Title order={1} className="mb-4 px-2">
-              Create New Item
-              <Text size="sm" color="dimmed">
-                You can set preferred display name, create your profile URL and
-                manage other personal settings.
-              </Text>
-            </Title>
-            <div className="w-full px-4 sm:px-2 mb-6">
-              <Form />
-            </div>
+        <div className="container">
+          <div className="my-12 sm:lg:my-16 lg:my-24 max-w-4xl mx-auto space-y-8 sm:space-y-10">
+            {page}
           </div>
         </div>
       </ModalsProvider>
     </Layout>
   );
-}
-
-export default NFTsRegisterPage;
+};

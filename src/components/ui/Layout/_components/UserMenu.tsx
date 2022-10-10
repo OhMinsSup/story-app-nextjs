@@ -42,7 +42,7 @@ const UserMenu = () => {
   }, [router]);
 
   const onMoveToLogin = useCallback(() => {
-    router.push(PAGE_ENDPOINTS.LOGIN);
+    router.push(PAGE_ENDPOINTS.AUTH.SIGNIN);
   }, [router]);
 
   if (!userInfo) {

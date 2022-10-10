@@ -84,6 +84,9 @@ export const API_ENDPOINTS = {
     UPLOAD: {
       FILE: '/files/upload', // 파일 업로드
     },
+    ITEM: {
+      ROOT: '/items', // 아이템
+    },
   },
 };
 
