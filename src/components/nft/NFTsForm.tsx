@@ -15,6 +15,8 @@ import {
 } from '@mantine/core';
 import { DateRangePicker } from '@mantine/dates';
 import { Paint, Network, Hash, Calendar } from 'tabler-icons-react';
+import { MediaUpload } from './_components';
+import { KlaytnIcon } from '@components/ui/Icon';
 
 // validation
 import { useForm, yupResolver } from '@mantine/form';
@@ -22,13 +24,13 @@ import { schema } from '@libs/validation/schema';
 
 // hooks
 import { useMediaQuery } from '@mantine/hooks';
-
-// enum
-// import { StoryUploadTypeEnum } from '@api/schema/enum';
-import { KlaytnIcon } from '@components/ui/Icon';
-import type { UploadRespSchema } from '@api/schema/resp';
-import { MediaUpload } from './_components';
 import { useItemMutation } from '@api/mutations';
+import { useRouter } from 'next/router';
+
+import { PAGE_ENDPOINTS } from '@constants/constant';
+
+import type { UploadRespSchema } from '@api/schema/resp';
+import type { ItemBody } from '@api/schema/body';
 
 interface MediaFieldValue extends UploadRespSchema {}
 
@@ -46,44 +48,54 @@ interface FormFieldValues {
 
 // browser env
 const NFTsForm = () => {
+  const router = useRouter();
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   const initialValues: FormFieldValues = useMemo(() => {
     return {
       title: '',
       description: '',
+      price: 0,
       tags: [],
       media: null,
       backgroundColor: '#ffffff',
       externalSite: '',
       rangeDate: [null, null],
       isPublic: false,
-      price: 0,
     };
   }, []);
 
   const form = useForm<FormFieldValues>({
-    validate: yupResolver(schema.item),
+    // validate: yupResolver(schema.item),
     initialValues,
   });
 
-  const {} = useItemMutation();
+  const { mutateAsync } = useItemMutation({
+    onSuccess: (result) => {
+      if (result.dataId) {
+        router.replace(PAGE_ENDPOINTS.NFT.ID(result.dataId));
+      } else {
+        router.replace(PAGE_ENDPOINTS.NFT.ROOT);
+      }
+    },
+  });
 
   const onSubmit = async (values: typeof form.values) => {
     const { rangeDate } = values;
     const body = {
       title: values.title,
       description: values.description,
-      backgroundColor: values.backgroundColor,
-      externalSite: values.externalSite,
-      isPublic: values.isPublic,
       price: values.price,
       beginDate: rangeDate[0] ? rangeDate[0].getTime() : null,
       endDate: rangeDate[1] ? rangeDate[1].getTime() : null,
+      fileId: values.media?.id,
+      thumbnailUrl: 'https://vitejs.dev/og-image.png',
+      isPublic: values.isPublic,
+      backgroundColor: values.backgroundColor,
+      externalSite: values.externalSite,
       tags: values.tags,
-      mediaId: values.media?.id,
-    };
-    console.log('body', body);
+    } as unknown as ItemBody;
+    mutateAsync(body);
   };
 
   // useEffect(() => {
@@ -93,6 +105,16 @@ const NFTsForm = () => {
   //     secureUrl:
   //       'https://res.cloudinary.com/planeshare/image/upload/v1663410100/media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm.jpg',
   //     mediaType: 'IMAGE',
+  //   });
+  // }, []);
+
+  // useEffect(() => {
+  //   form.setFieldValue('media', {
+  //     id: 5,
+  //     publicId: 'media/1/nft/video/2022_10_11/qswuayxuqte0rafkuv1k',
+  //     secureUrl:
+  //       'https://res.cloudinary.com/planeshare/video/upload/v1665419401/media/1/nft/video/2022_10_11/qswuayxuqte0rafkuv1k.mp4',
+  //     mediaType: 'VIDEO',
   //   });
   // }, []);
 

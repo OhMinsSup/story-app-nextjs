@@ -168,7 +168,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
           <Box className="flex flex-col">
             <div className="flex justify-between pb-2 items-center">
               <Text size="sm" align="left" weight={500}>
-                {media.mediaType}
+                {media.mediaType.toLowerCase()}
               </Text>
               <CloseButton
                 title="remove media item"
@@ -177,7 +177,10 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
                 onClick={onUploadRemove}
               />
             </div>
-            <MediaContentsUnStable media={media} />
+            <MediaContentsUnStable
+              media={media}
+              videoProps={{ controls: true }}
+            />
           </Box>
         ) : (
           <Info onDrop={onDrop} isLoading={isLoading} />

@@ -2,7 +2,7 @@ import React from 'react';
 
 // components
 import SuspenseImage from './SuspenseImage';
-import SuspenseVideo from './SuspenseVideo';
+import SuspenseVideo, { type VideoElementProps } from './SuspenseVideo';
 
 import { Suspense } from '@components/ui/Loader';
 import { ErrorBoundary } from '@components/ui/Error';
@@ -14,6 +14,7 @@ import type { UploadRespSchema } from '@api/schema/resp';
 
 interface SingleMediaProps {
   media: Nullable<FileSchema | UploadRespSchema>;
+  videoProps?: VideoElementProps;
 }
 
 function SingleMedia(props: SingleMediaProps) {
@@ -21,7 +22,7 @@ function SingleMedia(props: SingleMediaProps) {
   if (props.media?.mediaType === 'VIDEO') {
     component = (
       <Suspense fallback={<SkeletonImage />}>
-        <SuspenseVideo media={props.media} />
+        <SuspenseVideo media={props.media} {...props.videoProps} />
       </Suspense>
     );
   } else if (props.media?.mediaType === 'IMAGE') {
