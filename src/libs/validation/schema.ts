@@ -30,9 +30,10 @@ export const common = {
     .required('닉네임을 입력해주세요.'),
   gender: yup.string().oneOf(['M', 'F']).required('성별을 선택해 주세요.'),
   media: yup.object().shape({
-    contentUrl: yup.string().required('미디어 주소를 입력해주세요.'),
-    name: yup.string().optional().notRequired(),
-    idx: yup.number().required('미디어 주소를 입력해주세요.'),
+    mediaType: yup.string().required(),
+    publicId: yup.string().required(),
+    secureUrl: yup.string().required(),
+    id: yup.number().required(),
   }),
   price: yup.string().test('price', '숫자만 입력이 가능합니다', (price) => {
     if (!price) return false;

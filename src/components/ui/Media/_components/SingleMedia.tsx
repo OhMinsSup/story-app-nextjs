@@ -1,4 +1,5 @@
 import React from 'react';
+import { Image, Skeleton } from '@mantine/core';
 
 // components
 import SuspenseImage from './SuspenseImage';
@@ -25,6 +26,7 @@ function SingleMedia(props: SingleMediaProps) {
         <SuspenseVideo media={props.media} {...props.videoProps} />
       </Suspense>
     );
+  } else if (props.media?.mediaType === 'MODEL') {
   } else if (props.media?.mediaType === 'IMAGE') {
     component = (
       <Suspense fallback={<SkeletonImage />}>
@@ -40,6 +42,7 @@ function SingleMedia(props: SingleMediaProps) {
 
 export default SingleMedia;
 
-const SkeletonImage: React.FC<{ active?: boolean }> = ({ active }) => {
-  return null;
+const SkeletonImage: React.FC = () => {
+  // @ts-ignore
+  return <Image src={null} height={400} withPlaceholder alt="placeholder" />;
 };

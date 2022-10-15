@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 // components
 import {
@@ -66,11 +66,11 @@ const NFTsForm = () => {
   }, []);
 
   const form = useForm<FormFieldValues>({
-    // validate: yupResolver(schema.item),
+    validate: yupResolver(schema.item),
     initialValues,
   });
 
-  const { mutateAsync } = useItemMutation({
+  const { mutateAsync, isLoading } = useItemMutation({
     onSuccess: (result) => {
       if (result.dataId) {
         router.replace(PAGE_ENDPOINTS.NFT.ID(result.dataId));
@@ -256,7 +256,7 @@ const NFTsForm = () => {
           <Switch size="lg" {...form.getInputProps('isPublic')} />
         </div>
         <div className="pt-2 flex flex-col sm:flex-row space-y-3 sm:space-y-0 space-x-0 sm:space-x-3 ">
-          <Button className="flex-1" type="submit">
+          <Button className="flex-1" type="submit" loading={isLoading}>
             등록하기
           </Button>
         </div>

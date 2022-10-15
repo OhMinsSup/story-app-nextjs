@@ -113,7 +113,7 @@ AppPage.getInitialProps = async ({ Component, ctx }: AppContext) => {
 
     try {
       // server side user info prefetch react query
-      await client.prefetchQuery(QUERIES_KEY.ME, async () => {
+      await client.fetchQuery(QUERIES_KEY.ME, async () => {
         const response = await api.get<MeResp>({
           url: API_ENDPOINTS.APP.USERS.ME,
           config: {
