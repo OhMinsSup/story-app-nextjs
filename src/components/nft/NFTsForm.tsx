@@ -66,7 +66,7 @@ const NFTsForm = () => {
   }, []);
 
   const form = useForm<FormFieldValues>({
-    validate: yupResolver(schema.item),
+    // validate: yupResolver(schema.item),
     initialValues,
   });
 
@@ -128,6 +128,8 @@ const NFTsForm = () => {
   const onUploadRemove = useCallback(() => {
     form.setFieldValue('media', null);
   }, [form]);
+
+  console.log(form.errors);
 
   return (
     <>
