@@ -97,6 +97,28 @@ export const schema = {
       .of(yup.string().required())
       .max(5, '최대 5개까지 입력해주세요.')
       .optional(),
+    thumbnail: common.media.required('썸네일을 등록해주세요.'),
+    backgroundColor: yup
+      .string()
+      .matches(/^#[0-9a-fA-F]{6}$/, '색상 형식으로 입력해주세요.')
+      .nullable(true)
+      .optional(),
+    externalSite: yup
+      .string()
+      .url('연관 사이트는 URL 형식으로 입력해주세요.')
+      .test(
+        'externalSite',
+        '연관 사이트는 URL 형식으로 입력해주세요.',
+        (link) => {
+          if (!link) return true;
+          if (/^(http|https):\/\/[^ "]+$/.test(link)) {
+            return true;
+          }
+          return false;
+        },
+      )
+      .nullable(true)
+      .optional(),
     rangeDate: yup
       .array()
       .of(yup.date().nullable(true).required('시작일을 선택해주세요.'))
@@ -126,33 +148,5 @@ export const schema = {
       .nullable(true)
       .optional()
       .required('공개 여부를 선택해주세요.'),
-    backgroundColor: yup
-      .string()
-      .matches(/^#[0-9a-fA-F]{6}$/, '색상 형식으로 입력해주세요.')
-      .nullable(true)
-      .optional(),
-    externalSite: yup
-      .string()
-      .url('연관 사이트는 URL 형식으로 입력해주세요.')
-      .test(
-        'externalSite',
-        '연관 사이트는 URL 형식으로 입력해주세요.',
-        async (link) => {
-          if (!link) return true;
-          if (/^(http|https):\/\/[^ "]+$/.test(link)) {
-            // link ping validation
-            try {
-              const res = await fetch(link);
-              if (res.status === 200) return true;
-              return false;
-            } catch (e) {
-              return false;
-            }
-          }
-          return true;
-        },
-      )
-      .nullable(true)
-      .optional(),
   }),
 };

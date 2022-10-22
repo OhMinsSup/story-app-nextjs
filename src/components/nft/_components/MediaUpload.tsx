@@ -132,12 +132,17 @@ const Info: React.FC<InfoProps> = ({ onDrop, isLoading }) => {
 };
 
 interface MediaUploadProps {
+  title?: string;
+  description?: string;
   media: Nullable<UploadRespSchema>;
   onUploaded: (data: any) => void;
   onUploadRemove: () => void;
 }
 
 const MediaUpload: React.FC<MediaUploadProps> = ({
+  title = 'Image, Video, Audio, or 3D Model',
+  description = `지원되는 파일 형식: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG, GLB,
+  GLTF. 최대 크기: 10MB`,
   media,
   onUploaded,
   onUploadRemove,
@@ -156,12 +161,9 @@ const MediaUpload: React.FC<MediaUploadProps> = ({
 
   return (
     <div>
-      <h3 className="text-lg sm:text-xl font-semibold">
-        Image, Video, Audio, or 3D Model
-      </h3>
+      <h3 className="text-lg sm:text-xl font-semibold">{title}</h3>
       <span className="text-neutral-500 dark:text-neutral-400 text-sm">
-        지원되는 파일 형식: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV, OGG, GLB,
-        GLTF. 최대 크기: 10MB
+        {description}
       </span>
       <div className="mt-5">
         {media ? (

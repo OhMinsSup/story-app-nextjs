@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 // components
 import {
@@ -37,6 +37,7 @@ interface MediaFieldValue extends UploadRespSchema {}
 interface FormFieldValues {
   title: string;
   media: MediaFieldValue | null;
+  thumbnail: MediaFieldValue | null;
   externalSite: string;
   description: string;
   tags: string[];
@@ -53,11 +54,12 @@ const NFTsForm = () => {
 
   const initialValues: FormFieldValues = useMemo(() => {
     return {
+      media: null,
       title: '',
       description: '',
       price: 0,
       tags: [],
-      media: null,
+      thumbnail: null,
       backgroundColor: '#ffffff',
       externalSite: '',
       rangeDate: [null, null],
@@ -66,7 +68,7 @@ const NFTsForm = () => {
   }, []);
 
   const form = useForm<FormFieldValues>({
-    // validate: yupResolver(schema.item),
+    validate: yupResolver(schema.item),
     initialValues,
   });
 
@@ -89,34 +91,15 @@ const NFTsForm = () => {
       beginDate: rangeDate[0] ? rangeDate[0].getTime() : null,
       endDate: rangeDate[1] ? rangeDate[1].getTime() : null,
       fileId: values.media?.id,
-      thumbnailUrl: 'https://vitejs.dev/og-image.png',
+      thumbnailUrl: values.thumbnail?.secureUrl,
       isPublic: values.isPublic,
       backgroundColor: values.backgroundColor,
       externalSite: values.externalSite,
       tags: values.tags,
     } as unknown as ItemBody;
+
     mutateAsync(body);
   };
-
-  // useEffect(() => {
-  //   form.setFieldValue('media', {
-  //     id: 2,
-  //     publicId: 'media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm',
-  //     secureUrl:
-  //       'https://res.cloudinary.com/planeshare/image/upload/v1663410100/media/1/nft/image/2022_9_17/s3pqipbu3sfdg5bmujvm.jpg',
-  //     mediaType: 'IMAGE',
-  //   });
-  // }, []);
-
-  // useEffect(() => {
-  //   form.setFieldValue('media', {
-  //     id: 5,
-  //     publicId: 'media/1/nft/video/2022_10_11/qswuayxuqte0rafkuv1k',
-  //     secureUrl:
-  //       'https://res.cloudinary.com/planeshare/video/upload/v1665419401/media/1/nft/video/2022_10_11/qswuayxuqte0rafkuv1k.mp4',
-  //     mediaType: 'VIDEO',
-  //   });
-  // }, []);
 
   const onUploaded = useCallback(
     (data: any) => {
@@ -129,6 +112,17 @@ const NFTsForm = () => {
     form.setFieldValue('media', null);
   }, [form]);
 
+  const onThumbnailUploaded = useCallback(
+    (data: any) => {
+      form.setFieldValue('thumbnail', data);
+    },
+    [form],
+  );
+
+  const onThumbnailRemove = useCallback(() => {
+    form.setFieldValue('thumbnail', null);
+  }, [form]);
+
   console.log(form.errors);
 
   return (
@@ -137,6 +131,13 @@ const NFTsForm = () => {
         media={form.values.media}
         onUploaded={onUploaded}
         onUploadRemove={onUploadRemove}
+      />
+      <MediaUpload
+        title="썸네일"
+        description="썸네일을 등록해주세요."
+        media={form.values.thumbnail}
+        onUploaded={onThumbnailUploaded}
+        onUploadRemove={onThumbnailRemove}
       />
       <form
         className="form-area mt-4 space-y-4"
