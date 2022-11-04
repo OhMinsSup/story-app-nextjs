@@ -1,6 +1,7 @@
 import type { Api } from './story-api';
 import type { UserSchema, WalletSchema } from './user';
 import type { FileSchema } from './file';
+import type { ItemSchema } from './item';
 
 export interface AuthRespSchema {
   userId: number;
@@ -33,3 +34,6 @@ export type UploadResp = Api<UploadRespSchema>;
 
 // data id return response model
 export type DataIdResp = Api<DataIdRespSchema>;
+
+// item detail response model
+export type ItemDetailResp = ItemSchema;

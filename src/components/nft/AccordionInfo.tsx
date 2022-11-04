@@ -1,6 +1,11 @@
 import { Accordion, Text } from '@mantine/core';
+import type { ItemSchema } from '@api/schema/item';
 
-const AccordionInfo = () => {
+interface AccordionInfoProps {
+  item: ItemSchema | undefined;
+}
+
+const AccordionInfo: React.FC<AccordionInfoProps> = ({ item }) => {
   return (
     <div className="w-full rounded-2xl">
       <Accordion variant="contained">
@@ -8,10 +13,7 @@ const AccordionInfo = () => {
           <Accordion.Control>Descriptions</Accordion.Control>
           <Accordion.Panel>
             <Text size="sm" color="dimmed">
-              Tattooed Kitty Gang (“TKG”) is a collection of 666 badass kitty
-              gangsters, with symbol of tattoos, living in the Proud Kitty Gang
-              (“PKG”) metaverse. Each TKG is an 1/1 ID as gangster member & all
-              the joint rights.
+              {item?.description}
             </Text>
           </Accordion.Panel>
         </Accordion.Item>
@@ -20,21 +22,33 @@ const AccordionInfo = () => {
           <Accordion.Control>Details</Accordion.Control>
           <Accordion.Panel>
             <div className='className="flex flex-col text-xs text-neutral-500 overflow-hidden'>
-              <span>Contract Address</span>
+              <span>Contract Hash</span>
               <Text
                 variant="link"
                 component="a"
                 href="https://mantine.dev"
                 className="text-base line-clamp-1"
               >
-                0x50f5474724e0ee42d9a4e711ccfb275809fd6d4a
+                {item?.contractHash}
+              </Text>
+            </div>
+            <br />
+            <div className='className="flex flex-col text-xs text-neutral-500 overflow-hidden'>
+              <span>Transaction Hash</span>
+              <Text
+                variant="link"
+                component="a"
+                href="https://mantine.dev"
+                className="text-base line-clamp-1"
+              >
+                {item?.nft?.transactionReceipt?.at(0)?.transactionHash}
               </Text>
             </div>
             <br />
             <div className='className="flex flex-col text-xs text-neutral-500 overflow-hidden'>
               <span>Token ID</span>
               <span className="text-base text-neutral-900 line-clamp-1">
-                100300372864
+                {item?.nft?.tokenId}
               </span>
             </div>
             <br />
@@ -48,7 +62,7 @@ const AccordionInfo = () => {
             <div className='className="flex flex-col text-xs text-neutral-500 overflow-hidden'>
               <span>Blockchain</span>
               <span className="text-base text-neutral-900 line-clamp-1">
-                Ethereum
+                Klaytn
               </span>
             </div>
           </Accordion.Panel>

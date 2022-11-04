@@ -24,7 +24,7 @@ export interface Schema<Result = any> {
   resultCode: number;
   message: string[] | string | null;
   error: string | null;
-  result: Result | null;
+  result: Result;
 }
 
 export interface ListSchema<Result = any> {

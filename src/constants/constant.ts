@@ -1,3 +1,5 @@
+import type { Nullable } from '@utils/assertion';
+
 export const PAGE_ENDPOINTS = {
   INDEX: '/',
   LOGIN: '/login/',
@@ -86,13 +88,21 @@ export const API_ENDPOINTS = {
     },
     ITEM: {
       ROOT: '/items', // 아이템
+      ID: (id: string | number) => `/items/${id}`, // 아이템 상세
     },
   },
 };
 
 export const QUERIES_KEY = {
-  ME: [API_ENDPOINTS.APP.USERS.ME],
-  FILE_LIST: [API_ENDPOINTS.LOCAL.FILE.LIST],
+  ME: ['getMeApi'],
+  FILE_LIST: ['getFileListApi'],
+  ITEM_ID: (id?: Nullable<string | number>) => {
+    const keys: Array<string | number> = ['getItemIdApi'];
+    if (id) {
+      keys.push(id);
+    }
+    return keys;
+  },
 };
 
 export const WEB_APP = '@@StoryFront';
