@@ -4,25 +4,30 @@ import { MediaResource } from '../_internal/resource';
 
 // types
 import type { Nullable } from '@utils/assertion';
+import type { ImageProps } from '@mantine/core';
 import type { FileSchema } from '@api/schema/file';
 import type { UploadRespSchema } from '@api/schema/resp';
 
-interface SuspenseImageProps {
+export type ImageElementProps = ImageProps &
+  React.RefAttributes<HTMLDivElement>;
+
+interface SuspenseImageProps extends ImageElementProps {
   media?: Nullable<FileSchema | UploadRespSchema>;
   hiddenExpandBtn?: boolean;
 }
 
 const SuspenseImage: React.FC<SuspenseImageProps> = (props) => {
-  if (props.media) {
-    const resource = MediaResource(props.media, 'IMAGE');
+  const { media, ...otherProps } = props;
+  if (media) {
+    const resource = MediaResource(media, 'IMAGE');
 
     resource.load();
     resource.read();
   }
 
-  const src = props?.media?.secureUrl;
+  const src = media?.secureUrl;
 
-  return <Image radius="md" src={src} alt="nft item media" withPlaceholder />;
+  return <Image src={src} alt="nft item media" {...otherProps} />;
 };
 
 export default SuspenseImage;

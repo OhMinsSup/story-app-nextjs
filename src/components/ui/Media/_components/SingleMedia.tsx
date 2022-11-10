@@ -1,8 +1,8 @@
 import React from 'react';
-import { Image, Skeleton } from '@mantine/core';
+import { Image } from '@mantine/core';
 
 // components
-import SuspenseImage from './SuspenseImage';
+import SuspenseImage, { type ImageElementProps } from './SuspenseImage';
 import SuspenseVideo, { type VideoElementProps } from './SuspenseVideo';
 
 import { Suspense } from '@components/ui/Loader';
@@ -16,6 +16,7 @@ import type { UploadRespSchema } from '@api/schema/resp';
 interface SingleMediaProps {
   media: Nullable<FileSchema | UploadRespSchema>;
   videoProps?: VideoElementProps;
+  imageProps?: ImageElementProps;
 }
 
 function SingleMedia(props: SingleMediaProps) {
@@ -30,7 +31,7 @@ function SingleMedia(props: SingleMediaProps) {
   } else if (props.media?.mediaType === 'IMAGE') {
     component = (
       <Suspense fallback={<SkeletonImage />}>
-        <SuspenseImage media={props.media} />
+        <SuspenseImage media={props.media} {...props.imageProps} />
       </Suspense>
     );
   }

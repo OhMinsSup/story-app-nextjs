@@ -73,7 +73,7 @@ const RightSection: React.FC<RightSectionProps> = ({ item }) => {
       </div>
 
       <div className="py-9">
-        <TimeCountDown />
+        <TimeCountDown beginDate={item?.beginDate} endDate={item?.endDate} />
       </div>
 
       <Text color="dimmed">Current price</Text>
@@ -95,15 +95,7 @@ const RightSection: React.FC<RightSectionProps> = ({ item }) => {
             </Text>
           </div>
           <div className="w-full ml-3 overflow-hidden text-ellipsis whitespace-nowrap">
-            0.23
-          </div>
-        </div>
-        <div
-          className="max-w-full text-gray-700 w-fit ml-2 mt-4"
-          style={{ fontSize: '15px' }}
-        >
-          <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-normal text-gray-400">
-            ($382.68)
+            {item?.price}
           </div>
         </div>
       </div>

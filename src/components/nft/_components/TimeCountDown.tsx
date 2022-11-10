@@ -2,8 +2,13 @@ import React from 'react';
 import { TimerIcon } from '@components/ui/Icon';
 import { useCountDownTime } from '@hooks/useCountDownTime';
 
-const TimeCountDown = () => {
-  const timeLeft = useCountDownTime();
+interface TimeCountDownProps {
+  beginDate?: Date;
+  endDate?: Date;
+}
+
+const TimeCountDown: React.FC<TimeCountDownProps> = (props) => {
+  const timeLeft = useCountDownTime(props);
 
   return (
     <div className="space-y-5">

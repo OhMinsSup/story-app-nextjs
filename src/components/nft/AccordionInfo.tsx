@@ -1,11 +1,23 @@
 import { Accordion, Text } from '@mantine/core';
 import type { ItemSchema } from '@api/schema/item';
+import { useMemo } from 'react';
 
 interface AccordionInfoProps {
   item: ItemSchema | undefined;
 }
 
 const AccordionInfo: React.FC<AccordionInfoProps> = ({ item }) => {
+  const contractHref = useMemo(() => {
+    // `https://scope.klaytn.com/account/${item?.contractAddress}`;
+    return `https://baobab.scope.klaytn.com/account/${item?.contractHash}`;
+  }, [item?.contractHash]);
+
+  const transactionHref = useMemo(() => {
+    const hash = item?.nft?.transactionReceipt?.at(0)?.transactionHash;
+    // `https://scope.klaytn.com/tx/${item?.transactionHash}`;
+    return `https://baobab.scope.klaytn.com/tx/${hash}`;
+  }, [item]);
+
   return (
     <div className="w-full rounded-2xl">
       <Accordion variant="contained">
@@ -26,7 +38,7 @@ const AccordionInfo: React.FC<AccordionInfoProps> = ({ item }) => {
               <Text
                 variant="link"
                 component="a"
-                href="https://mantine.dev"
+                href={contractHref}
                 className="text-base line-clamp-1"
               >
                 {item?.contractHash}
@@ -38,7 +50,7 @@ const AccordionInfo: React.FC<AccordionInfoProps> = ({ item }) => {
               <Text
                 variant="link"
                 component="a"
-                href="https://mantine.dev"
+                href={transactionHref}
                 className="text-base line-clamp-1"
               >
                 {item?.nft?.transactionReceipt?.at(0)?.transactionHash}
